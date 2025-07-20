@@ -1,3 +1,4 @@
+-- detect.lua
 
 function DetectPeripherals()
     local list = peripheral.getNames()
@@ -30,3 +31,6 @@ function DetectPeripherals()
     return peripherals
 end
 
+return {
+    DetectPeripherals = DetectPeripherals
+}

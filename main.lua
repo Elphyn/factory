@@ -1,14 +1,8 @@
-
+-- main.lua
 
 local detect = require("detect")
 local peripherals = detect.DetectPeripherals()
 local queue = {}
-
-local function fmt(str, vars)
-    return (str:gsub("{(.-)}", function(key)
-        return tostring(vars[key] or "{"..key.."}")
-    end))
-end
 
 while true do
     for _, drawer in ipairs(peripherals.storage) do
