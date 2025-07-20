@@ -1,6 +1,7 @@
 return {
     ["minecraft:gravel"] = {
-        crafter = "basin",
-        items = {"minecarft:cobblestone"}
+        crafter = "mill",
+        items = {"minecarft:cobblestone"},
+        count = 1
     } 
 }

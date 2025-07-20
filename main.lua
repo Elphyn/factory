@@ -3,13 +3,14 @@
 local detect = require("detect")
 local storage = require("storage")
 local recipes = require("recipes")
-
+local crafting = require("craft.lua")
 local peripherals = detect.DetectPeripherals()
 
 local available_items = storage.UpdateStorage(peripherals.storage)
 
 
 local queue = {}
+local activeProcesses = {}
 while true do
     -- ordering 
     term.clear()
@@ -17,14 +18,15 @@ while true do
         local device = peripheral.wrap(drawer)
         local info = device.items()[1]
         local count = info.count
-        if count < 256 then
-            if not queue[drawer] and recipes[info.name] ~= nil then
-                queue[drawer] = {
-                    name = info.name,
-                    need = 256 - count,
-                    state = "queued"
-                }
-            end
+            if count < 64 then
+                if not queue[drawer] and recipes[info.name] ~= nil then
+                    queue[drawer] = {
+                        name = info.name,
+                        need = 256 - count,
+                        state = "queued",
+                        location = drawer
+                    }
+                end
         end
     end
     for key, _ in pairs(peripherals) do
@@ -36,8 +38,9 @@ while true do
     end 
     
     -- processing orders
+    for order in pairs(queue) do    
+        crafting.Craft(order, available_items, recipes[order.name].crafter)
+    end
 
-
-    
     sleep(5)
 end

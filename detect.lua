@@ -19,7 +19,7 @@ function DetectPeripherals()
         elseif string.match(name, "^createcobblestone:cobblestone_generator") then
             table.insert(peripherals.generators, name)
         elseif string.match(name, "^create:millstone") then
-            table.insert(peripherals.mills, name)
+            peripherals.mills[name] = { state = "idle" }
         end
     end
     
