@@ -20,7 +20,7 @@ local function millFinished(station_name, resource_name, expected)
         end
     end
     local idx = findIdx(table)
-    local cur_count = table.items[idx].count
+    local cur_count = table[idx].count
     if cur_count == expected then
         return true
     end
@@ -28,13 +28,13 @@ local function millFinished(station_name, resource_name, expected)
 
 end
 
-local function millCraft(order, station_name)
+local function millCraft(order, station_name, storage)
     return coroutine.create(function()
         local resource_name = order.name
         local mill = peripheral.wrap(station_name)
         
         local reagent = recipes[resource_name].items[1]
-        mill.pullItem(findResource(reagent), reagent, order.count)
+        mill.pullItem(findResource(storage, reagent), reagent, order.count)
         
         while not millFinished(station_name, resource_name, order.count) do
             coroutine.yield()
@@ -49,9 +49,9 @@ local activeCoroutines = {}
 -- here it should chunk it into smaller orders
 function Craft(order, storage, station_type) 
     if station_type == "mill" then
-        local co = millCraft(order)
+        
+        local co = millCraft(order, "create:millstone_11", storage)
         table.insert(activeCoroutines, co)
-        millCraft()
     end
 end
 
