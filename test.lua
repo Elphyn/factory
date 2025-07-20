@@ -2,7 +2,6 @@
 local list = peripheral.getNames()
 
 
-for added in list:
-    print(added)
-end 
-
+for _, device in ipairs(list) do
+    print(device)
+end
