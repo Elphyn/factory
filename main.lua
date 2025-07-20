@@ -1,7 +1,7 @@
 
 
-local peripherals = require("detect")
-
+local detect = require("detect")
+local peripherals = detect.DetectPeripherals()
 local queue = {}
 
 local function fmt(str, vars)
