@@ -1,17 +1,28 @@
 
 local list = peripheral.getNames()
 
-local basins = {}
+local peripherals = {
+    basins = {},
+    storage = {}
+} 
 
-local i = 0
-for _, device in ipairs(list) do
-    if string.match(device, "^create:basin") then
-        basins[i] = device
-        i = i + 1
+
+for _, name in ipairs(list) do
+    if string.match(name, "^create:basin") then
+        peripherals.basins[name] = { state = "idle"}
+    elseif string.match(name, "^extended_drawers:single_drawer") then
+        table.insert(peripherals.storage, name)
     end
+
 end
 
-for num, basin in ipairs(basin) do
-    local line = string.format("%d Basin: %s", num, basin)
-    print(line)
+print("Basins: ")
+for name, _ in ipairs(peripherals.basins) do
+    print(name)
 end
+
+print("Storage: ")
+for _, name in ipairs(peripherals.storage) do
+    print(name)
+end
+
