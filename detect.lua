@@ -18,16 +18,6 @@ function DetectPeripherals()
 
     end
 
-    print("Basins: ")
-    for name, _ in pairs(peripherals.basins) do
-        print(name)
-    end
-
-    print("Storage: ")
-    for _, name in ipairs(peripherals.storage) do
-        print(name)
-    end
-    
     return peripherals
 end
 

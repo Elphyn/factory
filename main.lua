@@ -6,7 +6,8 @@ local queue = {}
 
 while true do
     for _, drawer in ipairs(peripherals.storage) do
-        local info = drawer.items()
+        local device = peripheral.wrap(drawer)
+        local info = device.items()
         local count = info.count
         if count < 256 then
             if not queue[drawer] then
@@ -18,11 +19,9 @@ while true do
             end
         end
     end
-    
-    term.clear()
-    for storage_unit, table in pairs(queue) do
-        local line = fmt("Order for {storage_unit} | {table.count} {table.name}")
-    end
+    for name, order in pairs(queue) do
+        print(string.format("Order for %s: %d %s", name, order.need, order.name))
+    end 
     
     sleep(5)
 end
