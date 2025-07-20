@@ -5,7 +5,9 @@ function DetectPeripherals()
 
     local peripherals = {
         basins = {},
-        storage = {}
+        storage = {},
+        generators = {},
+        mills = {}
     } 
 
 
@@ -14,9 +16,13 @@ function DetectPeripherals()
             peripherals.basins[name] = { state = "idle"}
         elseif string.match(name, "^extended_drawers:single_drawer") then
             table.insert(peripherals.storage, name)
+        elseif string.match(name, "^createcobblestone:cobblestone_generator") then
+            table.insert(peripherals.generators, name)
+        elseif string.match(name, "^create:millstone") then
+            table.insert(peripherals.mills, name)
         end
-
     end
+    
 
     return peripherals
 end
