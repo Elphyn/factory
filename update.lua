@@ -4,8 +4,8 @@ local branch = "main"
 
 local function fetchFile(path, savePath)
     local url = string.format(
-        "https://raw.githubusercontent.com/%s/%s/%s/%s",
-        githubUser, repoName, branch, path
+        "https://raw.githubusercontent.com/%s/%s/%s/%s?t=%d",
+        githubUser, repoName, branch, path, math.random(1, 1e9)
     )
     local res = http.get(url)
     if not res then return false end
