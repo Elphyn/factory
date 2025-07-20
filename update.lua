@@ -1,5 +1,5 @@
 local githubUser = "Elphyn"
-local repoName = "my-cc-repo"
+local repoName = "factory"
 local branch = "main"
 
 local function fetchFile(path, savePath)
