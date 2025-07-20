@@ -3,7 +3,7 @@
 local detect = require("detect")
 local storage = require("storage")
 local recipes = require("recipes")
-local crafting = require("craft.lua")
+local crafting = require("craft")
 local peripherals = detect.DetectPeripherals()
 
 local available_items = storage.UpdateStorage(peripherals.storage)
@@ -22,7 +22,7 @@ while true do
                 if not queue[drawer] and recipes[info.name] ~= nil then
                     queue[drawer] = {
                         name = info.name,
-                        need = 256 - count,
+                        need = 64 - count,
                         state = "queued",
                         location = drawer
                     }
@@ -39,7 +39,7 @@ while true do
     
     -- processing orders
     for order in pairs(queue) do    
-        crafting.Craft(order, available_items, recipes[order.name].crafter)
+        crafting.Craft(order, available_items, "mill")
     end
 
     sleep(5)

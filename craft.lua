@@ -33,7 +33,7 @@ local function millCraft(order, station_name)
         local resource_name = order.name
         local mill = peripheral.wrap(station_name)
         
-        local reagent = recipes["minecraft:gravel"].items[1]
+        local reagent = recipes[resource_name].items[1]
         mill.pullItem(findResource(reagent), reagent, order.count)
         
         while not millFinished(station_name, resource_name, order.count) do
