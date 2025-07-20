@@ -3,9 +3,10 @@ local repoName = "factory"
 local branch = "main"
 
 local function fetchFile(path, savePath)
+    local cacheBuster = math.random(2^30)
     local url = string.format(
-        "https://raw.githubusercontent.com/%s/%s/%s/%s?t=%d",
-        githubUser, repoName, branch, path, math.random(1, 1e9)
+        "https://raw.githubusercontent.com/%s/%s/%s/%s?cb=%d",
+        githubUser, repoName, branch, path, cacheBuster
     )
     local res = http.get(url)
     if not res then return false end

@@ -1,6 +1,8 @@
 
-list = peripheral.getNames()
+local list = peripheral.getNames()
 
 
 for added in list:
     print(added)
+end 
+
