@@ -6,8 +6,10 @@ local queue = {}
 
 while true do
     for _, drawer in ipairs(peripherals.storage) do
+        print(drawer)
         local device = peripheral.wrap(drawer)
         local info = device.items()
+        print(info)
         local count = info.count
         if count < 256 then
             if not queue[drawer] then
