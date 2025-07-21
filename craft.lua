@@ -23,6 +23,9 @@ local function Done(expected_regent, expected_amount, station_name)
     end
     
     local idx = findIdx()
+    if not idx then
+        return false
+    end
     local count = mill.items[idx].count
     if count < expected_amount then
         return false
@@ -40,6 +43,7 @@ local function millCraft(order, station_name)
     mill.pullItem(available_items[regent_needed].location, regent_needed, order.how_much)
     
     while not Done(regent_crafting, order.how_much, station_name) do
+        print("Not done yet: pause")
         coroutine.yield()
     end
     
@@ -66,3 +70,14 @@ local queue = {
 print("Order: ")
 local order = queue["minecraft:gravel"]
 print(string.format("Crafting: %s\nCount: %d \nSource: %s", order.what_to_craft, order.how_much, order.where_put))
+
+local co = coroutine.create(function()
+    millCraft(order, "create:millstone_11") 
+end)
+
+coroutine.resume(co)
+
+while coroutine.status(co) ~= "dead" do
+    sleep(0.5)
+    coroutine.resume(co) 
+end
