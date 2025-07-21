@@ -75,9 +75,17 @@ local co = coroutine.create(function()
     millCraft(order, "create:millstone_11") 
 end)
 
-coroutine.resume(co)
+local success, result_or_err = coroutine.resume(co)
+
+if not success then
+    print("Coroutine error: " .. tostring(result_or_err))
+end
 
 while coroutine.status(co) ~= "dead" do
     sleep(0.5)
-    coroutine.resume(co) 
+    local success, result_or_err = coroutine.resume(co)
+
+    if not success then
+        print("Coroutine error: " .. tostring(result_or_err))
+    end
 end
