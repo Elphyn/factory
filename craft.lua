@@ -7,7 +7,7 @@ local detect = require("detect")
 
 
 
-local drawers = detect.DetectPeripherals()[storage]
+local drawers = detect.DetectPeripherals().ext_drawers
 local available_items = storage.UpdateStorage(drawers)
 
 local function Done(expected_regent, expected_amount, station_name) 
@@ -58,7 +58,11 @@ local queue = {
     }
 }
 
-local co = coroutine.create(millCraft(queue["minecraft:gravel"], "craete:millstone_11"))
+-- local co = coroutine.create(millCraft(queue["minecraft:gravel"], "create:millstone_11"))
 
-coroutine.resume(co)
-coroutine.resume(co)
+-- coroutine.resume(co)
+-- coroutine.resume(co)
+
+print("Order: ")
+local order = queue["minecraft:gravel"]
+print(string.format("Crafting: %s\nCount: %d \nSource: %s", order.what_to_craft, order.how_much, order.where_put))
