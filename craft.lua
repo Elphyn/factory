@@ -2,60 +2,63 @@
 -- order would look like: [drawer_name] = {resource_name, amount, state}
 
 local recipes = require("recipes")
+local storage = require("storage")
+local detect = require("detect")
 
-local function findResource(storage, name)
-    return storage[name].location
-end
 
-local function millFinished(station_name, resource_name, expected)
+
+local drawers = detect.DetectPeripherals()[storage]
+local available_items = storage.UpdateStorage(drawers)
+
+local function Done(expected_regent, expected_amount, station_name) 
     local mill = peripheral.wrap(station_name)
-    local table = mill.items()
-
-    -- first fine resource
-    local function findIdx(table)
-        for i, item_info in ipairs(table) do
-            if item_info.name == resource_name then
+    
+    -- need to find regent table
+    local function findIdx()
+        for i, table in ipairs(mill.items()) do
+            if table[i].name == expected_regent then
                 return i
             end
         end
     end
-    local idx = findIdx(table)
-    local cur_count = table[idx].count
-    if cur_count == expected then
-        return true
+    
+    local idx = findIdx()
+    local count = mill.items[idx].count
+    if count < expected_amount then
+        return false
     end
-    return false
+    return true
 
 end
 
-local function millCraft(order, station_name, storage)
-    return coroutine.create(function()
-        local resource_name = order.name
-        local mill = peripheral.wrap(station_name)
-        
-        local reagent = recipes[resource_name].items[1]
-        mill.pullItem(findResource(storage, reagent), reagent, order.count)
-        
-        while not millFinished(station_name, resource_name, order.count) do
-            coroutine.yield()
-        end
-        
-        mill.pushItem(order.location, resource_name, order.count)
-        order.state = "done"
-    end)
-end
+local function millCraft(order, station_name)
+    local regent_crafting = order.what_to_craft
+    local regent_needed = recipes[regent_crafting].items[1]
 
-local activeCoroutines = {}
--- here it should chunk it into smaller orders
-function Craft(order, storage, station_type) 
-    if station_type == "mill" then
-        
-        local co = millCraft(order, "create:millstone_11", storage)
-        table.insert(activeCoroutines, co)
+    
+    local mill = peripheral.wrap(station_name)
+    mill.pullItem(available_items[regent_needed].location, regent_needed, order.how_much)
+    
+    while not Done(regent_crafting, order.how_much, station_name) do
+        coroutine.yield()
     end
+    
+    mill.pushItem(order.where_put, regent_crafting, order.how_much)
+    print("Finished Order")
 end
 
 
-return {
-    Craft = Craft
+-- manual testing
+local queue = {
+    ["minecraft:gravel"] = {
+        what_to_craft = "minecraft:gravel",
+        how_much = 2,
+        where_put = "extended_drawers:single_drawer_14",
+        state = "queued"
+    }
 }
+
+local co = coroutine.create(millCraft(queue["minecraft:gravel"], "craete:millstone_11"))
+
+coroutine.resume(co)
+coroutine.resume(co)

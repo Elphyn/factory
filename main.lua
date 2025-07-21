@@ -14,21 +14,21 @@ local activeProcesses = {}
 while true do
     -- ordering 
     term.clear()
-    for _, drawer in ipairs(peripherals.storage) do
-        local device = peripheral.wrap(drawer)
-        local info = device.items()[1]
+    for _, drawer_name in ipairs(peripherals.storage) do
+        local drawer = peripheral.wrap(drawer_name)
+        local info = drawer.items()[1]
         local count = info.count
-            if count < 64 then
-                if not queue[drawer] and recipes[info.name] ~= nil then
-                    queue[drawer] = {
-                        name = info.name,
-                        need = 64 - count,
-                        state = "queued",
-                        location = drawer
-                    }
-                end
+        local regent = info.name
+        if count < 64 and recipes[regent] ~= nil and not queue[regent] then
+            queue[regent] = {
+                what_to_craft = regent,
+                how_much = 64 - count,
+                where_put = drawer_name,
+                state = "queued"
+            }
         end
     end
+
     for key, _ in pairs(peripherals) do
         print(string.format("P: %s | %d", key, #peripherals[key]))
     end
@@ -38,9 +38,6 @@ while true do
     end 
     
     -- processing orders
-    for order in pairs(queue) do    
-        crafting.Craft(order, available_items, "mill")
-    end
 
     sleep(5)
 end
