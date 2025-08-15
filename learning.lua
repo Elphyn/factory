@@ -29,7 +29,7 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 	-- Should note, that if we got here, we must assume we have enough items
 	local craftingItemName = task.order
 	local howManyToCraft = task.count
-	local recipeItemList = recipes["minecraft:gravel"]
+	local recipeItemList = recipes[craftingItemName]
 
 	-- place itmes in a station
 	local station = peripheral.wrap(stationName)
@@ -47,9 +47,13 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 		if itemSlot then
 			local itemSlot = station.items()[itemSlot]
 			local curCount = 0
+			-- not sure that's needed, but it failed a few times, no count for some reason
 			if not itemSlot.count then
 				curCount = 1
+			else
+				curCount = itemSlot.count
 			end
+
 			if curCount == howManyToCraft then
 				break
 			end
