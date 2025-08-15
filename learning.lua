@@ -66,10 +66,10 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 end
 
 -- executeTask(chest_name, chest_name, mill_name, task)
-local co = coroutine.create(executeTask(chest_name, chest_name, mill_namea, task))
+local co = coroutine.create(executeTask)
 
 while coroutine.status(co) ~= "dead" do
-	local ok, res = coroutine.resume(co)
+	local ok, res = coroutine.resume(co, chest_name, chest_name, mill_name, task)
 	print("status: ", coroutine.status(co))
 	sleep(0.5)
 end
