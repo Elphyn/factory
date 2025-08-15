@@ -53,7 +53,7 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 	end
 
 	-- withdraw items
-	station.pushItem(placeWhereName, howManyToCraft)
+	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
 end
 
 executeTask(chest_name, chest_name, mill_name, task)
