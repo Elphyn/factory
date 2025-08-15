@@ -47,11 +47,16 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 			itemSlot = findItem(stationName, craftingItemName)
 		end
 		if itemSlot then
-			local isFinished = station.items()[itemSlot].count == howManyToCraft
-			if isFinished then
+			local itemSlot = station.items()[itemSlot]
+			local curCount = 0
+			if not itemSlot.count then
+				curCount = 1
+			end
+			if curCount == howManyToCraft then
 				break
 			end
 		end
+		sleep(0.1)
 	end
 
 	-- withdraw items
