@@ -16,12 +16,14 @@ local function findItem(stationName, itemName)
 	local station = peripheral.wrap(stationName)
 
 	local inventory = station.items()
-	for i, table in ipairs(inventory) do
+	for i, _ in ipairs(inventory) do
 		local curItemName = inventory[i].name
+		print("Found item in slot: %d", i)
 		if curItemName == itemName then
 			return i
 		end
 	end
+	print("No item in %s", stationName)
 	return nil
 end
 
