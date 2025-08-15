@@ -45,13 +45,13 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 			itemSlot = findItem(stationName, craftingItemName)
 		end
 		if itemSlot then
-			local itemSlot = station.items()[itemSlot]
+			local itemSlotTable = station.items()[itemSlot]
 			local curCount = 0
 			-- not sure that's needed, but it failed a few times, no count for some reason
-			if not itemSlot.count then
+			if not itemSlotTable.count then
 				curCount = 1
 			else
-				curCount = itemSlot.count
+				curCount = itemSlotTable.count
 			end
 
 			if curCount == howManyToCraft then
