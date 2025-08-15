@@ -41,9 +41,7 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 	-- wait for it to be finished
 	local itemSlot = nil
 	while true do
-		if not itemSlot then
-			itemSlot = findItem(stationName, craftingItemName)
-		end
+		itemSlot = findItem(stationName, craftingItemName)
 		if itemSlot then
 			local itemSlotTable = station.items()[itemSlot]
 			local curCount = 0
