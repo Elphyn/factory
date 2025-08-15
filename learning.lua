@@ -18,12 +18,10 @@ local function findItem(stationName, itemName)
 	local inventory = station.items()
 	for i, _ in ipairs(inventory) do
 		local curItemName = inventory[i].name
-		print("Found item in slot: %d", i)
 		if curItemName == itemName then
 			return i
 		end
 	end
-	print("No item in %s", stationName)
 	return nil
 end
 
@@ -37,7 +35,7 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 	local station = peripheral.wrap(stationName)
 
 	for key, value in pairs(recipeItemList) do
-		station.pullItem(takeFromName, key, value)
+		station.pullItem(takeFromName, key, value * howManyToCraft)
 	end
 
 	-- wait for it to be finished
