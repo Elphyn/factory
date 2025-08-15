@@ -58,11 +58,20 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 				break
 			end
 		end
-		sleep(0.1)
+		coroutine.yield()
 	end
 
 	-- withdraw items
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
 end
 
-executeTask(chest_name, chest_name, mill_name, task)
+-- executeTask(chest_name, chest_name, mill_name, task)
+local co = coroutine.create(executeTask(chest_name, chest_name, mill_namea, task))
+
+while coroutine.status(co) ~= "dead" do
+	local ok, res = coroutine.resume(co)
+	print("status: ", coroutine.status(co))
+	sleep(0.5)
+end
+
+print(coroutine.status(co))
