@@ -64,15 +64,26 @@ end
 
 -- executeTask(chest_name, chest_name, mill_name, task)
 
-local co = coroutine.create(executeTask)
+local function safeExecute(func, ...)
+	local ok, err = pcall(func, ...)
+	if not ok then
+		print("Error inside while running a function: ", err)
+	end
+end
 
-coroutine.resume(co, chest_name, chest_name, mill_name, task)
+local co = coroutine.create(safeExecute)
+
+local ok, err = coroutine.resume(co, executeTask, chest_name, chest_name, mill_name, task)
+if not ok then
+	print("Error:", err)
+end
+
 while coroutine.status(co) ~= "dead" do
 	local ok, err = coroutine.resume(co)
 	if not ok then
-		print("Something went wrong: ", err)
+		print("Error:", err)
 	end
 	sleep(1)
 end
 
-print("coroutine is finished!")
+print("coroutine is finished")
