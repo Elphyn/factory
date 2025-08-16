@@ -9,8 +9,10 @@ local recipes = {
 	},
 }
 
-local chest_name = "minecraft:chest_14"
+-- local chest_name = "minecraft:chest_14"
 local mill_name = "create:millstone_14"
+local gravel_drawer = "extended_drawers:single_drawer_15"
+local cobblestone_drawer = "extended_drawers:single_drawer_16"
 
 local function findItem(stationName, itemName)
 	local station = peripheral.wrap(stationName)
@@ -49,12 +51,12 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 	local recipeItemList = recipes[craftingItemName]
 
 	-- place itmes in a station
-	local chest = peripheral.wrap(takeFromName)
 	local station = peripheral.wrap(stationName)
+	local drawer = peripheral.wrap(takeFromName)
 
 	for key, value in pairs(recipeItemList) do
 		-- local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
-		chest.pushItem(stationName, kye, value * howManyToCraft)
+		drawer.pushItem(stationName, key, value * howManyToCraft)
 	end
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
@@ -68,7 +70,7 @@ end
 -- executeTask(chest_name, chest_name, mill_name, task)
 
 local co = coroutine.create(executeTask)
-coroutine.resume(co, chest_name, chest_name, mill_name, task)
+coroutine.resume(co, cobblestone_drawer, gravel_drawer, mill_name, task)
 
 while coroutine.status(co) ~= "dead" do
 	local ok, err = coroutine.resume(co)
