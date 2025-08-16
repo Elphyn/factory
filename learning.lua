@@ -61,7 +61,7 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
 		print("Pausing")
-		coroutine.yield()
+		sleep(1)
 	end
 	-- withdraw items
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
@@ -69,14 +69,11 @@ end
 
 -- executeTask(chest_name, chest_name, mill_name, task)
 
-local co = coroutine.create(executeTask)
-coroutine.resume(co, cobblestone_drawer, gravel_drawer, mill_name, task)
-
-while coroutine.status(co) ~= "dead" do
-	local ok, err = coroutine.resume(co)
-	if not ok then
-		print("Something went wrong: ", err)
+local function wrapper(func, ...)
+	local args = { ... }
+	return function()
+		return func(table.unpack(args))
 	end
 end
 
-print("Coroutine is finished")
+parallel.waitForAll(wrapper(executeTask, cobblestone_drawer, gravel_drawer, mill_name, task))
