@@ -49,18 +49,16 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 	local recipeItemList = recipes[craftingItemName]
 
 	-- place itmes in a station
+	local chest = peripheral.wrap(takeFromName)
 	local station = peripheral.wrap(stationName)
 
 	for key, value in pairs(recipeItemList) do
-		local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
-		if ok then
-			print("Success, pulled out")
-		else
-			print("pullItem failed, err", result)
-		end
+		-- local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
+		chest.pushItem(stationName, kye, value * howManyToCraft)
 	end
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
+		print("Pausing")
 		coroutine.yield()
 	end
 	-- withdraw items
