@@ -25,6 +25,23 @@ local function findItem(stationName, itemName)
 	return nil
 end
 
+local function isDone(craftingItemName, howManyToCraft, stationName)
+	local station = peripheral.wrap(stationName)
+	local stationStorage = station.items()
+
+	local itemSlot = findItem(stationName, craftingItemName)
+
+	if itemSlot then
+		local curCount = stationStorage[itemSlot].count
+		if curCount >= howManyToCraft then
+			return true
+		end
+		return false
+	else
+		return false
+	end
+end
+
 local function executeTask(takeFromName, placeWhereName, stationName, task)
 	-- Should note, that if we got here, we must assume we have enough items
 	local craftingItemName = task.order
@@ -38,40 +55,24 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 		station.pullItem(takeFromName, key, value * howManyToCraft)
 	end
 
-	-- wait for it to be finished
-	local itemSlot = nil
-	while true do
-		itemSlot = findItem(stationName, craftingItemName)
-		if itemSlot then
-			local itemSlotTable = station.items()[itemSlot]
-			local curCount = 0
-			-- not sure that's needed, but it failed a few times, no count for some reason
-			if not itemSlotTable.count then
-				curCount = 1
-			else
-				curCount = itemSlotTable.count
-			end
-
-			if curCount == howManyToCraft then
-				break
-			end
-		end
+	while not isDone(craftingItemName, howManyToCraft, stationName) do
 		coroutine.yield()
 	end
-
 	-- withdraw items
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
 end
 
 -- executeTask(chest_name, chest_name, mill_name, task)
-local function taskWrapper()
-	executeTask(chest_name, chest_name, mill_name, task)
-end
 
-local co = coroutine.create(taskWrapper)
+local co = coroutine.create(executeTask)
+
+coroutine.resume(co, chest_name, chest_name, mill_name, task)
 while coroutine.status(co) ~= "dead" do
-	coroutine.resume(co)
+	local ok, err = coroutine.resume(co)
+	if not ok then
+		print("Something went wrong: ", err)
+	end
 	sleep(1)
 end
 
-print(coroutine.status(co))
+print("coroutine is finished!")
