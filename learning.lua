@@ -52,7 +52,12 @@ local function executeTask(takeFromName, placeWhereName, stationName, task)
 	local station = peripheral.wrap(stationName)
 
 	for key, value in pairs(recipeItemList) do
-		station.pullItem(takeFromName, key, value * howManyToCraft)
+		local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
+		if ok then
+			print("Success, pulled out")
+		else
+			print("pullItem failed, err", result)
+		end
 	end
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
@@ -64,26 +69,14 @@ end
 
 -- executeTask(chest_name, chest_name, mill_name, task)
 
-local function safeExecute(func, ...)
-	local ok, err = pcall(func, ...)
-	if not ok then
-		print("Error inside while running a function: ", err)
-	end
-end
-
-local co = coroutine.create(safeExecute)
-
-local ok, err = coroutine.resume(co, executeTask, chest_name, chest_name, mill_name, task)
-if not ok then
-	print("Error:", err)
-end
+local co = coroutine.create(executeTask)
+coroutine.resume(co, chest_name, chest_name, mill_name, task)
 
 while coroutine.status(co) ~= "dead" do
 	local ok, err = coroutine.resume(co)
 	if not ok then
-		print("Error:", err)
+		print("Something went wrong: ", err)
 	end
-	sleep(1)
 end
 
-print("coroutine is finished")
+print("Coroutine is finished")
