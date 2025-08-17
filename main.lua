@@ -34,7 +34,8 @@ local function getStorageItems()
 			itemStorageTable[itemTable.name].count = itemStorageTable[itemTable.name].count + itemTable.count
 			itemStorageTable[itemTable.name].capacity = itemStorageTable[itemTable.name].capacity + 1024
 		else
-			itemStorageTable[itemTable.name] = { count = itemTable.count, capacity = 1024 }
+			itemStorageTable[itemTable.name] =
+				{ count = itemTable.count, capacity = 1024, displayName = itemTable.displayName }
 		end
 		::continue::
 	end
@@ -64,7 +65,7 @@ local function displayStorageItems()
 	local line = 1
 	for name, info in pairs(itemTable) do
 		monitor.setCursorPos(1, line)
-		local itemInfoString = string.format("%s | %d/%d", name, info.count, info.capacity)
+		local itemInfoString = string.format("%s | %d/%d", info.displayName, info.count, info.capacity)
 		monitor.write(itemInfoString)
 		line = line + 1
 	end
