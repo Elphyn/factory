@@ -62,7 +62,7 @@ end
 
 
 local function initStations(stationStartsWith)
-	local devices = peripherals.getNames()
+	local devices = peripheral.getNames()
 
 	local stationTable = {}
 	local stationStack = {}
@@ -138,9 +138,11 @@ local function displayStorageItems(itemTable)
   
   -- name = {order = name, count = how much we crafting}
   line = line + 1
+	monitor.setCursorPos(1, line)
   monitor.write("Queue: ")
   line = line + 1
   for name, info in pairs(queue) do
+		monitor.setCursorPos(1, line)
     local itemInfoString = string.format("%s | Can craft: %d", name, info.count)
     monitor.write(itemInfoString)
     line = line + 1
