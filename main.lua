@@ -155,7 +155,7 @@ local function displayStorageItems(itemTable)
   line = line + 1
   for name, info in pairs(queue) do
 		monitor.setCursorPos(1, line)
-    local itemInfoString = string.format("%s | Can craft: %d", name, info.count)
+    local itemInfoString = string.format("%s | Can craft: %d", itemTable[name].displayName, info.count)
     monitor.write(itemInfoString)
     line = line + 1
   end
