@@ -11,7 +11,7 @@ local function getStorageUnits()
 	local storageUnits = {}
 
 	for _, connectedPeripheral in ipairs(list) do
-		if string.match(name, "^extended_drawers") then
+		if string.match(connectedPeripheral, "^extended_drawers") then
 			table.insert(storageUnits, connectedPeripheral)
 		end
 	end
@@ -23,16 +23,20 @@ local function getStorageItems()
 
 	local itemStorageTable = {}
 	-- key should be [regent] = {curCount, capacity}
-	for _, name in ipairs(list) do
+	for _, name in ipairs(itemStorageTable) do
 		local drawer = peripheral.wrap(name)
 
 		local itemTable = drawer.items()[1]
+		if itemTable == nil then
+			goto continue
+		end
 		if itemStorageTable[itemTable.name] ~= nil then
 			itemStorageTable[itemTable.name].count = itemStorageTable[itemTable.name].count + itemTable.count
 			itemStorageTable[itemTable.name].capacity = itemStorageTable[itemTable.name].capacity + 1024
 		else
 			itemStorageTable[itemTable.name] = { count = itemTable.count, capacity = 1024 }
 		end
+		::continue::
 	end
 	return itemStorageTable
 end
@@ -56,6 +60,7 @@ local function displayStorageItems()
 		error("No monitor found")
 	end
 	local monitor = peripheral.wrap(monitorName)
+	monitor.clear()
 	local line = 1
 	for name, info in pairs(itemTable) do
 		monitor.setCursorPos(1, line)
