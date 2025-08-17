@@ -115,7 +115,7 @@ local function scheduler(itemTable)
       queue[item] = {count = info.capacity - info.count}
 		end
 	end
-  queue = whatCanCraft(queue)
+  queue = whatCanCraft(queue, itemTable)
   return queue 
 end
 
