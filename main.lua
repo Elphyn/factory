@@ -23,7 +23,7 @@ local function getStorageItems()
 
 	local itemStorageTable = {}
 	-- key should be [regent] = {curCount, capacity}
-	for _, name in ipairs(itemStorageTable) do
+	for _, name in ipairs(storageUnits) do
 		local drawer = peripheral.wrap(name)
 
 		local itemTable = drawer.items()[1]
@@ -65,6 +65,7 @@ local function displayStorageItems()
 	for name, info in pairs(itemTable) do
 		monitor.setCursorPos(1, line)
 		local itemInfoString = string.format("%s | %d/%d", name, info.count, info.capacity)
+		monitor.write(itemInfoString)
 		line = line + 1
 	end
 end
