@@ -1,43 +1,74 @@
--- main.lua
+-- This should handle checking storage/queing tasks/station states
+
+-- we do need a main loop right, which checks for items we lack
+
+-- Find storage, check if it's not full
 --
-local detect = require("detect")
-local storage = require("storage")
-local recipes = require("recipes")
-local crafting = require("craft")
-local peripherals = detect.DetectPeripherals()
+--
+local function getStorageUnits()
+	local list = peripheral.getNames()
 
-local available_items = storage.UpdateStorage(peripherals.storage)
+	local storageUnits = {}
 
-
-local queue = {}
-local activeProcesses = {}
-while true do
-    -- ordering 
-    term.clear()
-    for _, drawer_name in ipairs(peripherals.storage) do
-        local drawer = peripheral.wrap(drawer_name)
-        local info = drawer.items()[1]
-        local count = info.count
-        local regent = info.name
-        if count < 64 and recipes[regent] ~= nil and not queue[regent] then
-            queue[regent] = {
-                what_to_craft = regent,
-                how_much = 64 - count,
-                where_put = drawer_name,
-                state = "queued"
-            }
-        end
-    end
-
-    for key, _ in pairs(peripherals) do
-        print(string.format("P: %s | %d", key, #peripherals[key]))
-    end
-    -- logs
-    for name, order in pairs(queue) do
-        print(string.format("Order for %s: %d %s", name, order.need, order.name))
-    end 
-    
-    -- processing orders
-
-    sleep(5)
+	for _, connectedPeripheral in ipairs(list) do
+		if string.match(name, "^extended_drawers") then
+			table.insert(storageUnits, connectedPeripheral)
+		end
+	end
+	return storageUnits
 end
+
+local function getStorageItems()
+	local storageUnits = getStorageUnits()
+
+	local itemStorageTable = {}
+	-- key should be [regent] = {curCount, capacity}
+	for _, name in ipairs(list) do
+		local drawer = peripheral.wrap(name)
+
+		local itemTable = drawer.items()[1]
+		if itemStorageTable[itemTable.name] ~= nil then
+			itemStorageTable[itemTable.name].count = itemStorageTable[itemTable.name].count + itemTable.count
+			itemStorageTable[itemTable.name].capacity = itemStorageTable[itemTable.name].capacity + 1024
+		else
+			itemStorageTable[itemTable.name] = { count = itemTable.count, capacity = 1024 }
+		end
+	end
+	return itemStorageTable
+end
+
+local function findMonitor()
+	local list = peripheral.getNames()
+
+	for _, name in ipairs(list) do
+		if string.match(name, "^monitor") then
+			return name
+		end
+	end
+	return nil
+end
+
+local function displayStorageItems()
+	local itemTable = getStorageItems()
+
+	local monitorName = findMonitor()
+	if monitorName == nil then
+		error("No monitor found")
+	end
+	local monitor = peripheral.wrap(monitorName)
+	local line = 1
+	for name, info in pairs(itemTable) do
+		monitor.setCursorPos(1, line)
+		local itemInfoString = string.format("%s | %d/%d", name, info.count, info.capacity)
+		line = line + 1
+	end
+end
+
+local function displayLoop()
+	while true do
+		displayStorageItems()
+		sleep(2)
+	end
+end
+
+parallel.waitForAll(displayLoop)
