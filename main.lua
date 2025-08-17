@@ -77,11 +77,14 @@ local function initStations(stationStartsWith)
 end
 
 
-local function whatCanCraft(itemsToCraft, itemList)
+local function whatCanCraft(itemsToCraft, itemStorage)
 	-- probably something like {"minecarft:gravel = {count = 10}"}
 	-- if we got here, assume regent is in recipe
   --
-  local itemList = itemList
+  local itemList = {}
+  for k, v in pairs(itemStorage) do
+    itemList[k] = v
+  end
 	local canCraft = {}
 	for name, info in pairs(itemsToCraft) do
 		local maxCraft = info.count
