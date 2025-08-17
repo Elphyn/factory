@@ -112,7 +112,7 @@ local function scheduler(itemTable)
 	for item, info in pairs(itemTable) do
 		if info.count < info.capacity and recipes[item] ~= nil then
 			-- not enough items + there's a recipe, now we need to check for dependencies
-      queue[item] = {count = item.capacity - info.count}
+      queue[item] = {count = info.capacity - info.count}
 		end
 	end
   queue = whatCanCraft(queue)
