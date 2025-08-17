@@ -76,15 +76,24 @@ local function initStations(stationStartsWith)
 	return stationTable, stationStack
 end
 
+local function deepCopy(itemStorage)
+  local itemList = {}
+  for k, v in pairs(itemStorage) do
+    itemList[k] = {
+      count = v.count,
+      capacity = v.capacity,
+      displayName = v.displayName
+    }
+  end
+  return itemList
+end
+
 
 local function whatCanCraft(itemsToCraft, itemStorage)
 	-- probably something like {"minecarft:gravel = {count = 10}"}
 	-- if we got here, assume regent is in recipe
   --
-  local itemList = {}
-  for k, v in pairs(itemStorage) do
-    itemList[k] = v
-  end
+  local itemList = deepCopy(itemStorage) 
 	local canCraft = {}
 	for name, info in pairs(itemsToCraft) do
 		local maxCraft = info.count
