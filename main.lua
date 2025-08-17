@@ -161,8 +161,9 @@ local function displayStorageItems(itemTable)
   end
 end
 
-local function displayLoop(itemTable)
+local function displayLoop()
 	while true do
+    local itemTable = getStorageItems()
 		displayStorageItems(itemTable)
 		sleep(0.1)
 	end
@@ -176,9 +177,8 @@ local function wrapper(func, ...)
 end
 
 local function main()
-	local itemTable = getStorageItems()
 
-	parallel.waitForAll(wrapper(displayLoop, itemTable))
+	parallel.waitForAll(displayLoop)
 end
 
 main()
