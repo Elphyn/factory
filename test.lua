@@ -1,9 +1,3 @@
-local function test(x)
-	local x = x
-	x = x + 1
-	print(x)
-end
+s = "worker:mill"
 
-a = 2
-test(a)
-print(a)
+print(string.match(s, "^worker:(.+)$"))
