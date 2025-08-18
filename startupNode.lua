@@ -1,5 +1,5 @@
-local config = require("config.lua")
-local executeTask = require("factory.executeTask.lua")
+local config = require("config")
+local executeTask = require("factory.executeTask")
 -- config should be something like {pcType = "node", stationType = "mill"}
 
 local stationStates = {}
