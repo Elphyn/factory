@@ -1,3 +1,4 @@
+local recipes = require("recipes")
 local function findItem(stationName, itemName)
 	local station = peripheral.wrap(stationName)
 
@@ -36,11 +37,10 @@ function executeTask(takeFromName, placeWhereName, stationName, task)
 
 	-- place itmes in a station
 	local station = peripheral.wrap(stationName)
-	local drawer = peripheral.wrap(takeFromName)
 
 	for key, value in pairs(recipeItemList) do
 		-- local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
-		drawer.pushItem(stationName, key, value * howManyToCraft)
+		station.pullItem(takeFromName, key, value * howManyToCraft)
 	end
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
