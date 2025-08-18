@@ -7,11 +7,11 @@ end
 local function setupNode(stationType)
 	local pcLabel = string.format("worker:%s", stationType)
 	os.setComputerLabel(pcLabel)
-	if fs.exists("startupNode.lua") then
-		fs.move("startupNode.lua", "../startup.lua")
+	if fs.exists("factory/startupNode.lua") then
+		fs.copy("factory/startupNode.lua", "startup.lua")
 	end
-	if fs.exists("config.lua") then
-		fs.move("config.lua", "../config.lua")
+	if fs.exists("factory/config.lua") then
+		fs.copy("factory/config.lua", "config.lua")
 	end
 end
 
