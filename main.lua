@@ -5,12 +5,7 @@
 -- Find storage, check if it's not full
 --
 --
-
-local recipes = {
-	["minecraft:gravel"] = {
-		["minecraft:cobblestone"] = 1,
-	},
-}
+local recipes = require("recipes")
 
 local function getStorageUnits()
 	local list = peripheral.getNames()

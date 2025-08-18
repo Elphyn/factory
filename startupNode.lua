@@ -10,7 +10,7 @@ local function getStations()
 	local devices = peripheral.getNames()
 
 	for _, name in ipairs(devices) do
-		if string.match(name, string.format("^%s", config.stationType)) then
+		if string.match(name, string.format("^create:%s", config.stationType)) then
 			stationStates[name] = { state = "idle" }
 			table.insert(stationsAvailable, name)
 		end
