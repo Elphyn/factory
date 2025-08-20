@@ -2,10 +2,11 @@ function generateConfig(stationType, bufferName)
 	local config = {
 		stationType = stationType,
 		bufferName = bufferName,
+		modemLocation = "top",
 	}
 
 	-- open file for writing
-	local file = fs.open("config.lua", "w")
+	local file = fs.open("factory/worker/config.lua", "w")
 	file.write("return {\n")
 	for k, v in pairs(config) do
 		if v == "nil" then
@@ -21,5 +22,4 @@ function generateConfig(stationType, bufferName)
 
 	print("config.lua generated!")
 end
-
 return generateConfig

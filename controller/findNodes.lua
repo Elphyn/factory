@@ -1,4 +1,4 @@
-function getWorkers()
+local function getWorkers()
 	local workers = {}
 
 	local devices = peripheral.getNames()

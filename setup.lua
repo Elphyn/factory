@@ -14,17 +14,24 @@ end
 local function setupNode(stationType, bufferName)
 	local pcLabel = string.format("worker:%s", stationType)
 	os.setComputerLabel(pcLabel)
+
 	if fs.exists("startup.lua") then
 		fs.delete("startup.lua")
 	end
-
-	if fs.exists("config.lua") then
-		fs.delete("config.lua")
+	if fs.exists("fatory/worker/startup.lua") then
+		fs.copy("factory/worker/startup.lua", "startup.lua")
 	end
-
-	if fs.exists("factory/startupNode.lua") then
-		fs.copy("factory/startupNode.lua", "startup.lua")
-	end
+	-- if fs.exists("startup.lua") then
+	-- 	fs.delete("startup.lua")
+	-- end
+	--
+	-- if fs.exists("config.lua") then
+	-- 	fs.delete("config.lua")
+	-- end
+	--
+	-- if fs.exists("factory/startupNode.lua") then
+	-- 	fs.copy("factory/startupNode.lua", "startup.lua")
+	-- end
 	generateConfig(stationType, bufferName)
 end
 
