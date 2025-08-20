@@ -1,12 +1,7 @@
--- This should handle checking storage/queing tasks/station states
 
--- we do need a main loop right, which checks for items we lack
-
--- Find storage, check if it's not full
---
---
+local getWorkers = require("getWorkers")
 local recipes = require("recipes")
-
+local crafting = {} 
 local function getStorageUnits()
 	local list = peripheral.getNames()
 
@@ -56,21 +51,6 @@ local function findMonitor()
 end
 
 
-local function initStations(stationStartsWith)
-	local devices = peripheral.getNames()
-
-	local stationTable = {}
-	local stationStack = {}
-
-	for _, name in ipairs(devices) do
-		if string.match(name, "^" .. stationStartsWith) then
-			table.insert(stationStack, name)
-			stationTable[name] = { state = "idle" }
-		end
-	end
-	return stationTable, stationStack
-end
-
 local function deepCopy(itemStorage)
   local itemList = {}
   for k, v in pairs(itemStorage) do
@@ -92,8 +72,11 @@ local function whatCanCraft(itemsToCraft, itemStorage)
 	local canCraft = {}
 	for name, info in pairs(itemsToCraft) do
 		local maxCraft = info.count
-		for neededIngridientName, needed in pairs(recipes[name]) do
-			local stock = itemList[neededIngridientName] and itemList[neededIngridientName].count or 0
+		for neededIngredientName, needed in pairs(recipes[name]) do
+      if neededIngredientName == "crafterType" then
+        goto jump
+      end
+			local stock = itemList[neededIngredientName] and itemList[neededIngredientName].count or 0
 			local maxByIngridient = math.floor(stock / needed)
       if maxByIngridient == 0 then
         goto continue
@@ -101,10 +84,11 @@ local function whatCanCraft(itemsToCraft, itemStorage)
 			if maxCraft > maxByIngridient then
 				maxCraft = maxByIngridient
 			end
+      ::jump::
 		end  
     local curOrder = {order = name, count = maxCraft}
-		for neededIngridientName, needed in pairs(recipes[name]) do
-      itemList[neededIngridientName].count = itemList[neededIngridientName].count - maxCraft * needed 
+		for neededIngredientName, needed in pairs(recipes[name]) do
+      itemList[neededIngredientName].count = itemList[neededIngredientName].count - maxCraft * needed 
     end
     canCraft[name] = curOrder
     ::continue::
@@ -113,11 +97,10 @@ local function whatCanCraft(itemsToCraft, itemStorage)
 end
 -- should wait until we've crafted a batch, then it can look into crafting somethng else
 local function scheduler(itemTable)
-	local stationTable, stationStack = initStations("create:mill")
 
 	local queue = {}
-	for item, info in pairs(itemTable) do
-		if info.count < info.capacity and recipes[item] ~= nil then
+	for item, info in pairs(itemTable) do 
+    if info.count < info.capacity and recipes[item] ~= nil and not crafting[item] then
 			-- not enough items + there's a recipe, now we need to check for dependencies
       queue[item] = {count = info.capacity - info.count}
 		end
@@ -126,10 +109,11 @@ local function scheduler(itemTable)
   return queue 
 end
 
-local function displayStorageItems(itemTable)
+local function displayStorageItems(itemTable, queue)
 	local monitorName = findMonitor()
 	if monitorName == nil then
-		error("No monitor found")
+		print("No monitor found")
+    return
 	end
 	local monitor = peripheral.wrap(monitorName)
 	monitor.clear()
@@ -141,8 +125,8 @@ local function displayStorageItems(itemTable)
 		line = line + 1
 	end
   -- items to craft:
-  local queue = scheduler(itemTable)
-  
+  -- local queue = scheduler(itemTable)
+   
   -- name = {order = name, count = how much we crafting}
   line = line + 1
 	monitor.setCursorPos(1, line)
@@ -156,19 +140,28 @@ local function displayStorageItems(itemTable)
   end
 end
 
-local function displayLoop()
+function isEmpty(table)
+  for _ in pairs(table) do
+    return false
+  end
+  return true 
+end
+
+local function mainLoop()
 	while true do
     local itemTable = getStorageItems()
-		displayStorageItems(itemTable)
+    local queue = scheduler(itemTable)
+		displayStorageItems(itemTable, queue)
+
+    if isEmpty(crafting) then
+      crafting = queue
+    end
+    queue = {}
 		sleep(0.1)
 	end
 end
 
+mainLoop()
 
-local function main()
-	parallel.waitForAll(displayLoop)
-end
-
-main()
 
 -- scheduler

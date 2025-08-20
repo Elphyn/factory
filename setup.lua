@@ -1,10 +1,17 @@
-local function input() end
+local generateConfig = require("createConfig")
 
 local function setupMain()
-	print("Not yet done")
+	os.setComputerLabel("MainPC")
+	if fs.exists("startup.lua") then
+		fs.delete("startup.lua")
+	end
+
+	if fs.exists("factory/startupMain.lua") then
+		fs.copy("factory/startupMain.lua", "startup.lua")
+	end
 end
 
-local function setupNode(stationType)
+local function setupNode(stationType, bufferName)
 	local pcLabel = string.format("worker:%s", stationType)
 	os.setComputerLabel(pcLabel)
 	if fs.exists("startup.lua") then
@@ -18,9 +25,7 @@ local function setupNode(stationType)
 	if fs.exists("factory/startupNode.lua") then
 		fs.copy("factory/startupNode.lua", "startup.lua")
 	end
-	if fs.exists("factory/config.lua") then
-		fs.copy("factory/config.lua", "config.lua")
-	end
+	generateConfig(stationType, bufferName)
 end
 
 local function setup()
@@ -34,7 +39,9 @@ local function setup()
 		-- if it's a node prompt as to which type of station it's going to manage
 		print("Enter what type of station this pc should manage: ")
 		local stationType = read()
-		setupNode(stationType)
+		print("Enter a buffer peripheral name: ")
+		local bufferName = read()
+		setupNode(stationType, bufferName)
 	else
 		print("Wrong type, try again")
 		setup()

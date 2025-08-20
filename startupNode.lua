@@ -1,10 +1,11 @@
 local config = require("config")
+local recipes = require("factory.recipes")
 local executeTask = require("factory.executeTask")
 -- config should be something like {pcType = "node", stationType = "mill"}
 
 local stationStates = {}
 local stationsAvailable = {}
-local bufferChest = nil
+local bufferChest = "minecraft:barrel_1"
 
 local function getStations()
 	local devices = peripheral.getNames()
@@ -15,7 +16,7 @@ local function getStations()
 			table.insert(stationsAvailable, name)
 		end
 		if string.match(name, "^minecraft:chest") then
-			bufferChest = name
+			print("found a chest")
 		end
 	end
 end
@@ -61,6 +62,7 @@ end
 
 local function handleInstructions()
 	local _, bulkOrder = rednet.receive()
+	print("received order")
 
 	local totalStationsAvailable = #stationsAvailable
 	local totalRegentToCraft = bulkOrder.count
