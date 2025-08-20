@@ -1,6 +1,8 @@
 return {
 	["minecraft:gravel"] = {
-		crafterType = "mill",
-		["minecraft:cobblestone"] = 1,
+		crafter = "mill",
+		dependencies = {
+			["minecraft:cobblestone"] = 1,
+		},
 	},
 }

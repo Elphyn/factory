@@ -8,10 +8,7 @@ local function whatCanCraft(itemsToCraft, itemStorage)
 	local canCraft = {}
 	for name, info in pairs(itemsToCraft) do
 		local maxCraft = info.count
-		for neededIngredientName, needed in pairs(recipes[name]) do
-      if neededIngredientName == "crafterType" then
-        goto jump
-      end
+		for neededIngredientName, needed in pairs(recipes[name].dependencies) do
 			local stock = itemList[neededIngredientName] and itemList[neededIngredientName].count or 0
 			local maxByIngridient = math.floor(stock / needed)
       if maxByIngridient == 0 then
@@ -20,15 +17,10 @@ local function whatCanCraft(itemsToCraft, itemStorage)
 			if maxCraft > maxByIngridient then
 				maxCraft = maxByIngridient
 			end
-      ::jump::
 		end  
     local curOrder = {order = name, count = maxCraft}
-		for neededIngredientName, needed in pairs(recipes[name]) do
-      if neededIngredientName == "crafterType" then
-        goto skip
-      end
+		for neededIngredientName, needed in pairs(recipes[name].dependencies) do
       itemList[neededIngredientName].count = itemList[neededIngredientName].count - maxCraft * needed 
-      ::skip::
     end
     canCraft[name] = curOrder
     ::continue::
