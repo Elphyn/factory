@@ -1,2 +1,0 @@
-update.lua
-test.lua
