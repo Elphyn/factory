@@ -1,14 +1,15 @@
 local generateConfig = require("createConfig")
 
 local function setupMain()
-	os.setComputerLabel("MainPC")
-	if fs.exists("startup.lua") then
-		fs.delete("startup.lua")
-	end
-
-	if fs.exists("factory/startupMain.lua") then
-		fs.copy("factory/startupMain.lua", "startup.lua")
-	end
+	-- os.setComputerLabel("MainPC")
+	-- if fs.exists("startup.lua") then
+	-- 	fs.delete("startup.lua")
+	-- end
+	--
+	-- if fs.exists("factory/startupMain.lua") then
+	-- 	fs.copy("factory/startupMain.lua", "startup.lua")
+	-- end
+	print("not made yet")
 end
 
 local function setupNode(stationType, bufferName)
@@ -18,20 +19,9 @@ local function setupNode(stationType, bufferName)
 	if fs.exists("startup.lua") then
 		fs.delete("startup.lua")
 	end
-	if fs.exists("fatory/worker/startup.lua") then
+	if fs.exists("factory/worker/startup.lua") then
 		fs.copy("factory/worker/startup.lua", "startup.lua")
 	end
-	-- if fs.exists("startup.lua") then
-	-- 	fs.delete("startup.lua")
-	-- end
-	--
-	-- if fs.exists("config.lua") then
-	-- 	fs.delete("config.lua")
-	-- end
-	--
-	-- if fs.exists("factory/startupNode.lua") then
-	-- 	fs.copy("factory/startupNode.lua", "startup.lua")
-	-- end
 	generateConfig(stationType, bufferName)
 end
 
