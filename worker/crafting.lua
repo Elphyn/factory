@@ -33,7 +33,7 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task)
 	-- Should note, that if we got here, we must assume we have enough items
 	local craftingItemName = task.order
 	local howManyToCraft = task.count
-	local recipeItemList = recipes[craftingItemName]
+	local recipeItemList = recipes[craftingItemName].dependencies
 
 	-- place itmes in a station
 	local station = peripheral.wrap(stationName)
