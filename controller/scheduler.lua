@@ -24,7 +24,11 @@ local function whatCanCraft(itemsToCraft, itemStorage)
 		end  
     local curOrder = {order = name, count = maxCraft}
 		for neededIngredientName, needed in pairs(recipes[name]) do
+      if neededIngredientName == "crafterType" then
+        goto skip
+      end
       itemList[neededIngredientName].count = itemList[neededIngredientName].count - maxCraft * needed 
+      ::skip::
     end
     canCraft[name] = curOrder
     ::continue::
