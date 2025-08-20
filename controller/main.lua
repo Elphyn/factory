@@ -1,5 +1,6 @@
 local getStorageItems = require("storage")
 local scheduler = require("scheduler")
+local displayStorageItems = require("display")
 
 local function displayLoop()
 	while true do

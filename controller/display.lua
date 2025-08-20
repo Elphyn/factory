@@ -10,6 +10,10 @@ local function findMonitor()
 end
 
 local function displayStorageItems(itemTable, queue)
+	if itemTable == nil then
+		print("No items in storage")
+		return
+	end
 	local monitorName = findMonitor()
 	if monitorName == nil then
 		print("No monitor found")
