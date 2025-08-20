@@ -1,5 +1,6 @@
 local wrapper = require("utils.wrapper")
 local standardCrafting = require("crafting")
+local distribute_even = require("distribute")
 local function getTaskFunctions(tasks)
 	local functions = {}
 	for _, task in ipairs(tasks) do
