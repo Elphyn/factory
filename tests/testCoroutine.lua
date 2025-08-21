@@ -16,7 +16,7 @@ local function craft(buffer, stationName)
 		coroutine.yeild()
 	end
 
-	station.pushItem(buffer, "minecraft:cobblestone", 1)
+	station.pushItem(buffer, "minecraft:gravel", 1)
 end
 
 local co = coroutine.create(function()
