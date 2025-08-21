@@ -1,4 +1,4 @@
-local recipes = dofile("factory/shared/recipes")
+local recipes = dofile("factory/shared/recipes.lua")
 local function findItem(stationName, itemName)
 	local station = peripheral.wrap(stationName)
 

@@ -1,5 +1,5 @@
-local recipes = dofile("factory/shared/recipes")
-local deepCopy = dofile("factory/utils/deepCopy")
+local recipes = dofile("factory/shared/recipes.lua")
+local deepCopy = dofile("factory/utils/deepCopy.lua")
 local function whatCanCraft(itemsToCraft, itemStorage)
 	-- probably something like {"minecarft:gravel = {count = 10}"}
 	-- if we got here, assume regent is in recipe
