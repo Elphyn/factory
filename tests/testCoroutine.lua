@@ -1,7 +1,8 @@
 local buffer = "minecraft:barrel_1"
 local station = "create:millstone_30"
 
-local function craft(buffer, station)
+local function craft(buffer, stationName)
+	local station = peripheral.wrap(stationName)
 	station.pullItem(buffer, "minecraft:cobblestone", 1)
 
 	local flag = true
@@ -22,7 +23,7 @@ local co = coroutine.create(function()
 	craft(buffer, station)
 end)
 
-local thread = { co, filter = nil }
+local thread = { co = co, filter = nil }
 
 local event = { n = 0 }
 while coroutine.status(thread.co) ~= "dead" do
