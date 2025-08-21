@@ -1,5 +1,5 @@
 local recipes = require("shared.recipes")
-local deepCopy = require("utils.deepCopy")
+local deepCopy = dofile("../utils/deepCopy")
 local function whatCanCraft(itemsToCraft, itemStorage)
 	-- probably something like {"minecarft:gravel = {count = 10}"}
 	-- if we got here, assume regent is in recipe

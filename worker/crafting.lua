@@ -31,6 +31,7 @@ end
 
 function standardCrafting(takeFromName, placeWhereName, stationName, task)
 	-- Should note, that if we got here, we must assume we have enough items
+	-- Also, this crafting assumes we get one to one ratio, no, when it's concrete how many items you get
 	local craftingItemName = task.order
 	local howManyToCraft = task.count
 	local recipeItemList = recipes[craftingItemName].dependencies

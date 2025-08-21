@@ -1,4 +1,4 @@
-local wrapper = require("utils.wrapper")
+local wrapper = dofile("../utils/wrapper")
 local standardCrafting = require("crafting")
 local distribute_even = require("distribute")
 local bufferChest = require("config").bufferName
