@@ -1,4 +1,4 @@
-local recipes = require("shared.recipes")
+local recipes = dofile("factory/shared/recipes")
 local function findItem(stationName, itemName)
 	local station = peripheral.wrap(stationName)
 
