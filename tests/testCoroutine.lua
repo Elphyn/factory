@@ -1,6 +1,3 @@
-local buffer = "minecraft:barrel_1"
-local station = "create:millstone_30"
-
 local function craft(buffer, stationName)
 	local station = peripheral.wrap(stationName)
 	station.pullItem(buffer, "minecraft:cobblestone", 1)
@@ -19,32 +16,30 @@ local function craft(buffer, stationName)
 	station.pushItem(buffer, "minecraft:gravel", 1)
 end
 
-local function placeholder()
-	print("second coroutine works")
-	sleep(1)
-end
+local buffer = "minecraft:barrel_1"
+local station = "create:millstone_30"
+local secStation = "create:millstone_27"
 
 local co = coroutine.create(function()
 	craft(buffer, station)
 end)
 
-local co2 = coroutine.create(placeholder)
+local co2 = coroutine.create(function()
+	craft(buffer, secStation)
+end)
 
-local main = { co = co, filter = nil }
-local secondary = { co = co2, filter = nil }
+local first = { co = co, filter = nil }
+local second = { co = co2, filter = nil }
 
 local threads = {}
-table.insert(threads, main)
-table.insert(threads, secondary)
+table.insert(threads, first)
+table.insert(threads, second)
 
 local event = { n = 0 }
 while true do
 	for _, thread in ipairs(threads) do
 		if thread.filter == nil or thread.filter == event[1] or event[1] == "terminate" then
 			local ok, param = coroutine.resume(thread.co, table.unpack(event, 1, event.n))
-			if not ok then
-				print("Something went wrong while resuming coroutine", param)
-			end
 
 			if coroutine.status(thread.co) == "dead" then
 				print("One coroutine finished")
