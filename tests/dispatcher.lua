@@ -33,17 +33,17 @@ local function dispatcher(order, available)
 						count = 1,
 					}
 					order.count = order.count - 1
-					threader:addThread(function(thread)
-						local station = popStation()
-						stationStates[station].state = "working"
-						thread.info.station = station
+					local station = popStation()
+					stationStates[station].state = "working"
+					threader:addThread(function()
+						-- thread.info.station = station
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
 						print("Finished a piece, freeing up the station")
 						local station = info.station
 						stationStates[station].state = "idle"
 						table.insert(stationsAvailable, station)
-					end)
+					end, { station = station })
 				end
 			end
 		end

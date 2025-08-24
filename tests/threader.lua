@@ -8,13 +8,13 @@ function Threader.new()
 	return self
 end
 
-function Threader:addThread(fn, callback)
+function Threader:addThread(fn, callback, info)
 	local co = coroutine.create(fn)
 	local thread = {
 		co = co,
 		filter = nil,
 		callback = callback,
-		info = {}, -- additional info
+		info = info or {}, -- additional info
 	}
 	table.insert(self.threads, thread)
 end
