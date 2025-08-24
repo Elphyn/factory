@@ -21,7 +21,7 @@ local function dispatcher(order)
 	-- end
 	print("dispatcher started")
 	local threader = Threader.new()
-	while order.count > 0 or threader.alive() do
+	while order.count > 0 or threader:alive() do
 		-- assaigning stations
 		if #stationsAvailable > 0 then
 			local total = #stationsAvailable
