@@ -27,6 +27,7 @@ local function dispatcher(order)
 			local total = #stationsAvailable
 			print("Total: ", total)
 			for i = 1, total do
+				print("assigning station")
 				if order.count > 0 then
 					local miniTask = {
 						order = order.item,
@@ -47,6 +48,7 @@ local function dispatcher(order)
 				end
 			end
 		end
+		print("re")
 		threader:run()
 	end
 end
