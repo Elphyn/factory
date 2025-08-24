@@ -45,7 +45,7 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task)
 	end
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
-		sleep(1)
+		sleep(0.1)
 	end
 	-- withdraw items
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
