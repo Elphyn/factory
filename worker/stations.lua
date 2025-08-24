@@ -1,4 +1,4 @@
-local config = require("config")
+local config = dofile("factory/config.lua")
 
 local function getStations()
 	local devices = peripheral.getNames()
