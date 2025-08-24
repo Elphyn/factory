@@ -20,6 +20,9 @@ function Threader:addThread(fn, callback, info)
 end
 
 function Threader:alive()
+	if #self.threads < 1 then
+		return false
+	end
 	for _, thread in ipairs(self.threads) do
 		if thread then
 			return true

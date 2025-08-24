@@ -13,7 +13,7 @@ local function popStation()
 	return name
 end
 
-local function dispatcher(order, available)
+local function dispatcher(order)
 	-- you get task = {item = "minecraft:gravel", count = 10}
 	-- checking if there are any staions available
 	-- while #available < 1 do
@@ -23,8 +23,8 @@ local function dispatcher(order, available)
 	local threader = Threader.new()
 	while order.count > 0 or threader.alive() do
 		-- assaigning stations
-		if #available > 0 then
-			local total = #available
+		if #stationsAvailable > 0 then
+			local total = #stationsAvailable
 			print("Total: ", total)
 			for i = 1, total do
 				if order.count > 0 then
@@ -54,4 +54,4 @@ end
 print("Before order")
 print("Number of stations: ", #stationsAvailable)
 local order = { item = "minecraft:gravel", count = 10 }
-dispatcher(order, stationsAvailable)
+dispatcher(order)
