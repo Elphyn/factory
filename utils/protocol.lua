@@ -10,11 +10,13 @@ local message = {
 
 local request = {
 	action = { "get-stations", "crafting-order" },
-	-- if it's crafting-order, then next field is here, an example
-	id = 8, -- id of the order, not pc
-	task = {
-		order = "minecraft:gravel",
-		count = 1,
+	-- if it's an order
+	order = {
+		id = 8,
+		task = {
+			item = "minecraft:gravel",
+			count = 1,
+		},
 	},
 }
 

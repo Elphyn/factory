@@ -1,6 +1,6 @@
 local getStations = require("stations")
 local config = require("config")
-local handleInstructions = require("dispatcher")
+local handleInstructions = require("tests.main")
 
 local function main()
 	if not rednet.isOpen() then
