@@ -51,7 +51,12 @@ function Threader:run()
 			end
 		end
 	end
-	self.event = table.pack(os.pullEventRaw())
+	if self:alive() then
+		self.event = table.pack(os.pullEventRaw())
+	else
+		self.event = { n = 0 }
+	end
+
 	-- thread.event = table.pack(os.pullEventRaw())
 	sleep(0.1)
 end
