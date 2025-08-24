@@ -5,7 +5,6 @@ local getStations = dofile("factory/worker/stations.lua")
 local buffer = "minecraft:barrel_1"
 
 local stationStates, stationsAvailable = getStations() -- also finds a buffer chest
-
 local function popStation()
 	if #stationsAvailable < 1 then
 		error("No stations available")
@@ -14,17 +13,19 @@ local function popStation()
 	return name
 end
 
-local function dispatcher(order, available, stations)
+local function dispatcher(order, available)
 	-- you get task = {item = "minecraft:gravel", count = 10}
 	-- checking if there are any staions available
 	-- while #available < 1 do
 	-- 	sleep(0.1)
 	-- end
+	print("dispatcher started")
 	local threader = Threader.new()
 	while order.count > 0 or threader.alive() do
 		-- assaigning stations
 		if #available > 0 then
 			local total = #available
+			print("Total: ", total)
 			for i = 1, total do
 				if order.count > 0 then
 					local miniTask = {
@@ -38,9 +39,10 @@ local function dispatcher(order, available, stations)
 						thread.info.station = station
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
+						print("Finished a piece, freeing up the station")
 						local station = info.station
 						stationStates[station].state = "idle"
-						table.insert(available, station)
+						table.insert(stationsAvailable, station)
 					end)
 				end
 			end
@@ -48,3 +50,8 @@ local function dispatcher(order, available, stations)
 		threader:run()
 	end
 end
+
+print("Before order")
+print("Number of stations: ", #stationsAvailable)
+local order = { item = "minecraft:gravel", count = 10 }
+dispatcher(order, stationsAvailable)
