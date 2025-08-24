@@ -24,7 +24,7 @@ function Threader:alive()
 		return false
 	end
 	for _, thread in ipairs(self.threads) do
-		if thread then
+		if thread and coroutine.status(thread.co) ~= "dead" then
 			return true
 		end
 	end
@@ -58,7 +58,6 @@ function Threader:run()
 	end
 
 	-- thread.event = table.pack(os.pullEventRaw())
-	sleep(0.1)
 end
 
 return Threader
