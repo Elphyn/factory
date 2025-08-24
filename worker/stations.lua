@@ -1,4 +1,4 @@
-local config = dofile("factory/config.lua")
+local config = dofile("factory/worker/config.lua")
 
 local function getStations()
 	local devices = peripheral.getNames()
