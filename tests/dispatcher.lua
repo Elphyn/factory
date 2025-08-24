@@ -40,10 +40,12 @@ local function dispatcher(order)
 						-- thread.info.station = station
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
-						print("Finished a piece, freeing up the station")
-						local station = info.station
-						stationStates[station].state = "idle"
-						table.insert(stationsAvailable, station)
+						if info.station == nil then
+							print("info.station is nil")
+						end
+						print("Finished a piece, freeing up the station", info.station)
+						stationStates[info.station].state = "idle"
+						table.insert(stationsAvailable, info.station)
 					end, { station = station })
 				end
 			end
