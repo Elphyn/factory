@@ -40,7 +40,6 @@ local function main()
 			end
 		end
 		threader:run()
-		sleep(0.1)
 	end
 end
 
