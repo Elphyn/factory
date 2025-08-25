@@ -24,7 +24,7 @@ local function main()
 					end, function()
 						queue[i].state = "finished"
 					end)
-				elseif entry.order.state == "finished" then
+				elseif queue[i].state == "finished" then
 					print("Order id: " .. queue[i].id .. " is Finished!")
 					queue[i] = false
 				end
