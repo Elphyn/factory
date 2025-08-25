@@ -1,40 +1,42 @@
-local wrapper = dofile("factory/utils/wrapper.lua")
-local standardCrafting = require("crafting")
-local distribute_even = require("distribute")
-local bufferChest = require("config").bufferName
-
-local function getTaskFunctions(tasks)
-	local functions = {}
-	for _, task in ipairs(tasks) do
-		local wrappedFunction = wrapper(standardCrafting, bufferChest, bufferChest, task.station, task)
-		table.insert(functions, wrappedFunction)
+local function popStation(stationsAvailable)
+	if #stationsAvailable < 1 then
+		error("No stations available")
 	end
-	return functions
+	local name = table.remove(stationsAvailable)
+	return name
 end
 
-local function startProduction(tasks)
-	local functions = getTaskFunctions(tasks)
-
-	parallel.waitForAll(table.unpack(functions))
-end
-
-local function handleInstructions(stationsAvailable, stationStates)
-	local _, bulkOrder = rednet.receive()
-	print("received order")
-
-	local totalStationsAvailable = #stationsAvailable
-	local totalRegentToCraft = bulkOrder.count
-	local loads = distribute_even(totalRegentToCraft, totalStationsAvailable)
-
-	local tasks = {}
-
-	for _, load in ipairs(loads) do
-		local assignedStation = table.remove(stationsAvailable)
-		stationStates[assignedStation].state = "working"
-		table.insert(tasks, { order = bulkOrder.order, count = load, station = assignedStation })
+local function dispatcher(order, stationsAvailable, stationStates)
+	-- you get task = {item = "minecraft:gravel", count = 10}
+	-- checking if there are any staions available
+	while #available < 1 do
+		sleep(0.1)
 	end
-
-	startProduction(tasks)
+	local threader = Threader.new()
+	while order.count > 0 or threader:alive() do
+		-- assaigning stations
+		if #stationsAvailable > 0 then
+			local total = #stationsAvailable
+			for i = 1, total do
+				if order.count > 0 then
+					local miniTask = {
+						order = order.item,
+						count = 1,
+					}
+					order.count = order.count - 1
+					local station = popStation(stationsAvailable)
+					stationStates[station].state = "working"
+					threader:addThread(function()
+						craft(buffer, buffer, station, miniTask)
+					end, function(info)
+						stationStates[info.station].state = "idle"
+						table.insert(stationsAvailable, info.station)
+					end, { station = station })
+				end
+			end
+		end
+		threader:run()
+	end
 end
 
-return handleInstructions
+return dispatcher
