@@ -17,7 +17,7 @@ local function main()
 				local entry = queue[i]
 				if entry.state == "waiting" then
 					-- first is dispatcher, second is a callback when thread is dead
-					threader.addThread(function()
+					threader:addThread(function()
 						dispatcher(stationsAvailable, stationStates)
 						-- dispatcher goes here
 					end, function()
