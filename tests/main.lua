@@ -23,7 +23,7 @@ local function main()
 						dispatcher(entry.task, stationsAvailable, stationStates)
 						-- dispatcher goes here
 					end, function()
-						entry.order.state = "finished"
+						entry.state = "finished"
 					end)
 				elseif entry.order.state == "finished" then
 					print("Order id: " .. entry.order.id .. " is Finished!")
