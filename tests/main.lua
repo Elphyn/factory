@@ -11,6 +11,7 @@ local function main()
 	local threader = Threader.new()
 	while true do
 		local stationStates, stationsAvailable = getStations()
+		print("This many stations available")
 		for i = 1, #queue do
 			if queue[i] then
 				local entry = queue[i]
@@ -29,6 +30,7 @@ local function main()
 			end
 		end
 		threader:run()
+		sleep(0.1)
 	end
 end
 
