@@ -27,7 +27,9 @@ local function handleQ()
 				end
 			end
 		end
-		threader:run()
+		if #queue > 1 then
+			threader:run()
+		end
 	end
 end
 
