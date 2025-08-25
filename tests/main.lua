@@ -9,8 +9,8 @@ local queue = {}
 
 local function main()
 	local threader = Threader.new()
+	local stationStates, stationsAvailable = getStations()
 	while true do
-		local stationStates, stationsAvailable = getStations()
 		-- print("This many stations available" .. #stationsAvailable)
 		for i = 1, #queue do
 			if queue[i] then
@@ -19,7 +19,7 @@ local function main()
 					-- first is dispatcher, second is a callback when thread is dead
 					print("Starting dispatcher for " .. entry.id)
 					threader:addThread(function()
-						dispatcher(stationsAvailable, stationStates)
+						dispatcher(entry.task, stationsAvailable, stationStates)
 						-- dispatcher goes here
 					end, function()
 						entry.order.state = "finished"
