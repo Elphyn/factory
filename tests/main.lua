@@ -4,7 +4,7 @@ local getStations = dofile("factory/worker/stations.lua")
 
 local queue = {}
 
-local function main()
+local function handleQ()
 	local threader = Threader.new()
 	local stationStates, stationsAvailable = getStations()
 	while true do
@@ -31,7 +31,7 @@ local function main()
 	end
 end
 
-local function socket()
+local function listen()
 	while true do
 		rednet.open("top")
 		local _, message = rednet.receive()
@@ -46,7 +46,15 @@ local function socket()
 	end
 end
 
--- main()
-parallel.waitForAll(socket, main)
+local function main()
+	local threader = Threader.new()
+	threader:addThread(listen)
+	threader:addThread(handleQ)
+	while true do
+		threader:run()
+	end
+end
+
+main()
 
 -- notes, I might just add time of the start of productin, to the end, and then based on that calculate time per unit, based on how many things were crafted, and how long it took
