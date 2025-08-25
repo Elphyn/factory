@@ -11,7 +11,7 @@
 @local
 ]]
 
-local expect = require("expect").expect
+local expect = dofile("factory/tests/expect.lua").expect
 local type, debug, coroutine = type, debug, coroutine
 
 local function find_frame(thread, file, line)
