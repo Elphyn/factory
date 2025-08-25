@@ -65,7 +65,6 @@ local function dispatcher(order)
 		end
 		print("DEBUG: in dispatecher before checking threads")
 		threader:run()
-		sleep(0.1)
 	end
 end
 
