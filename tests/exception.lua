@@ -11,7 +11,7 @@
 @local
 ]]
 
-local expect = require("cc.expect").expect
+local expect = require("expect").expect
 local type, debug, coroutine = type, debug, coroutine
 
 local function find_frame(thread, file, line)
