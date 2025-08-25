@@ -42,6 +42,7 @@ local function dispatcher(order, stationsAvailable, stationStates)
 						print("Station finished it's piece")
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
+						print("DEBUG: Callback is finished")
 					end, { station = station })
 				end
 			end

@@ -30,9 +30,9 @@ local function main()
 						queue[i].state = "in progress"
 						dispatcher(queue[i].task, stationsAvailable, stationStates)
 						-- dispatcher goes here
-					end, function()
-						queue[i].state = "finished"
-					end)
+					end, function(info)
+						queue[info.index] = "finished"
+					end, { index = i })
 				elseif queue[i].state == "finished" then
 					print("Order id: " .. queue[i].id .. " is Finished!")
 					queue[i] = false
