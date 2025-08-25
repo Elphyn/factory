@@ -11,12 +11,13 @@ local function main()
 	local threader = Threader.new()
 	while true do
 		local stationStates, stationsAvailable = getStations()
-		print("This many stations available" .. #stationsAvailable)
+		-- print("This many stations available" .. #stationsAvailable)
 		for i = 1, #queue do
 			if queue[i] then
 				local entry = queue[i]
 				if entry.state == "waiting" then
 					-- first is dispatcher, second is a callback when thread is dead
+					print("Starting dispatcher for " .. entry.id)
 					threader:addThread(function()
 						dispatcher(stationsAvailable, stationStates)
 						-- dispatcher goes here
@@ -40,6 +41,7 @@ local function socket()
 		local _, message = rednet.receive()
 
 		if message.action == "crafting-order" then
+			print("Adding order")
 			local order = message.order
 			order.state = "waiting"
 			table.insert(queue, order)
