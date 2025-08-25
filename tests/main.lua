@@ -14,8 +14,8 @@ local queue = {
 				item = "minecraft:gravel",
 				count = 5,
 			},
-			state = "waiting",
 		},
+		state = "waiting",
 	},
 }
 
