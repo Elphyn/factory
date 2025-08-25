@@ -33,6 +33,9 @@ local function dispatcher(order, stationsAvailable, stationStates)
 					threader:addThread(function()
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
+						if info.station == nil then
+							print("info.station is nil")
+						end
 						print("Station finished it's piece")
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
