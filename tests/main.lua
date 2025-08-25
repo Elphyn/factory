@@ -7,13 +7,10 @@ local getStations = dofile("factory/worker/stations.lua")
 
 local queue = {
 	{
-		action = "crafting-order",
-		order = {
-			id = 1,
-			task = {
-				item = "minecraft:gravel",
-				count = 5,
-			},
+		id = 1,
+		task = {
+			item = "minecraft:gravel",
+			count = 5,
 		},
 		state = "waiting",
 	},
