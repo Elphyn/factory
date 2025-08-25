@@ -10,4 +10,4 @@ local request = {
 }
 
 rednet.open("top")
-rednet.send(44, request)
+rednet.send(8, request)

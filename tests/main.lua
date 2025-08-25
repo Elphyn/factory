@@ -11,11 +11,11 @@ local function main()
 	local threader = Threader.new()
 	while true do
 		local stationStates, stationsAvailable = getStations()
-		print("This many stations available")
+		print("This many stations available" .. #stationsAvailable)
 		for i = 1, #queue do
 			if queue[i] then
 				local entry = queue[i]
-				if entry.order.state == "waiting" then
+				if entry.state == "waiting" then
 					-- first is dispatcher, second is a callback when thread is dead
 					threader.addThread(function()
 						dispatcher(stationsAvailable, stationStates)
@@ -37,7 +37,7 @@ end
 local function socket()
 	while true do
 		rednet.open("top")
-		local message = rednet.receive()
+		local _, message = rednet.receive()
 
 		if message.action == "crafting-order" then
 			local order = message.order
