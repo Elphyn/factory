@@ -1,5 +1,6 @@
 local Threader = dofile("factory/tests/threader.lua")
 local craft = dofile("factory/worker/crafting.lua")
+local buffer = require("config").bufferName
 local function popStation(stationsAvailable)
 	if #stationsAvailable < 1 then
 		error("No stations available")
