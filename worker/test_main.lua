@@ -12,6 +12,6 @@ local queue = {
 	},
 }
 
-local stationStates, stationsAvailable
+local stationStates, stationsAvailable = getStations()
 
 dispatcher(queue[1].task, stationsAvailable, stationStates)
