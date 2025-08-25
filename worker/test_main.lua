@@ -1,5 +1,8 @@
 local getStations = dofile("factory/worker/stations.lua")
 -- local dispatcher = dofile("factory/worker/dispatcher.lua")
+local Threader = dofile("factory/tests/threader.lua")
+local craft = dofile("factory/worker/crafting.lua")
+local buffer = dofile("factory/worker/config.lua").bufferName
 
 local queue = {
 	{
