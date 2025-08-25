@@ -17,6 +17,14 @@ local queue = {
 
 local stationStates, stationsAvailable = getStations()
 
+local function popStation()
+	if #stationsAvailable < 1 then
+		error("No stations available")
+	end
+	local name = table.remove(stationsAvailable)
+	return name
+end
+
 local function dispatcher(order)
 	-- you get task = {item = "minecraft:gravel", count = 10}
 	-- checking if there are any staions available
