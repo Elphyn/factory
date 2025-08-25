@@ -14,19 +14,18 @@ local function main()
 		-- print("This many stations available" .. #stationsAvailable)
 		for i = 1, #queue do
 			if queue[i] then
-				local entry = queue[i]
-				if entry.state == "waiting" then
+				if queue[i].state == "waiting" then
 					-- first is dispatcher, second is a callback when thread is dead
-					print("Starting dispatcher for " .. entry.id)
+					print("Starting dispatcher for " .. queue[i].id)
 					threader:addThread(function()
-						entry.state = "in progress"
-						dispatcher(entry.task, stationsAvailable, stationStates)
+						queue[i].state = "in progress"
+						dispatcher(queue[i].task, stationsAvailable, stationStates)
 						-- dispatcher goes here
 					end, function()
-						entry.state = "finished"
+						queue[i].state = "finished"
 					end)
 				elseif entry.order.state == "finished" then
-					print("Order id: " .. entry.order.id .. " is Finished!")
+					print("Order id: " .. queue[i].order.id .. " is Finished!")
 					queue[i] = false
 				end
 			end
