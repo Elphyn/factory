@@ -45,10 +45,13 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task)
 	end
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
+		print("DEBUG: waiting crafting")
 		sleep(0.1)
 	end
 	-- withdraw items
+	print("DEBUG: Before withdrawing items")
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
+	print("DEBUG: After withdrawing items")
 	sleep(0.1)
 end
 

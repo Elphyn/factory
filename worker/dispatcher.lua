@@ -12,6 +12,7 @@ end
 local function dispatcher(order, stationsAvailable, stationStates)
 	-- you get task = {item = "minecraft:gravel", count = 10}
 	-- checking if there are any staions available
+	print("DEBUG: dispatcher started with n = ", stationsAvailable)
 	while #stationsAvailable < 1 do
 		sleep(0.1)
 	end
@@ -31,8 +32,10 @@ local function dispatcher(order, stationsAvailable, stationStates)
 					local station = popStation(stationsAvailable)
 					stationStates[station].state = "working"
 					threader:addThread(function()
+						print("DEBUG: Starting crafting")
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
+						print("DEBUG: dispatcher callback")
 						if info.station == nil then
 							print("info.station is nil")
 						end
@@ -43,8 +46,9 @@ local function dispatcher(order, stationsAvailable, stationStates)
 				end
 			end
 		end
-		sleep(0.1)
+		print("DEBUG: in dispatecher before checking threads")
 		threader:run()
+		sleep(0.1)
 	end
 end
 
