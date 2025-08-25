@@ -49,6 +49,7 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task)
 	end
 	-- withdraw items
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
+	sleep(0.1)
 end
 
 return standardCrafting

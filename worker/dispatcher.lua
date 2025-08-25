@@ -33,6 +33,7 @@ local function dispatcher(order, stationsAvailable, stationStates)
 					threader:addThread(function()
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
+						print("Station finished it's piece")
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
 					end, { station = station })
