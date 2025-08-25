@@ -43,6 +43,7 @@ local function dispatcher(order, stationsAvailable, stationStates)
 				end
 			end
 		end
+		sleep(0.1)
 		threader:run()
 	end
 end
