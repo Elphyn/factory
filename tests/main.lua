@@ -27,7 +27,7 @@ local function handleQ()
 				end
 			end
 		end
-		sleep(0.1)
+		coroutine.yield()
 		threader:run()
 	end
 end
