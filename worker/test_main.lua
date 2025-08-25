@@ -29,9 +29,9 @@ local function dispatcher(order)
 	-- you get task = {item = "minecraft:gravel", count = 10}
 	-- checking if there are any staions available
 	print("DEBUG: dispatcher started with n = ", #stationsAvailable)
-	while #stationsAvailable < 1 do
-		sleep(0.1)
-	end
+	-- while #stationsAvailable < 1 do
+	-- 	sleep(0.1)
+	-- end
 	print("Dispatcher assigning stations: n = " .. #stationsAvailable)
 	local threader = Threader.new()
 	while order.count > 0 or threader:alive() do
