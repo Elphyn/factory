@@ -5,7 +5,19 @@ local dispatcher = dofile("factory/worker/dispatcher.lua")
 local getStations = dofile("factory/worker/stations.lua")
 -- function standardCrafting(takeFromName, placeWhereName, stationName, task)
 
-local queue = {}
+local queue = {
+	{
+		action = "crafting-order",
+		order = {
+			id = 1,
+			task = {
+				item = "minecraft:gravel",
+				count = 5,
+			},
+			state = "waiting",
+		},
+	},
+}
 
 local function main()
 	local threader = Threader.new()
@@ -35,21 +47,22 @@ local function main()
 	end
 end
 
-local function socket()
-	while true do
-		rednet.open("top")
-		local _, message = rednet.receive()
+-- local function socket()
+-- 	while true do
+-- 		rednet.open("top")
+-- 		local _, message = rednet.receive()
+--
+-- 		if message.action == "crafting-order" then
+-- 			print("Adding order")
+-- 			local order = message.order
+-- 			order.state = "waiting"
+-- 			table.insert(queue, order)
+-- 		end
+-- 		sleep(0.1)
+-- 	end
+-- end
 
-		if message.action == "crafting-order" then
-			print("Adding order")
-			local order = message.order
-			order.state = "waiting"
-			table.insert(queue, order)
-		end
-		sleep(0.1)
-	end
-end
-
-parallel.waitForAll(socket, main)
+main()
+-- parallel.waitForAll(socket, main)
 
 -- notes, I might just add time of the start of productin, to the end, and then based on that calculate time per unit, based on how many things were crafted, and how long it took
