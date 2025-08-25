@@ -45,7 +45,7 @@ local function dispatcher(order)
 						count = 1,
 					}
 					order.count = order.count - 1
-					local station = popStation(stationsAvailable)
+					local station = popStation()
 					stationStates[station].state = "working"
 					threader:addThread(function()
 						print("DEBUG: Starting crafting")
