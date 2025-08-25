@@ -12,7 +12,7 @@ end
 local function dispatcher(order, stationsAvailable, stationStates)
 	-- you get task = {item = "minecraft:gravel", count = 10}
 	-- checking if there are any staions available
-	print("DEBUG: dispatcher started with n = ", stationsAvailable)
+	print("DEBUG: dispatcher started with n = ", #stationsAvailable)
 	while #stationsAvailable < 1 do
 		sleep(0.1)
 	end
@@ -43,6 +43,7 @@ local function dispatcher(order, stationsAvailable, stationStates)
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
 						print("DEBUG: Callback is finished")
+						sleep(0.1)
 					end, { station = station })
 				end
 			end
