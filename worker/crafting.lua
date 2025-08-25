@@ -42,7 +42,6 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task)
 	for key, value in pairs(recipeItemList) do
 		-- local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
 		station.pullItem(takeFromName, key, value * howManyToCraft)
-		coroutine.yield()
 	end
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
@@ -53,7 +52,6 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task)
 	print("DEBUG: Before withdrawing items")
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
 	print("DEBUG: After withdrawing items")
-	coroutine.yield()
 end
 
 return standardCrafting
