@@ -22,40 +22,38 @@ local function dispatcher(order)
 	while #stationsAvailable < 1 do
 		sleep(0.1)
 	end
-	while order.count > 0 or #inProgress >= 1 do
-		-- assaigning stations
-		if #stationsAvailable > 0 then
-			local total = #stationsAvailable
-			for i = 1, total do
-				if order.count > 0 then
-					local miniTask = {
-						order = order.item,
-						count = 1,
-					}
-					order.count = order.count - 1
-					local station = popStation(stationsAvailable)
-					stationStates[station].state = "working"
-					threader:addThread(function()
-						inProgress[station] = miniTask
-						print("DEBUG: Starting crafting")
-						craft(buffer, buffer, station, miniTask)
-					end, function(info)
-						print("DEBUG: dispatcher callback")
-						if info.station == nil then
-							print("info.station is nil")
-						end
-						print("Station finished it's piece")
-						stationStates[info.station].state = "idle"
-						table.insert(stationsAvailable, info.station)
-						inProgress[info.station] = nil
-						print("DEBUG: Callback is finished")
-						sleep(0.1)
-					end, { station = station })
-				end
+	-- assaigning stations
+	if #stationsAvailable > 0 then
+		local total = #stationsAvailable
+		for i = 1, total do
+			if order.count > 0 then
+				local miniTask = {
+					order = order.item,
+					count = 1,
+				}
+				order.count = order.count - 1
+				local station = popStation(stationsAvailable)
+				stationStates[station].state = "working"
+				threader:addThread(function()
+					inProgress[station] = miniTask
+					print("DEBUG: Starting crafting")
+					craft(buffer, buffer, station, miniTask)
+				end, function(info)
+					print("DEBUG: dispatcher callback")
+					if info.station == nil then
+						print("info.station is nil")
+					end
+					print("Station finished it's piece, freeing up: ", info.station)
+					stationStates[info.station].state = "idle"
+					table.insert(stationsAvailable, info.station)
+					inProgress[info.station] = nil
+					print("DEBUG: Callback is finished")
+					sleep(0.1)
+				end, { station = station })
 			end
 		end
-		sleep(0.1)
 	end
+	sleep(0.1)
 end
 
 local function main()
