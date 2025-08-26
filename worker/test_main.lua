@@ -103,7 +103,8 @@ local function main()
 		-- display function
 		while true do
 			term.clear()
-			local line = 1
+			term.write("Queue")
+			local line = 2
 			for _, entry in ipairs(queue) do
 				term.setCursorPos(1, line)
 				term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
