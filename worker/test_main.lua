@@ -64,6 +64,7 @@ local function main()
 	threader:addThread(function()
 		while true do
 			local _, message = rednet.receive()
+			print("Got message, this many stations available: ", #stationsAvailable)
 
 			if message then
 				if message.action == "crafting-order" then
