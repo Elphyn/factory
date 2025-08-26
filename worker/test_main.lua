@@ -8,6 +8,8 @@ local stationStates, stationsAvailable = getStations()
 
 local threader = Threader.new()
 
+local inProgress = {}
+
 local function popStation()
 	if #stationsAvailable < 1 then
 		error("No stations available")
@@ -29,7 +31,6 @@ local function dispatcher(order)
 	while #stationsAvailable < 1 do
 		sleep(0.05)
 	end
-	local inProgress = {}
 	local co_id = 1
 
 	while order.count > 0 or alive(inProgress) do
@@ -105,11 +106,19 @@ local function main()
 			local line = 1
 			term.clear()
 			term.setCursorPos(1, line)
-			term.write("Queue")
+			term.write("Queue: ")
 			line = 2
 			for _, entry in ipairs(queue) do
 				term.setCursorPos(1, line)
 				term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
+				line = line + 1
+			end
+			line = line + 1
+			term.setCursorPos(1, line)
+			term.write("Stations: ")
+			for i, task in pairs(inProgress) do
+				term.setCursorPos(1, line)
+				term.write(i .. " | " .. task)
 				line = line + 1
 			end
 			sleep(0.1)
