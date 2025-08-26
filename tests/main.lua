@@ -33,11 +33,13 @@ local function listen()
 	rednet.open("top")
 	local _, message = rednet.receive(nil, 5)
 
-	if message.action == "crafting-order" then
-		print("Adding order")
-		local order = message.order
-		order.state = "waiting"
-		table.insert(queue, order)
+	if message then
+		if message.action == "crafting-order" then
+			print("Adding order")
+			local order = message.order
+			order.state = "waiting"
+			table.insert(queue, order)
+		end
 	end
 end
 
