@@ -20,6 +20,7 @@ function Threader:addThread(fn, callback, info)
 		callback = callback,
 		info = info or {}, -- additional info
 	}
+	-- need to make sure they don't overrride each other
 	table.insert(self.threads, thread)
 end
 

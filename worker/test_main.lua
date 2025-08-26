@@ -19,6 +19,9 @@ local function popStation()
 end
 
 local function dispatcher(order)
+	while #stationsAvailable < 1 do
+		sleep(0.1)
+	end
 	while order.count > 0 or #inProgress >= 1 do
 		-- assaigning stations
 		if #stationsAvailable > 0 then
