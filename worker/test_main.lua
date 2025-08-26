@@ -35,7 +35,6 @@ local function dispatcher(order)
 				local station = popStation(stationsAvailable)
 				stationStates[station].state = "working"
 				threader:addThread(function()
-					inProgress[station] = miniTask
 					print("DEBUG: Starting crafting")
 					craft(buffer, buffer, station, miniTask)
 				end, function(info)
@@ -46,14 +45,12 @@ local function dispatcher(order)
 					print("Station finished it's piece, freeing up: ", info.station)
 					stationStates[info.station].state = "idle"
 					table.insert(stationsAvailable, info.station)
-					inProgress[info.station] = nil
 					print("DEBUG: Callback is finished")
 					sleep(0.1)
 				end, { station = station })
 			end
 		end
 	end
-	sleep(0.1)
 end
 
 local function main()
@@ -87,6 +84,7 @@ local function main()
 							dispatcher(queue[i].task)
 							-- dispatcher goes here
 						end, function(info)
+							print("DEBUG: Main Qhandler callback!")
 							queue[info.index] = "finished"
 						end, { index = i })
 					elseif queue[i].state == "finished" then
