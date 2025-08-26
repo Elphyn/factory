@@ -32,7 +32,7 @@ local function dispatcher(order)
 	local inProgress = {}
 	local co_id = 1
 
-	while order.count > 1 or alive(inProgress) do
+	while order.count > 0 or alive(inProgress) do
 		-- assaigning stations
 		if #stationsAvailable > 0 then
 			local total = #stationsAvailable
