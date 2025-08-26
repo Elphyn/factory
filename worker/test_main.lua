@@ -27,7 +27,7 @@ end
 
 local function dispatcher(order)
 	while #stationsAvailable < 1 do
-		sleep(0.1)
+		sleep(0.05)
 	end
 	local inProgress = {}
 	local co_id = 1
@@ -46,25 +46,18 @@ local function dispatcher(order)
 					local station = popStation()
 					stationStates[station].state = "working"
 					threader:addThread(function()
-						print("DEBUG: Starting crafting")
 						inProgress[co_id] = true
 						co_id = co_id + 1
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
-						print("DEBUG: dispatcher callback")
-						if info.station == nil then
-							print("info.station is nil")
-						end
-						print("Station finished it's piece, freeing up: ", info.station)
 						inProgress[info.co_id] = false
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
-						print("DEBUG: Callback is finished")
 					end, { station = station, co_id = co_id })
 				end
 			end
 		end
-		sleep(0.1)
+		sleep(0.05)
 	end
 end
 
@@ -72,13 +65,12 @@ local function main()
 	rednet.open("top")
 
 	threader:addThread(function()
+		-- receiving instructions
 		while true do
 			local _, message = rednet.receive()
-			print("Got message, this many stations available: ", #stationsAvailable)
 
 			if message then
 				if message.action == "crafting-order" then
-					print("Adding order")
 					local order = message.order
 					order.state = "waiting"
 					table.insert(queue, order)
@@ -88,25 +80,34 @@ local function main()
 	end)
 
 	threader:addThread(function()
+		-- Q handler
 		while true do
 			for i = 1, #queue do
 				if queue[i] then
 					if queue[i].state == "waiting" then
 						-- first is dispatcher, second is a callback when thread is dead
-						print("Starting dispatcher for " .. queue[i].id)
 						threader:addThread(function()
 							queue[i].state = "in progress"
 							dispatcher(queue[i].task)
 							-- dispatcher goes here
 						end, function(info)
-							print("DEBUG: Main Qhandler callback!")
 							queue[info.index] = "finished"
 						end, { index = i })
-					elseif queue[i].state == "finished" then
-						print("Order id: " .. queue[i].id .. " is Finished!")
-						queue[i] = false
 					end
 				end
+			end
+			sleep(0.05)
+		end
+	end)
+	threader:addThread(function()
+		-- display function
+		while true do
+			term.clear()
+			local line = 1
+			for _, entry in ipairs(queue) do
+				term.setCursorPos(1, line)
+				term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
+				line = line + 1
 			end
 			sleep(0.1)
 		end
