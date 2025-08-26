@@ -89,7 +89,9 @@ local function main()
 		end
 	end)
 
-	threader:run()
+	while true do
+		threader:run()
+	end
 end
 
 main()
