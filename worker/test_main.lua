@@ -118,7 +118,13 @@ local function main()
 			term.write("Stations: ")
 			for i, task in pairs(inProgress) do
 				term.setCursorPos(1, line)
-				term.write(i .. " | " .. task)
+				local alive = nil
+				if task then
+					alive = "alive"
+				else
+					alive = "dead"
+				end
+				term.write(i .. " | " .. alive)
 				line = line + 1
 			end
 			sleep(0.1)
