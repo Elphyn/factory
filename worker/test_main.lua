@@ -48,14 +48,14 @@ local function dispatcher(order)
 					stationStates[station].state = "working"
 					threader:addThread(function()
 						inProgress[co_id] = true
-						co_id = co_id + 1
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
 						inProgress[info.co_id] = false
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
-					end, { station = station, co_id = co_id - 1 })
+					end, { station = station, co_id = co_id })
 				end
+				co_id = co_id + 1
 			end
 		end
 		sleep(0.05)
