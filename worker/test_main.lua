@@ -44,9 +44,11 @@ local function dispatcher(order)
 					}
 					order.count = order.count - 1
 					local station = popStation()
+					local current_id = co_id
+					co_id = co_id + 1
 					stationStates[station].state = "working"
 					threader:addThread(function()
-						inProgress[co_id] = true
+						inProgress[current_id] = true
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
 						print("Setting " .. co_id .. "to false")
@@ -54,7 +56,6 @@ local function dispatcher(order)
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
 					end, { station = station, co_id = co_id })
-					co_id = co_id + 1
 				end
 			end
 		end
