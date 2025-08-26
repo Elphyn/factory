@@ -8,8 +8,6 @@ local stationStates, stationsAvailable = getStations()
 
 local threader = Threader.new()
 
-local inProgress = {}
-
 local function popStation()
 	if #stationsAvailable < 1 then
 		error("No stations available")
@@ -18,38 +16,55 @@ local function popStation()
 	return name
 end
 
+local function alive(inProgress)
+	for _, v in pairs(inProgress) do
+		if v then
+			return true
+		end
+	end
+	return false
+end
+
 local function dispatcher(order)
 	while #stationsAvailable < 1 do
 		sleep(0.1)
 	end
-	-- assaigning stations
-	if #stationsAvailable > 0 then
-		local total = #stationsAvailable
-		for i = 1, total do
-			if order.count > 0 then
-				local miniTask = {
-					order = order.item,
-					count = 1,
-				}
-				order.count = order.count - 1
-				local station = popStation(stationsAvailable)
-				stationStates[station].state = "working"
-				threader:addThread(function()
-					print("DEBUG: Starting crafting")
-					craft(buffer, buffer, station, miniTask)
-				end, function(info)
-					print("DEBUG: dispatcher callback")
-					if info.station == nil then
-						print("info.station is nil")
-					end
-					print("Station finished it's piece, freeing up: ", info.station)
-					stationStates[info.station].state = "idle"
-					table.insert(stationsAvailable, info.station)
-					print("DEBUG: Callback is finished")
-					sleep(0.1)
-				end, { station = station })
+	local inProgress = {}
+	local co_id = 1
+
+	while order.count > 1 or alive(inProgress) do
+		-- assaigning stations
+		if #stationsAvailable > 0 then
+			local total = #stationsAvailable
+			for i = 1, total do
+				if order.count > 0 then
+					local miniTask = {
+						order = order.item,
+						count = 1,
+					}
+					order.count = order.count - 1
+					local station = popStation()
+					stationStates[station].state = "working"
+					threader:addThread(function()
+						print("DEBUG: Starting crafting")
+						inProgress[co_id] = true
+						co_id = co_id + 1
+						craft(buffer, buffer, station, miniTask)
+					end, function(info)
+						print("DEBUG: dispatcher callback")
+						if info.station == nil then
+							print("info.station is nil")
+						end
+						print("Station finished it's piece, freeing up: ", info.station)
+						inProgress[info.co_id] = false
+						stationStates[info.station].state = "idle"
+						table.insert(stationsAvailable, info.station)
+						print("DEBUG: Callback is finished")
+					end, { station = station, co_id = co_id })
+				end
 			end
 		end
+		sleep(0.1)
 	end
 end
 
