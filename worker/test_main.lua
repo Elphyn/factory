@@ -10,6 +10,14 @@ local threader = Threader.new()
 
 local inProgress = {}
 
+local function popStation()
+	if #stationsAvailable < 1 then
+		error("No stations available")
+	end
+	local name = table.remove(stationsAvailable)
+	return name
+end
+
 local function dispatcher(order)
 	while order.count > 0 or #inProgress >= 1 do
 		-- assaigning stations
