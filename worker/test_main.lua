@@ -8,8 +8,6 @@ local stationStates, stationsAvailable = getStations()
 
 local threader = Threader.new()
 
-local inProgress = {}
-
 local function popStation()
 	if #stationsAvailable < 1 then
 		error("No stations available")
@@ -32,6 +30,7 @@ local function dispatcher(order)
 		sleep(0.05)
 	end
 	local co_id = 1
+	local inProgress = {}
 
 	while order.count > 0 or alive(inProgress) do
 		-- assaigning stations
