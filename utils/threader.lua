@@ -1,4 +1,3 @@
-local exception = dofile("factory/tests/exception.lua")
 local Threader = {}
 Threader.__index = Threader
 
@@ -10,10 +9,7 @@ function Threader.new()
 end
 
 function Threader:addThread(fn, callback, info)
-	local barrier_ctx = { co = coroutine.running() }
-	local co = coroutine.create(function()
-		return exception.try_barrier(barrier_ctx, fn)
-	end)
+	local co = coroutine.create(fn)
 	local thread = {
 		co = co,
 		filter = nil,
@@ -44,8 +40,6 @@ function Threader:run()
 
 			if ok then
 				thread.filter = param
-			elseif type(param) == "string" and exception.can_wrap_errors() then
-				error(exception.make_exception(param, thread.co))
 			else
 				error(param, 0)
 			end
