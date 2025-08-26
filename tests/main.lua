@@ -31,7 +31,7 @@ end
 
 local function listen()
 	rednet.open("top")
-	local _, message = rednet.receive()
+	local _, message = rednet.receive(nil, 5)
 
 	if message.action == "crafting-order" then
 		print("Adding order")
