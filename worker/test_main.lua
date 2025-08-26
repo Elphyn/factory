@@ -55,7 +55,7 @@ local function dispatcher(order)
 						inProgress[info.co_id] = false
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
-					end, { station = station, co_id = co_id })
+					end, { station = station, co_id = current_id })
 				end
 			end
 		end
