@@ -51,7 +51,6 @@ local function dispatcher(order)
 						inProgress[current_id] = true
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
-						print("Setting " .. info.co_id .. "to false")
 						inProgress[info.co_id] = false
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
@@ -93,7 +92,6 @@ local function main()
 							dispatcher(queue[i].task)
 							-- dispatcher goes here
 						end, function(info)
-							print("Callback after dispatcher called")
 							queue[info.idx].state = "finished"
 						end, { idx = i })
 					end
@@ -102,36 +100,22 @@ local function main()
 			sleep(0.05)
 		end
 	end)
-	-- threader:addThread(function()
-	-- 	-- display function
-	-- 	while true do
-	-- 		local line = 1
-	-- 		term.clear()
-	-- 		term.setCursorPos(1, line)
-	-- 		term.write("Queue: ")
-	-- 		line = 2
-	-- 		for _, entry in ipairs(queue) do
-	-- 			term.setCursorPos(1, line)
-	-- 			term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
-	-- 			line = line + 1
-	-- 		end
-	-- 		-- line = line + 1
-	-- 		-- term.setCursorPos(1, line)
-	-- 		-- term.write("Stations: ")
-	-- 		-- for i, task in pairs(inProgress) do
-	-- 		-- 	term.setCursorPos(1, line)
-	-- 		-- 	local alive = nil
-	-- 		-- 	if task then
-	-- 		-- 		alive = "alive"
-	-- 		-- 	else
-	-- 		-- 		alive = "dead"
-	-- 		-- 	end
-	-- 		-- 	term.write(i .. " | " .. alive)
-	-- 		-- 	line = line + 1
-	-- 		-- end
-	-- 		sleep(0.1)
-	-- 	end
-	-- end)
+	threader:addThread(function()
+		-- display function
+		while true do
+			local line = 1
+			term.clear()
+			term.setCursorPos(1, line)
+			term.write("Queue: ")
+			line = 2
+			for _, entry in ipairs(queue) do
+				term.setCursorPos(1, line)
+				term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
+				line = line + 1
+			end
+			sleep(0.1)
+		end
+	end)
 	--
 	while true do
 		threader:run()
