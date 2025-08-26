@@ -112,20 +112,20 @@ local function main()
 				term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
 				line = line + 1
 			end
-			line = line + 1
-			term.setCursorPos(1, line)
-			term.write("Stations: ")
-			for i, task in pairs(inProgress) do
-				term.setCursorPos(1, line)
-				local alive = nil
-				if task then
-					alive = "alive"
-				else
-					alive = "dead"
-				end
-				term.write(i .. " | " .. alive)
-				line = line + 1
-			end
+			-- line = line + 1
+			-- term.setCursorPos(1, line)
+			-- term.write("Stations: ")
+			-- for i, task in pairs(inProgress) do
+			-- 	term.setCursorPos(1, line)
+			-- 	local alive = nil
+			-- 	if task then
+			-- 		alive = "alive"
+			-- 	else
+			-- 		alive = "dead"
+			-- 	end
+			-- 	term.write(i .. " | " .. alive)
+			-- 	line = line + 1
+			-- end
 			sleep(0.1)
 		end
 	end)
