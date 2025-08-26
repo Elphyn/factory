@@ -7,29 +7,41 @@ local queue = {}
 local function handleQ()
 	local threader = Threader.new()
 	local stationStates, stationsAvailable = getStations()
+
+	-- Start a periodic timer for queue processing
+	local queueTimer = os.startTimer(0.1)
+
 	while true do
-		-- print("This many stations available" .. #stationsAvailable)
-		for i = 1, #queue do
-			if queue[i] then
-				if queue[i].state == "waiting" then
-					-- first is dispatcher, second is a callback when thread is dead
-					print("Starting dispatcher for " .. queue[i].id)
-					threader:addThread(function()
-						queue[i].state = "in progress"
-						dispatcher(queue[i].task, stationsAvailable, stationStates)
-						-- dispatcher goes here
-					end, function(info)
-						queue[info.index] = "finished"
-					end, { index = i })
-				elseif queue[i].state == "finished" then
-					print("Order id: " .. queue[i].id .. " is Finished!")
-					queue[i] = false
+		local event, param = os.pullEvent()
+
+		if event == "timer" and param == queueTimer then
+			-- Process queue
+			for i = 1, #queue do
+				if queue[i] then
+					if queue[i].state == "waiting" then
+						print("Starting dispatcher for " .. queue[i].id)
+						threader:addThread(function()
+							queue[i].state = "in progress"
+							dispatcher(queue[i].task, stationsAvailable, stationStates)
+						end, function(info)
+							queue[info.index].state = "finished"
+						end, { index = i })
+					elseif queue[i].state == "finished" then
+						print("Order id: " .. queue[i].id .. " is Finished!")
+						queue[i] = false
+					end
 				end
 			end
-		end
-		threader:run()
 
-		coroutine.yield()
+			-- Run threader
+			threader:run()
+
+			-- Restart timer
+			queueTimer = os.startTimer(0.1)
+		else
+			-- Pass other events to threader
+			threader:run()
+		end
 	end
 end
 
@@ -38,14 +50,12 @@ local function listen()
 		rednet.open("top")
 		local _, message = rednet.receive()
 
-		if message.action == "crafting-order" then
+		if message and message.action == "crafting-order" then
 			print("Adding order")
 			local order = message.order
 			order.state = "waiting"
 			table.insert(queue, order)
 		end
-
-		coroutine.yield()
 	end
 end
 
@@ -53,12 +63,10 @@ local function main()
 	local threader = Threader.new()
 	threader:addThread(listen)
 	threader:addThread(handleQ)
+
 	while true do
 		threader:run()
-		sleep(0.1)
 	end
 end
 
 main()
-
--- notes, I might just add time of the start of productin, to the end, and then based on that calculate time per unit, based on how many things were crafted, and how long it took
