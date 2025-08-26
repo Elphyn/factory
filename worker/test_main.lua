@@ -91,8 +91,8 @@ local function main()
 							dispatcher(queue[i].task)
 							-- dispatcher goes here
 						end, function(info)
-							queue[info.index] = "finished"
-						end, { index = i })
+							queue[i].state = "finished"
+						end)
 					end
 				end
 			end
