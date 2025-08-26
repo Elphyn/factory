@@ -27,8 +27,9 @@ local function handleQ()
 				end
 			end
 		end
-		coroutine.yield()
 		threader:run()
+
+		coroutine.yield()
 	end
 end
 
@@ -43,7 +44,8 @@ local function listen()
 			order.state = "waiting"
 			table.insert(queue, order)
 		end
-		sleep(0.1)
+
+		coroutine.yield()
 	end
 end
 
@@ -53,6 +55,7 @@ local function main()
 	threader:addThread(handleQ)
 	while true do
 		threader:run()
+		sleep(0.1)
 	end
 end
 
