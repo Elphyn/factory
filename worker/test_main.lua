@@ -1,40 +1,17 @@
 local getStations = dofile("factory/worker/stations.lua")
--- local dispatcher = dofile("factory/worker/dispatcher.lua")
 local Threader = dofile("factory/tests/threader.lua")
 local craft = dofile("factory/worker/crafting.lua")
 local buffer = dofile("factory/worker/config.lua").bufferName
 
-local queue = {
-	{
-		id = 1,
-		task = {
-			item = "minecraft:gravel",
-			count = 5,
-		},
-		state = "waiting",
-	},
-}
-
+local queue = {}
 local stationStates, stationsAvailable = getStations()
 
-local function popStation()
-	if #stationsAvailable < 1 then
-		error("No stations available")
-	end
-	local name = table.remove(stationsAvailable)
-	return name
-end
+local threader = Threader.new()
+
+local inProgress = {}
 
 local function dispatcher(order)
-	-- you get task = {item = "minecraft:gravel", count = 10}
-	-- checking if there are any staions available
-	print("DEBUG: dispatcher started with n = ", #stationsAvailable)
-	-- while #stationsAvailable < 1 do
-	-- 	sleep(0.1)
-	-- end
-	print("Dispatcher assigning stations: n = " .. #stationsAvailable)
-	local threader = Threader.new()
-	while order.count > 0 or threader:alive() do
+	while order.count > 0 or #inProgress >= 1 do
 		-- assaigning stations
 		if #stationsAvailable > 0 then
 			local total = #stationsAvailable
@@ -45,9 +22,10 @@ local function dispatcher(order)
 						count = 1,
 					}
 					order.count = order.count - 1
-					local station = popStation()
+					local station = popStation(stationsAvailable)
 					stationStates[station].state = "working"
 					threader:addThread(function()
+						inProgress[station] = miniTask
 						print("DEBUG: Starting crafting")
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
@@ -58,14 +36,60 @@ local function dispatcher(order)
 						print("Station finished it's piece")
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
+						inProgress[info.station] = nil
 						print("DEBUG: Callback is finished")
+						sleep(0.1)
 					end, { station = station })
 				end
 			end
 		end
-		print("DEBUG: in dispatecher before checking threads")
-		threader:run()
+		sleep(0.1)
 	end
 end
 
-dispatcher(queue[1].task)
+local function main()
+	rednet.open("top")
+
+	threader:addThread(function()
+		while true do
+			local _, message = rednet.receive()
+
+			if message then
+				if message.action == "crafting-order" then
+					print("Adding order")
+					local order = message.order
+					order.state = "waiting"
+					table.insert(queue, order)
+				end
+			end
+		end
+	end)
+
+	threader:addThread(function()
+		while true do
+			for i = 1, #queue do
+				if queue[i] then
+					if queue[i].state == "waiting" then
+						-- first is dispatcher, second is a callback when thread is dead
+						print("Starting dispatcher for " .. queue[i].id)
+						threader:addThread(function()
+							queue[i].state = "in progress"
+							dispatcher(queue[i].task)
+							-- dispatcher goes here
+						end, function(info)
+							queue[info.index] = "finished"
+						end, { index = i })
+					elseif queue[i].state == "finished" then
+						print("Order id: " .. queue[i].id .. " is Finished!")
+						queue[i] = false
+					end
+				end
+			end
+			sleep(0.1)
+		end
+	end)
+
+	threader:run()
+end
+
+main()
