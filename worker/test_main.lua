@@ -17,7 +17,6 @@ local function popStation()
 end
 
 local function alive(inProgress)
-	print("checking if alive")
 	for _, v in pairs(inProgress) do
 		if v then
 			return true
@@ -55,8 +54,8 @@ local function dispatcher(order)
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
 					end, { station = station, co_id = co_id })
+					co_id = co_id + 1
 				end
-				co_id = co_id + 1
 			end
 		end
 		sleep(0.05)
