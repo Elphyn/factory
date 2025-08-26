@@ -51,7 +51,7 @@ local function dispatcher(order)
 						inProgress[current_id] = true
 						craft(buffer, buffer, station, miniTask)
 					end, function(info)
-						print("Setting " .. co_id .. "to false")
+						print("Setting " .. info.co_id .. "to false")
 						inProgress[info.co_id] = false
 						stationStates[info.station].state = "idle"
 						table.insert(stationsAvailable, info.station)
