@@ -30,7 +30,6 @@ end
 
 -- should wait until we've crafted a batch, then it can look into crafting somethng else
 local function scheduler(itemTable)
-
 	local queue = {}
 	for item, info in pairs(itemTable) do 
     if info.count < info.capacity and recipes[item] ~= nil then
