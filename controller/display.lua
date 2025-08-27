@@ -44,14 +44,18 @@ local function displayStorageItems(itemTable, queue, crafting)
 	end
 
 	line = line + 1
+
 	monitor.setCursorPos(1, line)
 	monitor.write("Crafting: ")
 	line = line + 1
-	for i, request in ipairs(crafting) do
-		monitor.setCursorPos(1, line)
-		monitor.write(
-			request.assignedNode .. " " .. request.order.item .. " " .. request.order.count .. " " .. request.state
-		)
+	for item, requests in ipairs(crafting) do
+		for i, request in ipairs(requests) do
+			monitor.setCursorPos(1, line)
+			monitor.write(
+				request.assignedNode .. " " .. request.order.item .. " " .. request.order.count .. " " .. request.state
+			)
+			line = line + 1
+		end
 	end
 end
 
