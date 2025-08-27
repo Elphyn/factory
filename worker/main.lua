@@ -5,7 +5,6 @@ local buffer = dofile("factory/worker/config.lua").bufferName
 
 local queue = {}
 local stationStates, stationsAvailable = getStations()
-
 local threader = Threader.new()
 
 local function popStation()
