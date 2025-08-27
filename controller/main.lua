@@ -76,6 +76,7 @@ local function main()
 						end
 						print("Before inserting into crafting[type]")
 						table.insert(crafting[item], request)
+						print("after inserting")
 					end
 				end
 			end
