@@ -47,6 +47,7 @@ local function displayStorageItems(itemTable, queue, crafting)
 
 	monitor.setCursorPos(1, line)
 	monitor.write("Crafting: ")
+	print(textutils.serialize(crafting))
 	line = line + 1
 	for item, requests in ipairs(crafting) do
 		print("this many requests: " .. #requests .. " for " .. item)
