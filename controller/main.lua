@@ -41,7 +41,7 @@ local function main()
 				if crafting[item] == nil then
 					print("Checking nodes: ")
 
-					for i, node in ipairs(node["mill"]) do
+					for i, node in ipairs(nodes["mill"]) do
 						print("node: ", node)
 					end
 					print("Before req")
