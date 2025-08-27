@@ -14,9 +14,8 @@ function Threader:addThread(fn, callback, info)
 		co = co,
 		filter = nil,
 		callback = callback,
-		info = info or {}, -- additional info
+		info = info or {},
 	}
-	-- need to make sure they don't overrride each other
 	table.insert(self.threads, thread)
 end
 
@@ -57,8 +56,6 @@ function Threader:run()
 	else
 		self.event = { n = 0 }
 	end
-
-	-- self.event = table.pack(os.pullEventRaw())
 end
 
 return Threader

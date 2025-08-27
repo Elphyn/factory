@@ -68,13 +68,23 @@ local function main()
 	threader:addThread(function()
 		-- receiving instructions
 		while true do
-			local _, message = rednet.receive()
+			local id, message = rednet.receive()
+			print("got message")
 
 			if message then
 				if message.action == "crafting-order" then
 					local order = message.order
 					order.state = "waiting"
 					table.insert(queue, order)
+				elseif message.action == "get-stations" then
+					print("Requested n of stations")
+					local success = rednet.send(id, { nStations = #stationStates })
+					if success then
+						print("sent")
+					end
+					if not success then
+						error("Wasn't able to send message to main pc!")
+					end
 				end
 			end
 		end
@@ -100,22 +110,22 @@ local function main()
 			sleep(0.05)
 		end
 	end)
-	threader:addThread(function()
-		-- display function
-		while true do
-			local line = 1
-			term.clear()
-			term.setCursorPos(1, line)
-			term.write("Queue: ")
-			line = 2
-			for _, entry in ipairs(queue) do
-				term.setCursorPos(1, line)
-				term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
-				line = line + 1
-			end
-			sleep(0.1)
-		end
-	end)
+	-- threader:addThread(function()
+	-- 	-- display function
+	-- 	while true do
+	-- 		local line = 1
+	-- 		term.clear()
+	-- 		term.setCursorPos(1, line)
+	-- 		term.write("Queue: ")
+	-- 		line = 2
+	-- 		for _, entry in ipairs(queue) do
+	-- 			term.setCursorPos(1, line)
+	-- 			term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
+	-- 			line = line + 1
+	-- 		end
+	-- 		sleep(0.1)
+	-- 	end
+	-- end)
 	--
 	while true do
 		threader:run()
