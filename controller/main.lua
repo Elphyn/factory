@@ -5,6 +5,7 @@ local displayStorageItems = require("display")
 local getWorkers = require("findNodes")
 local recipes = dofile("factory/shared/recipes.lua")
 local splitN = require("even")
+local config = require("config")
 
 local threader = Threader.new()
 local itemTable = getStorageItems()
@@ -23,7 +24,7 @@ local function getNstations(id)
 end
 
 local function main()
-	rednet.open("top")
+	rednet.open(config.modemLocation)
 	threader:addThread(function()
 		-- updating info
 		while true do
@@ -39,24 +40,15 @@ local function main()
 		while true do
 			for item, info in pairs(queue) do
 				if crafting[item] == nil then
-					print("Checking nodes: ")
-
 					local req = info.count
 					local type = recipes[item].crafter
 
 					local nodeStationsCount = {}
 					for i, node in ipairs(nodes[type]) do
 						local n = getNstations(node.id)
-						print("Got this many stations from node: ", n)
 						table.insert(nodeStationsCount, n)
 					end
-					print("Before getting spread")
 					local spread = splitN(req, nodeStationsCount)
-					-- table.insert(crafting[item], {assignedNode = nodes[type][]})
-					print("Spread is: ")
-					for i, part in ipairs(spread) do
-						print(i .. ": " .. part)
-					end
 					for i, part in ipairs(spread) do
 						local locId = globalID
 						local request = {
@@ -70,13 +62,10 @@ local function main()
 							state = "waiting",
 						}
 						globalID = globalID + 1
-						print("Before creating crafting[type]")
 						if crafting[item] == nil then
 							crafting[item] = {}
 						end
-						print("Before inserting into crafting[type]")
 						table.insert(crafting[item], request)
-						print("after inserting")
 					end
 				end
 			end

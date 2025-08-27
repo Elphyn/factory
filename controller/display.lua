@@ -52,7 +52,8 @@ local function displayStorageItems(itemTable, queue, crafting)
 		for i, request in ipairs(requests) do
 			monitor.setCursorPos(1, line)
 			monitor.write(
-				request.assignedNode
+				"Assigned to: "
+					.. request.assignedNode
 					.. " "
 					.. itemTable[request.order.item].displayName
 					.. " "

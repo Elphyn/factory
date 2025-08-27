@@ -1,15 +1,14 @@
 local generateConfig = require("createConfig")
 
 local function setupMain()
-	-- os.setComputerLabel("MainPC")
-	-- if fs.exists("startup.lua") then
-	-- 	fs.delete("startup.lua")
-	-- end
-	--
-	-- if fs.exists("factory/startupMain.lua") then
-	-- 	fs.copy("factory/startupMain.lua", "startup.lua")
-	-- end
-	print("not made yet")
+	os.setComputerLabel("MainPC")
+	if fs.exists("startup.lua") then
+		fs.delete("startup.lua")
+	end
+
+	if fs.exists("factory/startup.lua") then
+		fs.copy("factory/startup.lua", "startup.lua")
+	end
 end
 
 local function setupNode(stationType, bufferName)
@@ -32,6 +31,7 @@ local function setup()
 
 	if type == "main" then
 		setupMain()
+		return
 	elseif type == "node" then
 		-- if it's a node prompt as to which type of station it's going to manage
 		print("Enter what type of station this pc should manage: ")
