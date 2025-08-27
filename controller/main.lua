@@ -14,6 +14,7 @@ local globalID = 1
 local nodes = getWorkers()
 
 local crafting = {}
+local unprocessedRequests = {}
 
 local function getNstations(id)
 	rednet.send(id, { action = "get-stations" })
@@ -65,7 +66,21 @@ local function main()
 							crafting[item] = {}
 						end
 						table.insert(crafting[item], request)
+						table.insert(unprocessedRequests, request)
 					end
+				end
+			end
+			sleep(0.05)
+		end
+	end)
+
+	threader:addThread(function()
+		while true do
+			while #unprocessedRequests > 0 do
+				local rq = table.remove(unprocessedRequests)
+				local succ = rednet.send(rq.assignedNode, rq)
+				if not succ then
+					error("Couldn't sent crafting order")
 				end
 			end
 			sleep(0.05)
