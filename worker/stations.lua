@@ -12,8 +12,6 @@ local function getStations()
 			table.insert(stationsAvailable, name)
 		end
 	end
-	print("Found this many stations: (states)", #stationStates)
-	print("Found this many stations (avail)", #stationsAvailable)
 	return stationStates, stationsAvailable
 end
 

@@ -5,6 +5,7 @@ local buffer = dofile("factory/worker/config.lua").bufferName
 
 local queue = {}
 local stationStates, stationsAvailable = getStations()
+local totalStations = #stationsAvailable
 local threader = Threader.new()
 
 local function popStation()
@@ -77,7 +78,7 @@ local function main()
 					table.insert(queue, order)
 				elseif message.action == "get-stations" then
 					print("Requested n of stations")
-					local count = #stationStates
+					local count = totalStations
 					local success = rednet.send(id, { nStations = count })
 					if success then
 						print("sent: ", count)
