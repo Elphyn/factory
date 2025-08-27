@@ -52,7 +52,13 @@ local function displayStorageItems(itemTable, queue, crafting)
 		for i, request in ipairs(requests) do
 			monitor.setCursorPos(1, line)
 			monitor.write(
-				request.assignedNode .. " " .. request.order.item .. " " .. request.order.count .. " " .. request.state
+				request.assignedNode
+					.. " "
+					.. itemTable[request.order.item].displayName
+					.. " "
+					.. request.order.count
+					.. " "
+					.. request.state
 			)
 			line = line + 1
 		end
