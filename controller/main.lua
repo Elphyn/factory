@@ -22,6 +22,7 @@ local function getNstations(id)
 end
 
 local function main()
+	rednet.open("top")
 	threader:addThread(function()
 		-- updating info
 		while true do
