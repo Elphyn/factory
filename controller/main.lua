@@ -15,8 +15,9 @@ local nodes = getWorkers()
 local crafting = {}
 
 local function getNstations(id)
-	local _, msg = rednet.send(id, { action = "get-stations" })
+	rednet.send(id, { action = "get-stations" })
 
+	local _, msg = rednet.receive()
 	return msg.nStations
 end
 
