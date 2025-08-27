@@ -23,18 +23,11 @@ local queue = scheduler(itemTable)
 
 local function main()
 	threader:addThread(function()
-		-- display items
-		while true do
-			displayStorageItems(itemTable, queue)
-			sleep(0.05)
-		end
-	end)
-
-	threader:addThread(function()
-		-- update storage
+		-- update storage and queue
 		while true do
 			itemTable = getStorageItems()
 			queue = scheduler(itemTable)
+			displayStorageItems(itemTable, queue)
 			sleep(0.05)
 		end
 	end)
