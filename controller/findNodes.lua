@@ -7,10 +7,12 @@ local function getWorkers()
 		if string.match(name, "^computer") then
 			local pc = peripheral.wrap(name)
 			local name = pc.getLabel()
-			if string.match(name, "^worker") then
-				local type = string.match(name, "^worker(.+)$")
-				workers[type] = {}
-				table.insert(workers[type], { id = pc.getID })
+			if name ~= nil then
+				if string.match(name, "^worker") then
+					local type = string.match(name, "^worker(.+)$")
+					workers[type] = {}
+					table.insert(workers[type], { id = pc.getID })
+				end
 			end
 		end
 	end
