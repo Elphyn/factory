@@ -9,9 +9,7 @@ local function getWorkers()
 			local name = pc.getLabel()
 			if name ~= nil then
 				if string.match(name, "^worker") then
-					print("found worker pc")
 					local type = string.match(name, "^worker:(.+)$")
-					print("It's type is ", type)
 					if workers[type] == nil then
 						workers[type] = {}
 					end
@@ -20,7 +18,6 @@ local function getWorkers()
 			end
 		end
 	end
-	print("found this many mill nodes", #workers["mill"])
 	return workers
 end
 
