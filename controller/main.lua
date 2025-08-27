@@ -18,6 +18,7 @@ local function getNstations(id)
 	rednet.send(id, { action = "get-stations" })
 
 	local _, msg = rednet.receive()
+	print("Received nStations: " .. msg.nStations)
 	return msg.nStations
 end
 
