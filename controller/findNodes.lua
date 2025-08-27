@@ -12,8 +12,10 @@ local function getWorkers()
 					print("Print found worker pc")
 					local type = string.match(name, "^worker(.+)$")
 					print("It's type is ", type)
-					workers[type] = {}
-					table.insert(workers[type], { id = pc.getID })
+					if workers[type] == nil then
+						workers[type] = {}
+					end
+					table.insert(workers[type], { id = pc.getID() })
 				end
 			end
 		end
