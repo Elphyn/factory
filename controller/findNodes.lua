@@ -3,9 +3,9 @@ local function getWorkers()
 
 	local devices = peripheral.getNames()
 
-	for _, name in ipairs(devices) do
+	for _, Pname in ipairs(devices) do
 		if string.match(name, "^computer") then
-			local pc = peripheral.wrap(name)
+			local pc = peripheral.wrap(Pname)
 			local name = pc.getLabel()
 			if name ~= nil then
 				if string.match(name, "^worker") then
