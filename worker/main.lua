@@ -78,9 +78,10 @@ local function main()
 					table.insert(queue, order)
 				elseif message.action == "get-stations" then
 					print("Requested n of stations")
-					local success = rednet.send(id, { nStations = #stationStates })
+					local count = #stationStates
+					local success = rednet.send(id, { nStations = count })
 					if success then
-						print("sent")
+						print("sent: ", count)
 					end
 					if not success then
 						error("Wasn't able to send message to main pc!")
