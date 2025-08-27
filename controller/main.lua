@@ -39,6 +39,11 @@ local function main()
 		while true do
 			for item, info in pairs(queue) do
 				if crafting[item] == nil then
+					print("Checking nodes: ")
+
+					for i, node in ipairs(node["mill"]) do
+						print("node: ", node)
+					end
 					print("Before req")
 					local req = info.count
 					print("Before type")
