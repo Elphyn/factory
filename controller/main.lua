@@ -59,6 +59,9 @@ local function main()
 							state = "waiting",
 						}
 						globalID = globalID + 1
+						if crafting[item] == nil then
+							crafting[item] = {}
+						end
 						table.insert(crafting[item], request)
 					end
 				end
