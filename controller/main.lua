@@ -36,16 +36,24 @@ local function main()
 		while true do
 			for item, info in pairs(queue) do
 				if crafting[item] == nil then
+					print("Before req")
 					local req = info.count
+					print("Before type")
 					local type = recipes[item].crafter
 
 					local nodeStationsCount = {}
+					print("Before getting nStations")
 					for i, node in ipairs(nodes[type]) do
 						local n = getNstations(node.id)
 						table.insert(nodeStationsCount, n)
 					end
+					print("Before getting spread")
 					local spread = splitN(req, nodeStationsCount)
 					-- table.insert(crafting[item], {assignedNode = nodes[type][]})
+					print("Spread is: ")
+					for i, part in ipairs(spread) do
+						print(i .. ": " .. part)
+					end
 					for i, part in ipairs(spread) do
 						local locId = globalID
 						local request = {
@@ -59,9 +67,11 @@ local function main()
 							state = "waiting",
 						}
 						globalID = globalID + 1
+						print("Before creating crafting[type]")
 						if crafting[item] == nil then
 							crafting[item] = {}
 						end
+						print("Before inserting into crafting[type]")
 						table.insert(crafting[item], request)
 					end
 				end
