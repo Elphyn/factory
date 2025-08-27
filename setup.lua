@@ -6,8 +6,8 @@ local function setupMain()
 		fs.delete("startup.lua")
 	end
 
-	if fs.exists("factory/startup.lua") then
-		fs.copy("factory/startup.lua", "startup.lua")
+	if fs.exists("factory/controller/startup.lua") then
+		fs.copy("factory/controller/startup.lua", "startup.lua")
 	end
 end
 
