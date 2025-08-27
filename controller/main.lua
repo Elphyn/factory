@@ -41,18 +41,13 @@ local function main()
 				if crafting[item] == nil then
 					print("Checking nodes: ")
 
-					for i, node in ipairs(nodes["mill"]) do
-						print("node: ", node)
-					end
-					print("Before req")
 					local req = info.count
-					print("Before type")
 					local type = recipes[item].crafter
 
 					local nodeStationsCount = {}
-					print("Before getting nStations")
 					for i, node in ipairs(nodes[type]) do
 						local n = getNstations(node.id)
+						print("Got this many stations from node: ", n)
 						table.insert(nodeStationsCount, n)
 					end
 					print("Before getting spread")
