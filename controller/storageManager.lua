@@ -40,7 +40,7 @@ function StorageManager:scan()
 					displayName = moreInfo.displayName,
 					total = 0,
 					slots = {},
-					capacty = chest.size() * chest.getItemLimit(idx),
+					capacity = chest.size() * chest.getItemLimit(idx),
 				}
 			end
 			self.items[itemName].total = self.items[itemName].total + itemInfo.count
