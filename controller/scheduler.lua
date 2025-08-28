@@ -30,7 +30,7 @@ function Scheduler:planCrafts(storage)
 					maxCraft = maxByIngridient
 				end
 			end
-			for itemReq, ratio in pairs(recipe.dependecies) do
+			for itemReq, ratio in pairs(recipe.dependencies) do
 				items[itemReq].total = items[itemReq].total - maxCraft * ratio
 			end
 			local order = { name = item, count = maxCraft }
