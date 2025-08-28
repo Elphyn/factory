@@ -1,8 +1,9 @@
 local Threader = dofile("factory/utils/threader.lua")
-local storageManager = require("storageManager")
+local StorageManager = require("storageManager")
 local displayStorageItems = require("display")
 
 local threader = Threader.new()
+local storageManager = StorageManager.new()
 
 local items = nil
 
