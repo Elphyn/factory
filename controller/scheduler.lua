@@ -21,7 +21,7 @@ function Scheduler:planCrafts(storage)
 				goto continue
 			end
 			for itemReq, ratio in pairs(recipe.dependencies) do
-				local stock = items[itemReq].total
+				local stock = items[itemReq] and items[itemReq].total or 0
 				local maxByIngridient = math.floor(stock / ratio)
 				if maxByIngridient == 0 then
 					goto continue
