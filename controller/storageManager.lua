@@ -34,22 +34,23 @@ function StorageManager:scan()
 			table.insert(self.freeChests, name)
 			goto continue
 		end
+		local chestSlots = chest.size()
 		for idx, itemInfo in pairs(items) do
 			local itemName = itemInfo.name
-			local moreInfo = nil
 			if self.cashedInfo[itemInfo.name] == nil then
-				moreInfo = chest.getItemDetail(idx)
-				self.cashedInfo[itemInfo.name] = moreInfo
-			else
-				moreInfo = self.cashedInfo[itemInfo.name]
+				local moreInfo = chest.getItemDetail(idx)
+				self.cashedInfo[itemInfo.name] = {
+					displayName = moreInfo.displayName,
+					itemLimit = chest.getItemLimit(idx),
+				}
 			end
 			if self.items[itemName] == nil then
 				self.items[itemName] = {
 					name = itemName,
-					displayName = moreInfo.displayName,
+					displayName = self.cashedInfo[itemInfo.name].displayName,
 					total = 0,
 					slots = {},
-					capacity = chest.size() * chest.getItemLimit(idx),
+					capacity = chestSlots * self.cashedInfo[itemInfo.name].itemLimit,
 				}
 			end
 			self.items[itemName].total = self.items[itemName].total + itemInfo.count
