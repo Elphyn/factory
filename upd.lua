@@ -1101,4 +1101,7 @@ preload["clone"] = function(...)
 end
 local clone = preload["clone"]
 
+if fs.exists("factory") then
+	fs.delete("factory")
+end
 clone("https://github.com/Elphyn/factory")
