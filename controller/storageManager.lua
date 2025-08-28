@@ -21,6 +21,8 @@ function StorageManager:_getStorageUnits()
 end
 
 function StorageManager:scan()
+	self.items = {}
+	self.freeChests = {}
 	local chests = StorageManager:_getStorageUnits()
 	-- self.items = {}
 	-- self.freeChests = {}
