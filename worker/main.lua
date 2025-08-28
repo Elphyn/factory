@@ -2,6 +2,7 @@ local getStations = dofile("factory/worker/stations.lua")
 local Threader = dofile("factory/utils/threader.lua")
 local craft = dofile("factory/worker/crafting.lua")
 local buffer = dofile("factory/worker/config.lua").bufferName
+local config = require("config")
 
 local queue = {}
 local stationStates, stationsAvailable = getStations()
@@ -14,6 +15,23 @@ local function popStation()
 	end
 	local name = table.remove(stationsAvailable)
 	return name
+end
+
+local mainPcID = nil
+local function getMainPcId()
+	if mainPcID ~= nil then
+		return mainPcID
+	end
+	local peripherals = peripheral.getNames()
+	for _, name in ipairs(peripherals) do
+		if string.match(name, "^computer") then
+			local pc = peripheral.wrap(name)
+			local label = pc.getLabel()
+			if label == "MainPC" then
+				return pc.getID()
+			end
+		end
+	end
 end
 
 local function alive(inProgress)
@@ -75,6 +93,7 @@ local function main()
 				if message.action == "crafting-order" then
 					local order = message.order
 					order.state = "waiting"
+					order.id = message.id
 					table.insert(queue, order)
 				elseif message.action == "get-stations" then
 					print("Requested n of stations")
@@ -83,6 +102,11 @@ local function main()
 					if success then
 						print("sent: ", count)
 					end
+					if not success then
+						error("Wasn't able to send message to main pc!")
+					end
+				elseif message.action == "get-buffer" then
+					local success = rednet.send(id, config.bufferNameGlobal)
 					if not success then
 						error("Wasn't able to send message to main pc!")
 					end

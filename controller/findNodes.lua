@@ -13,7 +13,7 @@ local function getWorkers()
 					if workers[type] == nil then
 						workers[type] = {}
 					end
-					table.insert(workers[type], { id = pc.getID() })
+					table.insert(workers[type], { id = pc.getID(), capacity = 1024 })
 				end
 			end
 		end

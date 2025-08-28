@@ -30,6 +30,7 @@ end
 
 -- should wait until we've crafted a batch, then it can look into crafting somethng else
 local function scheduler(itemTable)
+  -- TODO make a refactor
 	local queue = {}
 	for item, info in pairs(itemTable) do 
     if info.count < info.capacity and recipes[item] ~= nil then
@@ -37,6 +38,17 @@ local function scheduler(itemTable)
       queue[item] = {count = info.capacity - info.count}
 		end
 	end
+  -- need to refactor this 
+  -- for item, info in pairs(recipes) do
+  --   local inStorage = nil
+  --   if itemTable[item] == nil then
+  --     inStorage = 0
+  --   else
+  --     inStorage = itemTable[item].count
+  --   end
+  --   if inStorage < recipes[item].capacity and 
+
+  end
   queue = whatCanCraft(queue, itemTable)
   return queue 
 end

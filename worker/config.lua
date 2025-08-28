@@ -3,5 +3,6 @@
 return {
 	stationType = "mill",
 	modemLocation = "top",
-	bufferName = "minecraft:barrel_1",
+	bufferName = "minecraft:barrel_6",
+	bufferNameGlobal = "minecraft:barrel_7",
 }
