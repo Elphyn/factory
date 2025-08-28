@@ -12,7 +12,9 @@ function Scheduler.new(storageManager)
 end
 
 function Scheduler:planCrafts(storage)
+	-- placeholders for now, the logic would be different in a bit
 	self.queue = {}
+	self.queued = {}
 	local items = deepCopy(storage)
 	for item, recipe in pairs(recipes) do
 		-- if we don't have anything queued for this item
