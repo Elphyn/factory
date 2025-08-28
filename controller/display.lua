@@ -24,7 +24,7 @@ local function displayStorageItems(itemTable)
 	local line = 1
 	for name, info in pairs(itemTable) do
 		monitor.setCursorPos(1, line)
-		local itemInfoString = string.format("%s | %d/%d", info.displayName, info.count, info.capacity)
+		local itemInfoString = string.format("%s | %d/%d", info.displayName, info.total, info.capacity)
 		monitor.write(itemInfoString)
 		line = line + 1
 	end
