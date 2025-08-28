@@ -5,6 +5,7 @@ function StorageManager.new()
 	local self = setmetatable({}, StorageManager)
 	self.items = {}
 	self.freeChests = {}
+	self.cashedInfo = {}
 	return self
 end
 
@@ -35,7 +36,13 @@ function StorageManager:scan()
 		end
 		for idx, itemInfo in pairs(items) do
 			local itemName = itemInfo.name
-			local moreInfo = chest.getItemDetail(idx)
+			local moreInfo = nil
+			if self.cashedInfo[itemInfo.name] == nil then
+				moreInfo = chest.getItemDetail(idx)
+				self.cashedInfo[itemInfo.name] = moreInfo
+			else
+				moreInfo = self.cashedInfo[itemInfo.name]
+			end
 			if self.items[itemName] == nil then
 				self.items[itemName] = {
 					name = itemName,
