@@ -1,3 +1,4 @@
+local recipes = dofile("factory/shared/recipes.lua")
 local function findMonitor()
 	local list = peripheral.getNames()
 
@@ -34,7 +35,7 @@ local function displayStorageItems(itemTable, queue)
 	monitor.write("Queue: ")
 	line = line + 1
 	for _, order in ipairs(queue) do
-		local name = itemTable[order.name].displayName
+		local name = recipes[order.name].displayName
 		monitor.setCursorPos(1, line)
 		local itemInfoString = string.format("%s | Can craft: %d", name, order.count)
 		monitor.write(itemInfoString)

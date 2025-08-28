@@ -1,5 +1,6 @@
 return {
 	["minecraft:gravel"] = {
+		displayName = "Gravel",
 		crafter = "mill",
 		dependencies = {
 			["minecraft:cobblestone"] = 1,
@@ -7,6 +8,7 @@ return {
 		craftingLimit = 1024,
 	},
 	["minecraft:flint"] = {
+		displayName = "Flint",
 		crafter = "mill",
 		dependencies = {
 			["minecraft:gravel"] = 1,
