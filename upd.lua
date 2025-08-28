@@ -1099,4 +1099,6 @@ preload["clone"] = function(...)
 	report(("Cloned to %q"):format(name))
 	print()
 end
-return preload["clone"](...)
+local clone = preload["clone"]
+
+clone("https://github.com/Elphyn/factory")

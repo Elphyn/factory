@@ -1,13 +1,13 @@
-local function deepCopy(itemStorage)
-	local itemList = {}
-	for k, v in pairs(itemStorage) do
-		itemList[k] = {
-			count = v.count,
-			capacity = v.capacity,
-			displayName = v.displayName,
-		}
+local function deepCopy(t)
+	local copy = {}
+	for k, v in pairs(t) do
+		if type(v) == "table" then
+			copy[k] = deepCopy(v)
+		else
+			copy[k] = v
+		end
 	end
-	return itemList
+	return copy
 end
 
 return deepCopy

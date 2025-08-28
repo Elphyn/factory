@@ -9,15 +9,10 @@ local items = nil
 
 local function main()
 	threader:addThread(function()
+		-- updating and displaying contents of storage
 		while true do
-			local ok, res = pcall(function()
-				-- disconnecting a chest while this is running would throw an error
-				return storageManager:scan()
-			end)
-			if ok then
-				items = res
-				displayStorageItems(items)
-			end
+			items = storageManager:scan()
+			displayStorageItems(items)
 			sleep(0.05)
 		end
 	end)
