@@ -9,7 +9,7 @@ local function findMonitor()
 	return nil
 end
 
-local function displayStorageItems(itemTable)
+local function displayStorageItems(itemTable, queue)
 	if itemTable == nil then
 		print("No items in storage")
 		return
@@ -28,20 +28,18 @@ local function displayStorageItems(itemTable)
 		monitor.write(itemInfoString)
 		line = line + 1
 	end
-	-- items to craft:
-	-- local queue = scheduler(itemTable)
-
 	-- name = {order = name, count = how much we crafting}
-	-- line = line + 1
-	-- monitor.setCursorPos(1, line)
-	-- monitor.write("Queue: ")
-	-- line = line + 1
-	-- for name, info in pairs(queue) do
-	-- 	monitor.setCursorPos(1, line)
-	-- 	local itemInfoString = string.format("%s | Can craft: %d", itemTable[name].displayName, info.count)
-	-- 	monitor.write(itemInfoString)
-	-- 	line = line + 1
-	-- end
+	line = line + 1
+	monitor.setCursorPos(1, line)
+	monitor.write("Queue: ")
+	line = line + 1
+	for _, order in ipairs(queue) do
+		local name = itemTable[order.name].displayName
+		monitor.setCursorPos(1, line)
+		local itemInfoString = string.format("%s | Can craft: %d", name, order.count)
+		monitor.write(itemInfoString)
+		line = line + 1
+	end
 	--
 	-- line = line + 1
 	--
