@@ -43,7 +43,7 @@ function StorageManager:scan()
 					capacty = chest.size() * chest.getItemLimit(idx),
 				}
 			end
-			self.items[itemName].count = self.items[itemName].total + itemInfo.count
+			self.items[itemName].total = self.items[itemName].total + itemInfo.count
 			table.insert(self.items[itemName].slots, { name, idx, itemInfo.count })
 		end
 		::continue::
