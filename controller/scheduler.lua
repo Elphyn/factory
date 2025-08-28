@@ -16,7 +16,7 @@ function Scheduler:planCrafts(storage)
 	for item, recipe in pairs(recipes) do
 		-- if we don't have anything queued for this item
 		if self.queued[item] == nil then
-			local maxCraft = recipe.craftingLimit - (items[item].total or 0)
+			local maxCraft = recipe.craftingLimit - (items[item] and items[item].total or 0)
 			if maxCraft <= 0 then
 				goto continue
 			end
