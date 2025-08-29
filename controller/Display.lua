@@ -56,3 +56,5 @@ function Display:render()
 		line = line + 1
 	end
 end
+
+return Display
