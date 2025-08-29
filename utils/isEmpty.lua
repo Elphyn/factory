@@ -1,8 +1,8 @@
-local function isEmpty(table)
+local function Empty(table)
 	for _ in pairs(table) do
 		return false
 	end
 	return true
 end
 
-return isEmpty
+return Empty

@@ -1,5 +1,7 @@
 local recipes = dofile("factory/shared/recipes.lua")
+local empty = dofile("factory/utils/isEmpty.lua")
 local Display = {}
+
 Display.__index = Display
 
 function Display.new(storageManager, scheduler)
@@ -49,7 +51,7 @@ function Display:render()
 	-- name = {order = name, count = how much we crafting}
 	line = line + 1
 	monitor.setCursorPos(1, line)
-	if #queue > 0 then
+	if not empty(queue) then
 		monitor.write("Queue: ")
 	end
 	line = line + 1
