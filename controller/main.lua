@@ -1,20 +1,18 @@
 local Threader = dofile("factory/utils/threader.lua")
 local StorageManager = require("storageManager")
-local displayStorageItems = require("display")
 local Scheduler = require("scheduler")
+local Display = require("Display")
 
 local threader = Threader.new()
 local storageManager = StorageManager.new()
 local scheduler = Scheduler.new(storageManager)
-
-local queue = nil
+local display = Display.new(storageManager, scheduler)
 
 local function main()
 	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
 			storageManager:scan()
-			displayStorageItems(items, queue)
 			sleep(0.05)
 		end
 	end)

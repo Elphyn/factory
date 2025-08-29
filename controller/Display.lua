@@ -3,7 +3,9 @@ Display.__index = Display
 
 function Display.new(storageManager, scheduler)
 	local self = setmetatable({}, Display)
-	storageManager:subscribe(function()
+	self.storageManager = storageManager
+	self.scheduler = scheduler
+	self.storageManager:subscribe(function()
 		Display:render()
 	end, "inventory_changed")
 	return self

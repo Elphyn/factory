@@ -41,28 +41,6 @@ local function displayStorageItems(itemTable, queue)
 		monitor.write(itemInfoString)
 		line = line + 1
 	end
-	--
-	-- line = line + 1
-	--
-	-- monitor.setCursorPos(1, line)
-	-- monitor.write("Crafting: ")
-	-- line = line + 1
-	-- for item, requests in pairs(crafting) do
-	-- 	for i, request in ipairs(requests) do
-	-- 		monitor.setCursorPos(1, line)
-	-- 		monitor.write(
-	-- 			"to: "
-	-- 				.. request.assignedNode
-	-- 				.. " "
-	-- 				.. itemTable[request.order.item].displayName
-	-- 				.. " "
-	-- 				.. request.order.count
-	-- 				.. " "
-	-- 				.. request.state
-	-- 		)
-	-- 		line = line + 1
-	-- 	end
-	-- end
 end
 
 return displayStorageItems
