@@ -49,7 +49,9 @@ function Display:render()
 	-- name = {order = name, count = how much we crafting}
 	line = line + 1
 	monitor.setCursorPos(1, line)
-	monitor.write("Queue: ")
+	if #queue > 0 then
+		monitor.write("Queue: ")
+	end
 	line = line + 1
 	for _, order in ipairs(queue) do
 		local name = recipes[order.name].displayName
