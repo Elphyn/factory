@@ -72,6 +72,9 @@ function StorageManager:scan()
 	for item, info in pairs(self.items) do
 		local old = oldTotals[item] or 0
 		local new = info.total
+		if new == 0 then
+			info = nil
+		end
 
 		if old ~= new then
 			self:emit("inventory_changed")
@@ -118,6 +121,8 @@ function StorageManager:_scanChest(name)
 		table.insert(self.items[itemName].slots, { name, idx, itemInfo.count })
 	end
 end
+
+function StorageManager:push(to, item, count) end
 
 function StorageManager:_exist(item)
 	if self.items[item] ~= nil then

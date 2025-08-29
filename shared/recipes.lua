@@ -5,7 +5,7 @@ return {
 		dependencies = {
 			["minecraft:cobblestone"] = 1,
 		},
-		craftingLimit = 1024,
+		craftingLimit = 15,
 	},
 	["minecraft:flint"] = {
 		displayName = "Flint",
@@ -13,6 +13,6 @@ return {
 		dependencies = {
 			["minecraft:gravel"] = 1,
 		},
-		craftingLimit = 1024,
+		craftingLimit = 15,
 	},
 }

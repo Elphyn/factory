@@ -1,7 +1,7 @@
 local Threader = dofile("factory/utils/threader.lua")
 local StorageManager = require("storageManager")
 local Scheduler = require("scheduler")
-local Display = require("Display")
+local Display = require("display")
 
 local threader = Threader.new()
 local storageManager = StorageManager.new()

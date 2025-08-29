@@ -1,5 +1,18 @@
 local recipes = dofile("factory/shared/recipes.lua")
-local function findMonitor()
+local Display = {}
+Display.__index = Display
+
+function Display.new(storageManager, scheduler)
+	local self = setmetatable({}, Display)
+	self.storageManager = storageManager
+	self.scheduler = scheduler
+	self.storageManager:subscribe(function()
+		self:render()
+	end, "inventory_changed")
+	return self
+end
+
+function Display:findMonitor()
 	local list = peripheral.getNames()
 
 	for _, name in ipairs(list) do
@@ -10,12 +23,14 @@ local function findMonitor()
 	return nil
 end
 
-local function displayStorageItems(itemTable, queue)
+function Display:render()
+	local itemTable = self.storageManager:getItems()
+	local queue = self.scheduler:getQueue()
 	if itemTable == nil then
 		print("No items in storage")
 		return
 	end
-	local monitorName = findMonitor()
+	local monitorName = self:findMonitor()
 	if monitorName == nil then
 		print("No monitor found")
 		return
@@ -25,7 +40,7 @@ local function displayStorageItems(itemTable, queue)
 	local line = 1
 	for name, info in pairs(itemTable) do
 		monitor.setCursorPos(1, line)
-		local itemInfoString = string.format("%s | %d/%d", info.displayName, info.total, info.capacity)
+		local itemInfoString = string.format("%d/%d | %s", info.total, info.capacity, info.displayName)
 		monitor.write(itemInfoString)
 		line = line + 1
 	end
@@ -43,4 +58,4 @@ local function displayStorageItems(itemTable, queue)
 	end
 end
 
-return displayStorageItems
+return Display
