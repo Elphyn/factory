@@ -1,3 +1,4 @@
+local recipes = dofile("factory/shared/recipes.lua")
 local Display = {}
 Display.__index = Display
 
