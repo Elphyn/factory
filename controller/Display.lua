@@ -23,8 +23,8 @@ function Display:findMonitor()
 end
 
 function Display:render()
-	local itemTable = storageManager:getItems()
-	local queue = scheduler:getQueue()
+	local itemTable = self.storageManager:getItems()
+	local queue = self.scheduler:getQueue()
 	if itemTable == nil then
 		print("No items in storage")
 		return
