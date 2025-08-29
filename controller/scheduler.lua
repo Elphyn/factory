@@ -27,7 +27,7 @@ function Scheduler:planCrafts(storage)
   -- removing entries that aren't processed, so we can recalculate
   for id, entry in pairs(self.queue) do
     if entry.state == "waiting" then
-      queue[id] = nil
+      self.queue[id] = nil
     end
   end
 
