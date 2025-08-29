@@ -36,29 +36,28 @@ function Scheduler:planCrafts(storage)
 	for item, recipe in pairs(recipes) do
     if not self.itemsProcessing[item] then   
       -- if we don't have anything queued for this item
-      if self.queued[item] == nil then
-        local maxCraft = recipe.craftingLimit - (items[item] and items[item].total or 0)
-        if maxCraft <= 0 then
+      local maxCraft = recipe.craftingLimit - (items[item] and items[item].total or 0)
+      if maxCraft <= 0 then
+        goto continue
+      end
+      for itemReq, ratio in pairs(recipe.dependencies) do
+        local stock = items[itemReq] and items[itemReq].total or 0
+        local maxByIngridient = math.floor(stock / ratio)
+        if maxByIngridient == 0 then
           goto continue
         end
-        for itemReq, ratio in pairs(recipe.dependencies) do
-          local stock = items[itemReq] and items[itemReq].total or 0
-          local maxByIngridient = math.floor(stock / ratio)
-          if maxByIngridient == 0 then
-            goto continue
-          end
-          if maxCraft > maxByIngridient then
-            maxCraft = maxByIngridient
-          end
+        if maxCraft > maxByIngridient then
+          maxCraft = maxByIngridient
         end
-        for itemReq, ratio in pairs(recipe.dependencies) do
-          items[itemReq].total = items[itemReq].total - maxCraft * ratio
-        end
-        local id = self.nextId
-        self.nextId = self.nextId + 1
-        self.queue[id]= { name = item, count = maxCraft, state = "waiting" }
-        ::continue::
       end
+      for itemReq, ratio in pairs(recipe.dependencies) do
+        items[itemReq].total = items[itemReq].total - maxCraft * ratio
+      end
+      local id = self.nextId
+      self.nextId = self.nextId + 1
+      self.queue[id]= { name = item, count = maxCraft, state = "waiting" }
+      ::continue::
+      
     end
 	end
 	return self.queue
