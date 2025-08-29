@@ -1,0 +1,56 @@
+local Display = {}
+Display.__index = Display
+
+function Display.new(storageManager, scheduler)
+	local self = setmetatable({}, Display)
+	storageManager:subscribe(function()
+		Display:render()
+	end, "inventory_changed")
+	return self
+end
+
+function Display:findMonitor()
+	local list = peripheral.getNames()
+
+	for _, name in ipairs(list) do
+		if string.match(name, "^monitor") then
+			return name
+		end
+	end
+	return nil
+end
+
+function Display:render()
+	local itemTable = storageManager:getItems()
+	local queue = scheduler:getQueue()
+	if itemTable == nil then
+		print("No items in storage")
+		return
+	end
+	local monitorName = self:findMonitor()
+	if monitorName == nil then
+		print("No monitor found")
+		return
+	end
+	local monitor = peripheral.wrap(monitorName)
+	monitor.clear()
+	local line = 1
+	for name, info in pairs(itemTable) do
+		monitor.setCursorPos(1, line)
+		local itemInfoString = string.format("%s | %d/%d", info.displayName, info.total, info.capacity)
+		monitor.write(itemInfoString)
+		line = line + 1
+	end
+	-- name = {order = name, count = how much we crafting}
+	line = line + 1
+	monitor.setCursorPos(1, line)
+	monitor.write("Queue: ")
+	line = line + 1
+	for _, order in ipairs(queue) do
+		local name = recipes[order.name].displayName
+		monitor.setCursorPos(1, line)
+		local itemInfoString = string.format("%s | Can craft: %d", name, order.count)
+		monitor.write(itemInfoString)
+		line = line + 1
+	end
+end

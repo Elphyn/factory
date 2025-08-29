@@ -5,17 +5,15 @@ local Scheduler = require("scheduler")
 
 local threader = Threader.new()
 local storageManager = StorageManager.new()
-local scheduler = Scheduler.new()
+local scheduler = Scheduler.new(storageManager)
 
-local items = nil
 local queue = nil
 
 local function main()
 	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
-			items = storageManager:scan()
-			queue = scheduler:planCrafts(items)
+			storageManager:scan()
 			displayStorageItems(items, queue)
 			sleep(0.05)
 		end

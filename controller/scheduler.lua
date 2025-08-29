@@ -8,11 +8,16 @@ function Scheduler.new(storageManager)
 	local self = setmetatable({}, Scheduler)
 	self.queued = {}
 	self.queue = {}
+	storageManager:subscribe(function()
+		self:planCrafts(storageManager:getItems())
+	end, "inventory_changed")
 	return self
 end
 
 function Scheduler:planCrafts(storage)
 	-- placeholders for now, the logic would be different in a bit
+	-- checking if I should add or not should depend on things we actually craft
+	-- meaning it's a job of NetworkManager, which I didn't made yet
 	self.queue = {}
 	self.queued = {}
 	local items = deepCopy(storage)
@@ -43,6 +48,10 @@ function Scheduler:planCrafts(storage)
 			::continue::
 		end
 	end
+	return self.queue
+end
+
+function Scheduler:getQueue()
 	return self.queue
 end
 
