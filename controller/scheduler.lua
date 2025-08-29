@@ -6,8 +6,13 @@ Scheduler.__index = Scheduler
 
 function Scheduler.new(storageManager)
 	local self = setmetatable({}, Scheduler)
-	self.queued = {}
+  self.nextId = 1
 	self.queue = {}
+  -- the plan is to insert items that are crafting right now
+  -- to stop any new entries of the same items appearing in queue 
+  -- insert should probably be done by event handler, event would be
+  -- emitted by NetworkManager, once order would be sent to Node
+  self.itemsProcessing = {} -- poor man's set 
 	storageManager:subscribe(function()
 		self:planCrafts(storageManager:getItems())
 	end, "inventory_changed")
@@ -18,35 +23,43 @@ function Scheduler:planCrafts(storage)
 	-- placeholders for now, the logic would be different in a bit
 	-- checking if I should add or not should depend on things we actually craft
 	-- meaning it's a job of NetworkManager, which I didn't made yet
-	self.queue = {}
-	self.queued = {}
+
+  -- removing entries that aren't processed, so we can recalculate
+  for id, entry in pairs(queue) do
+    if entry.state == "waiting" then
+      queue[id] = nil
+    end
+  end
+
+  
 	local items = deepCopy(storage)
 	for item, recipe in pairs(recipes) do
-		-- if we don't have anything queued for this item
-		if self.queued[item] == nil then
-			local maxCraft = recipe.craftingLimit - (items[item] and items[item].total or 0)
-			if maxCraft <= 0 then
-				goto continue
-			end
-			for itemReq, ratio in pairs(recipe.dependencies) do
-				local stock = items[itemReq] and items[itemReq].total or 0
-				local maxByIngridient = math.floor(stock / ratio)
-				if maxByIngridient == 0 then
-					goto continue
-				end
-				if maxCraft > maxByIngridient then
-					maxCraft = maxByIngridient
-				end
-			end
-			for itemReq, ratio in pairs(recipe.dependencies) do
-				items[itemReq].total = items[itemReq].total - maxCraft * ratio
-			end
-			local order = { name = item, count = maxCraft }
-			self.queued[item] = {}
-			table.insert(self.queued[item], order)
-			table.insert(self.queue, order)
-			::continue::
-		end
+    if not self.itemsProcessing[item] then   
+      -- if we don't have anything queued for this item
+      if self.queued[item] == nil then
+        local maxCraft = recipe.craftingLimit - (items[item] and items[item].total or 0)
+        if maxCraft <= 0 then
+          goto continue
+        end
+        for itemReq, ratio in pairs(recipe.dependencies) do
+          local stock = items[itemReq] and items[itemReq].total or 0
+          local maxByIngridient = math.floor(stock / ratio)
+          if maxByIngridient == 0 then
+            goto continue
+          end
+          if maxCraft > maxByIngridient then
+            maxCraft = maxByIngridient
+          end
+        end
+        for itemReq, ratio in pairs(recipe.dependencies) do
+          items[itemReq].total = items[itemReq].total - maxCraft * ratio
+        end
+        local id = self.nextId
+        self.nextId = self.nextId + 1
+        self.queue[id]= { name = item, count = maxCraft, state = "waiting" }
+        ::continue::
+      end
+    end
 	end
 	return self.queue
 end

@@ -12,7 +12,7 @@ function Display.new(storageManager, scheduler)
 	return self
 end
 
-function Display:findMonitor()
+function Display:_findMonitor()
 	local list = peripheral.getNames()
 
 	for _, name in ipairs(list) do
@@ -30,7 +30,7 @@ function Display:render()
 		print("No items in storage")
 		return
 	end
-	local monitorName = self:findMonitor()
+	local monitorName = self:_findMonitor()
 	if monitorName == nil then
 		print("No monitor found")
 		return
@@ -53,7 +53,7 @@ function Display:render()
 		monitor.write("Queue: ")
 	end
 	line = line + 1
-	for _, order in ipairs(queue) do
+	for _, order in pairs(queue) do
 		local name = recipes[order.name].displayName
 		monitor.setCursorPos(1, line)
 		local itemInfoString = string.format("%s | Can craft: %d", name, order.count)
