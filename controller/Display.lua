@@ -6,7 +6,7 @@ function Display.new(storageManager, scheduler)
 	self.storageManager = storageManager
 	self.scheduler = scheduler
 	self.storageManager:subscribe(function()
-		Display:render()
+		self:render()
 	end, "inventory_changed")
 	return self
 end
