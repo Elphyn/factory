@@ -72,9 +72,6 @@ function StorageManager:scan()
 	for item, info in pairs(self.items) do
 		local old = oldTotals[item] or 0
 		local new = info.total
-		if new == 0 then
-			info = nil
-		end
 
 		if old ~= new then
 			self:emit("inventory_changed")

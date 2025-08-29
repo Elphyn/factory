@@ -39,10 +39,12 @@ function Display:render()
 	monitor.clear()
 	local line = 1
 	for name, info in pairs(itemTable) do
-		monitor.setCursorPos(1, line)
-		local itemInfoString = string.format("%d/%d | %s", info.total, info.capacity, info.displayName)
-		monitor.write(itemInfoString)
-		line = line + 1
+		if info.total > 0 then
+			monitor.setCursorPos(1, line)
+			local itemInfoString = string.format("%d/%d | %s", info.total, info.capacity, info.displayName)
+			monitor.write(itemInfoString)
+			line = line + 1
+		end
 	end
 	-- name = {order = name, count = how much we crafting}
 	line = line + 1
