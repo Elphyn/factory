@@ -25,7 +25,7 @@ function Scheduler:planCrafts(storage)
 	-- meaning it's a job of NetworkManager, which I didn't made yet
 
   -- removing entries that aren't processed, so we can recalculate
-  for id, entry in pairs(queue) do
+  for id, entry in pairs(self.queue) do
     if entry.state == "waiting" then
       queue[id] = nil
     end
