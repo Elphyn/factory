@@ -17,6 +17,9 @@ function EventEmitter:subscribe(event, callback)
 end
 
 function EventEmitter:emit(event, ...)
+	if not self.callbacks[event] then
+		return
+	end
 	for _, callback in ipairs(self.callbacks[event]) do
 		callback(...)
 	end

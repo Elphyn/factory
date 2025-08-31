@@ -153,8 +153,3 @@ function StorageManager:getSnapshot()
 end
 
 return StorageManager
-
---
---
---
--- function StorageManager:pull() end
