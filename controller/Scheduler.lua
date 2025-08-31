@@ -4,8 +4,9 @@ local deepCopy = dofile("factory/utils/deepCopy.lua")
 local Scheduler = {}
 Scheduler.__index = Scheduler
 
-function Scheduler.new(storageManager)
+function Scheduler.new(eventEmitter)
 	local self = setmetatable({}, Scheduler)
+  self.eventEmitter = eventEmitter
   self.nextId = 1
 	self.queue = {}
   -- the plan is to insert items that are crafting right now
@@ -13,13 +14,18 @@ function Scheduler.new(storageManager)
   -- insert should probably be done by event handler, event would be
   -- emitted by NetworkManager, once order would be sent to Node
   self.itemsProcessing = {} -- poor man's set 
-	storageManager:subscribe(function()
-		self:planCrafts(storageManager:getItems())
-	end, "inventory_changed")
+  self:setupEventListeners()
 	return self
 end
 
+function Scheduler:setupEventListeners()
+  self.eventEmitter:subscribe("inventory_changed", function (storage)
+    self:planCrafts(storage)
+  end)
+end
+
 function Scheduler:planCrafts(storage)
+  -- TODO: Dissect this ugly piece of code
 	-- placeholders for now, the logic would be different in a bit
 	-- checking if I should add or not should depend on things we actually craft
 	-- meaning it's a job of NetworkManager, which I didn't made yet
@@ -55,9 +61,8 @@ function Scheduler:planCrafts(storage)
       end
       local id = self.nextId
       self.nextId = self.nextId + 1
-      self.queue[id]= { name = item, count = maxCraft, state = "waiting" }
+      self.queue[id]= { name = item, count = maxCraft, state = "waiting", id = id}
       ::continue::
-      
     end
 	end
 	return self.queue

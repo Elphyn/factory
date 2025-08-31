@@ -17,43 +17,32 @@ local function isDone(craftingItemName, howManyToCraft, stationName)
 	local stationStorage = station.items()
 
 	local itemSlot = findItem(stationName, craftingItemName)
-
-	if itemSlot then
-		local curCount = stationStorage[itemSlot].count
-		if curCount >= howManyToCraft then
-			return true
-		end
-		return false
+	if not itemSlot then
+		-- if we didn't find an item, it's spent and we're done
+		return true
 	else
+		-- if we found an item, meaning it's still crafting
 		return false
 	end
 end
 
-function standardCrafting(takeFromName, placeWhereName, stationName, task, order)
-	-- Should note, that if we got here, we must assume we have enough items
-	-- Also, this crafting assumes we get one to one ratio, no, when it's concrete how many items you get
+function exhaustCrafting(takeFromName, placeWhereName, stationName, task)
+	-- assuming it's one dependencie type of crafting
 	local craftingItemName = task.order
 	local howManyToCraft = task.count
-	local recipeItemList = recipes[craftingItemName].dependencies
+	local recipeItem = recipes[craftingItemName].dependencies[1]
+	local recipeItemRatio = recipes[craftingItemName]
 
 	-- place itmes in a station
 	local station = peripheral.wrap(stationName)
 
-	for key, value in pairs(recipeItemList) do
-		-- local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
-		station.pullItem(takeFromName, key, value * howManyToCraft)
-	end
+	-- take one item in bulk here
 
 	while not isDone(craftingItemName, howManyToCraft, stationName) do
 		sleep(0.1)
 	end
 	-- withdraw items
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
-	-- since it's concrete for this type of crafting, we always end up with what we needed to craft
-	if not order.yeild then
-		order.yeild = 0
-	end
-	order.yeild = order.yeild + howManyToCraft
 end
 
 return standardCrafting

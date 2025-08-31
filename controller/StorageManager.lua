@@ -2,8 +2,9 @@ local deepCopy = dofile("factory/utils/deepCopy.lua")
 local StorageManager = {}
 StorageManager.__index = StorageManager
 
-function StorageManager.new()
+function StorageManager.new(eventEmitter)
 	local self = setmetatable({}, StorageManager)
+	self.eventEmitter = eventEmitter
 	self.items = {}
 	self.freeChests = {}
 	self.cachedInfo = {}
@@ -21,22 +22,6 @@ function StorageManager:_getStorageUnits()
 		end
 	end
 	return storageUnits
-end
-
-function StorageManager:subscribe(callback, event)
-	if not self.callbacks[event] then
-		self.callbacks[event] = {}
-	end
-	table.insert(self.callbacks[event], callback)
-end
-
-function StorageManager:emit(event)
-	if not self.callbacks[event] then
-		return
-	end
-	for _, callback in ipairs(self.callbacks[event]) do
-		callback()
-	end
 end
 
 function StorageManager:scan()
@@ -65,7 +50,7 @@ function StorageManager:scan()
 	end
 
 	if oldCount ~= newCount then
-		self:emit("inventory_changed")
+		self.eventEmitter.emit("inventory_changed", self:getItems())
 		return
 	end
 
@@ -74,7 +59,7 @@ function StorageManager:scan()
 		local new = info.total
 
 		if old ~= new then
-			self:emit("inventory_changed")
+			self.eventEmitter.emit("inventory_changed")
 			return
 		end
 	end
@@ -115,11 +100,34 @@ function StorageManager:_scanChest(name)
 		end
 
 		self.items[itemName].total = self.items[itemName].total + itemInfo.count
-		table.insert(self.items[itemName].slots, { name, idx, itemInfo.count })
+		table.insert(self.items[itemName].slots, { name = name, slot_idx = idx, count = itemInfo.count })
 	end
 end
 
-function StorageManager:push(to, item, count) end
+function StorageManager:pushItem(to, item, count)
+	local total = self:getTotal(item)
+
+	if total == 0 or count > total then
+		error("Storage doesn't have/not enough of this item: ", item)
+	end
+
+	local slots = self.items[item].slots
+	for _, slot in ipairs(slots) do
+		local chest = peripheral.wrap(slot.name)
+
+		local take = 0
+		if count >= slot.count then
+			take = slot.count
+		else
+			take = count
+		end
+		chest.pushItems(to, slot.slot_idx, take)
+		count = count - take
+		if count == 0 then
+			break
+		end
+	end
+end
 
 function StorageManager:_exist(item)
 	if self.items[item] ~= nil then

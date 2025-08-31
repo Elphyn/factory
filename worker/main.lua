@@ -135,23 +135,7 @@ local function main()
 			sleep(0.05)
 		end
 	end)
-	-- threader:addThread(function()
-	-- 	-- display function
-	-- 	while true do
-	-- 		local line = 1
-	-- 		term.clear()
-	-- 		term.setCursorPos(1, line)
-	-- 		term.write("Queue: ")
-	-- 		line = 2
-	-- 		for _, entry in ipairs(queue) do
-	-- 			term.setCursorPos(1, line)
-	-- 			term.write("Order for: " .. entry.task.item .. "| " .. entry.task.count .. " | " .. entry.state)
-	-- 			line = line + 1
-	-- 		end
-	-- 		sleep(0.1)
-	-- 	end
-	-- end)
-	--
+
 	while true do
 		threader:run()
 	end

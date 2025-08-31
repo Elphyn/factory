@@ -40,3 +40,15 @@ local request = {
 		count = 1,
 	},
 }
+
+local request = {
+	action = { "get-stations", "get-buffer", "crafting-order" },
+	senderId = 1,
+	assignedWorkerId = 3,
+	id = 10,
+	status = { "waiting", "sent", "finished" },
+	order = {
+		item = "minecraft:gravel",
+		count = 1,
+	},
+}

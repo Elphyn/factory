@@ -4,14 +4,19 @@ local Display = {}
 
 Display.__index = Display
 
-function Display.new(storageManager, scheduler)
+function Display.new(eventEmitter)
 	local self = setmetatable({}, Display)
-	self.storageManager = storageManager
-	self.scheduler = scheduler
-	self.storageManager:subscribe(function()
-		self:render()
-	end, "inventory_changed")
+	self.eventEmitter = eventEmitter
 	return self
+end
+
+function Display:setupEventListeners()
+	self.eventEmitter:subscribe("inventory_changed", function(storage)
+		self:renderStorage(storage)
+	end)
+	self.eventEmitter:subscribe("queue_changed", function(queue)
+		self:renderQueue(queue)
+	end)
 end
 
 function Display:_findMonitor()
@@ -50,6 +55,52 @@ function Display:render()
 	end
 	-- name = {order = name, count = how much we crafting}
 	line = line + 1
+	monitor.setCursorPos(1, line)
+	if not empty(queue) then
+		monitor.write("Queue: ")
+	end
+	line = line + 1
+	for _, order in pairs(queue) do
+		local name = recipes[order.name].displayName
+		monitor.setCursorPos(1, line)
+		local itemInfoString = string.format("%s | Can craft: %d", name, order.count)
+		monitor.write(itemInfoString)
+		line = line + 1
+	end
+end
+
+function Display:renderStorage(storage)
+	local itemTable = storage
+	if itemTable == nil then
+		print("No items in storage")
+		return
+	end
+	local monitorName = self:_findMonitor()
+	if monitorName == nil then
+		print("No monitor found")
+		return
+	end
+	local monitor = peripheral.wrap(monitorName)
+	monitor.clear()
+	local line = 1
+	for name, info in pairs(itemTable) do
+		if info.total > 0 then
+			monitor.setCursorPos(1, line)
+			local itemInfoString = string.format("%d/%d | %s", info.total, info.capacity, info.displayName)
+			monitor.write(itemInfoString)
+			line = line + 1
+		end
+	end
+end
+
+function Display:renderQueue(queue)
+	local monitorName = self:_findMonitor()
+	if monitorName == nil then
+		print("No monitor found")
+		return
+	end
+	local monitor = peripheral.wrap(monitorName)
+	local line = 5
 	monitor.setCursorPos(1, line)
 	if not empty(queue) then
 		monitor.write("Queue: ")
