@@ -23,7 +23,7 @@ function StorageManager:_getStorageUnits()
 	return storageUnits
 end
 
-function StorageManager:getTotalItems()
+function StorageManager:getTotalAndReset()
 	local totals = {}
 	for item, info in pairs(self.items) do
 		totals[item] = info.total
@@ -44,7 +44,7 @@ end
 
 function StorageManager:update()
 	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
-	local oldValuesOfItems = self:getTotalItems()
+	local oldValuesOfItems = self:getTotalAndReset()
 	local oldNumberOfItems = self:countItems()
 	local anyValueChange = false
 
@@ -62,11 +62,15 @@ function StorageManager:update()
 		end
 	end
 
-	-- if there are any changes(value wise or different number of items)
+	-- if there are any changes emit event
 	local newNumberOfItems = self:countItems()
 	if anyValueChange or oldNumberOfItems ~= newNumberOfItems then
-		self.eventEmitter:emit("inventory_changed", self:getItems())
+		self:signalChange()
 	end
+end
+
+function StorageManager:signalChange()
+	self.eventEmitter:emit("inventory_changed", self:getItems())
 end
 
 function StorageManager:scan()
