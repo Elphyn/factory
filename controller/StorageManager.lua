@@ -8,7 +8,6 @@ function StorageManager.new(eventEmitter)
 	self.items = {}
 	self.freeChests = {}
 	self.cachedInfo = {}
-	self.callbacks = {}
 	return self
 end
 
@@ -24,44 +23,57 @@ function StorageManager:_getStorageUnits()
 	return storageUnits
 end
 
-function StorageManager:scan()
-	self.freeChests = {}
-	local chests = StorageManager:_getStorageUnits()
-
-	local oldTotals = {}
+function StorageManager:getTotalItems()
+	local totals = {}
 	for item, info in pairs(self.items) do
-		oldTotals[item] = info.total
+		totals[item] = info.total
 		info.total = 0
 		info.slots = {}
 	end
+	return totals
+end
 
-	for _, name in ipairs(chests) do
-		self:_scanChest(name)
-	end
-
-	local oldCount = 0
-	for _ in pairs(oldTotals) do
-		oldCount = oldCount + 1
-	end
-
-	local newCount = 0
+function StorageManager:countItems()
+	-- returns how many items there are in the system
+	local count = 0
 	for _ in pairs(self.items) do
-		newCount = newCount + 1
+		count = count + 1
 	end
+	return count
+end
 
-	if oldCount ~= newCount then
-		self.eventEmitter:emit("inventory_changed", self:getItems())
-		return
-	end
+function StorageManager:update()
+	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
+	local oldValuesOfItems = self:getTotalItems()
+	local oldNumberOfItems = self:countItems()
+	local anyValueChange = false
 
+	-- updating storage
+	self:scan()
+
+	-- now we compare
 	for item, info in pairs(self.items) do
-		local old = oldTotals[item] or 0
+		local old = oldValuesOfItems[item] or 0
 		local new = info.total
 
 		if old ~= new then
-			self.eventEmitter:emit("inventory_changed", self:getItems())
-			return
+			anyValueChange = true
+			break
 		end
+	end
+
+	-- if there are any changes(value wise or different number of items)
+	local newNumberOfItems = self:countItems()
+	if anyValueChange or oldNumberOfItems ~= newNumberOfItems then
+		self.eventEmitter:emit("inventory_changed", self:getItems())
+	end
+end
+
+function StorageManager:scan()
+	self.freeChests = {}
+	local chests = StorageManager:_getStorageUnits()
+	for _, name in ipairs(chests) do
+		self:_scanChest(name)
 	end
 end
 

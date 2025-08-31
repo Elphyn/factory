@@ -14,7 +14,7 @@ local function main()
 	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
-			storageManager:scan()
+			storageManager:update()
 			sleep(0.05)
 		end
 	end)
