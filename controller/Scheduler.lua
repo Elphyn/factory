@@ -65,7 +65,7 @@ function Scheduler:planCrafts(storage)
       ::continue::
     end
 	end
-	return self.queue
+  self.eventEmitter:emit("queue_changed", self:getQueue())
 end
 
 function Scheduler:getQueue()

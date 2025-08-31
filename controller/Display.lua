@@ -7,6 +7,7 @@ Display.__index = Display
 function Display.new(eventEmitter)
 	local self = setmetatable({}, Display)
 	self.eventEmitter = eventEmitter
+	self:setupEventListeners()
 	return self
 end
 
@@ -14,9 +15,9 @@ function Display:setupEventListeners()
 	self.eventEmitter:subscribe("inventory_changed", function(storage)
 		self:renderStorage(storage)
 	end)
-	-- self.eventEmitter:subscribe("queue_changed", function(queue)
-	-- 	self:renderQueue(queue)
-	-- end)
+	self.eventEmitter:subscribe("queue_changed", function(queue)
+		self:renderQueue(queue)
+	end)
 end
 
 function Display:_findMonitor()
