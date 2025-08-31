@@ -21,3 +21,5 @@ function EventEmitter:emit(event, ...)
 		callback(...)
 	end
 end
+
+return EventEmitter
