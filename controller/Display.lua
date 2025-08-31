@@ -7,16 +7,20 @@ Display.__index = Display
 function Display.new(eventEmitter)
 	local self = setmetatable({}, Display)
 	self.eventEmitter = eventEmitter
+	self.items = {}
+	self.queue = {}
 	self:setupEventListeners()
 	return self
 end
 
 function Display:setupEventListeners()
 	self.eventEmitter:subscribe("inventory_changed", function(storage)
-		self:renderStorage(storage)
+		self.items = storage
+		self:render()
 	end)
 	self.eventEmitter:subscribe("queue_changed", function(queue)
-		self:renderQueue(queue)
+		self.queue = queue
+		self:render()
 	end)
 end
 
@@ -32,8 +36,8 @@ function Display:_findMonitor()
 end
 
 function Display:render()
-	local itemTable = self.storageManager:getItems()
-	local queue = self.scheduler:getQueue()
+	local itemTable = self.items
+	local queue = self.queue
 	if itemTable == nil then
 		print("No items in storage")
 		return
@@ -91,28 +95,6 @@ function Display:renderStorage(storage)
 			monitor.write(itemInfoString)
 			line = line + 1
 		end
-	end
-end
-
-function Display:renderQueue(queue)
-	local monitorName = self:_findMonitor()
-	if monitorName == nil then
-		print("No monitor found")
-		return
-	end
-	local monitor = peripheral.wrap(monitorName)
-	local line = 5
-	monitor.setCursorPos(1, line)
-	if not empty(queue) then
-		monitor.write("Queue: ")
-	end
-	line = line + 1
-	for _, order in pairs(queue) do
-		local name = recipes[order.name].displayName
-		monitor.setCursorPos(1, line)
-		local itemInfoString = string.format("%s | Can craft: %d", name, order.count)
-		monitor.write(itemInfoString)
-		line = line + 1
 	end
 end
 
