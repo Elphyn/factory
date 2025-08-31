@@ -59,7 +59,7 @@ function StorageManager:scan()
 		local new = info.total
 
 		if old ~= new then
-			self.eventEmitter.emit("inventory_changed")
+			self.eventEmitter.emit("inventory_changed", self:getItems())
 			return
 		end
 	end
