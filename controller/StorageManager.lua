@@ -46,7 +46,7 @@ function StorageManager:update()
 	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
 	local oldValuesOfItems = self:getTotalAndReset()
 	local oldNumberOfItems = self:countItems()
-	local anyValueChange = false
+	local changed = false
 
 	-- updating storage
 	self:scan()
@@ -57,14 +57,18 @@ function StorageManager:update()
 		local new = info.total
 
 		if old ~= new then
-			anyValueChange = true
+			changed = true
 			break
 		end
 	end
 
+	if not changed then
+		local newNumberOfItems = self:countItems()
+		changed = oldNumberOfItems ~= newNumberOfItems
+	end
+
 	-- if there are any changes emit event
-	local newNumberOfItems = self:countItems()
-	if anyValueChange or oldNumberOfItems ~= newNumberOfItems then
+	if changed then
 		self:signalChange()
 	end
 end
