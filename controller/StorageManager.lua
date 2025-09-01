@@ -42,12 +42,21 @@ function StorageManager:countItems()
 	return count
 end
 
+function StorageManager:reset()
+	for item, _ in pairs(self.items) do
+		self.items[item].total = 0
+		self.items[item].slots = {}
+	end
+end
+
 function StorageManager:update()
 	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
 	local oldValuesOfItems = self:getTotalAndReset()
 	local oldNumberOfItems = self:countItems()
 	local changed = false
 
+	-- reset before updating
+	self:reset()
 	-- updating storage
 	self:scan()
 

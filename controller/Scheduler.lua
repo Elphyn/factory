@@ -65,6 +65,9 @@ function Scheduler:reserveMaterials(recipe, count, inventory)
 	-- if we're making an item, need to reserve it's dependencies
 	for dep, ratio in pairs(recipe.dependencies) do
 		inventory[dep].assigned = inventory[dep].assigned + count * ratio
+		if inventory[dep].assigned > inventory[dep].total then
+			error("Can't assign more resources then there is, were trying to assign: " .. count .. " " .. dep)
+		end
 	end
 end
 
