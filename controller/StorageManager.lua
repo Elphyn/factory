@@ -120,10 +120,10 @@ function StorageManager:_scanChest(name)
 		if self.items[itemName] == nil then
 			self.items[itemName] = {
 				name = itemName,
-				displayName = self.cachedInfo[itemInfo.name].displayName,
+				displayName = self.cachedInfo[itemName].displayName,
 				total = 0,
 				slots = {},
-				capacity = chestSlots * self.cachedInfo[itemInfo.name].itemLimit,
+				capacity = chestSlots * self.cachedInfo[itemName].itemLimit,
 				assigned = 0,
 			}
 		end
