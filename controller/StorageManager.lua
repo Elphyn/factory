@@ -1,5 +1,5 @@
 local deepCopy = dofile("factory/utils/deepCopy.lua")
-local counter = dofile("factory/utils/countKeys.lua")
+local empty = dofile("factory/utils/isEmpty.lua")
 local StorageManager = {}
 
 StorageManager.__index = StorageManager
@@ -99,11 +99,7 @@ function StorageManager:_scanChest(name)
 	local chest = peripheral.wrap(name)
 	local items = chest.list()
 
-	-- if #items == 0 then
-	-- 	table.insert(self.freeChests, name)
-	-- 	return
-	-- end
-	if counter(items) == 0 then
+	if empty(items) then
 		table.insert(self.freeChests, name)
 		return
 	end
