@@ -68,7 +68,15 @@ function Scheduler:reserveMaterials(recipe, count, inventory)
 	end
 end
 
+function Scheduler:resetReservedMaterials(inventory)
+	for item, _ in pairs(inventory) do
+		inventory[item].assigned = 0
+	end
+end
+
 function Scheduler:planCrafts(inventory)
+	-- need to reset items that we reserved
+	self:resetReservedMaterials(inventory)
 	-- all waiting entries in queue could be recalculated
 	self:removeWaiting()
 
