@@ -79,7 +79,9 @@ function StorageManager:update()
 end
 
 function StorageManager:signalChange()
-	self.eventEmitter:emit("inventory_changed", self:getItems())
+	if self.eventEmitter then
+		self.eventEmitter:emit("inventory_changed", self:getItems())
+	end
 end
 
 function StorageManager:scan()
