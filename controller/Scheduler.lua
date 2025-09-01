@@ -1,5 +1,7 @@
 local recipes = dofile("factory/shared/recipes.lua")
 local fp = dofile("factory/utils/fp.lua")
+local deepCopy = dofile("factory/utils/deepCopy.lua")
+
 -- local recipes = dofile("../shared/recipes.lua") -- for testing
 -- local fp = dofile("../utils/fp.lua") -- for testing
 
@@ -31,14 +33,20 @@ function Scheduler:setupEventListeners()
 end
 
 function Scheduler:calculateMaxCraftable(item, recipe, inventory)
+	-- assigned - reserved ammount for other orders, that were queued before this one
+	local assigned = inventory[item] and inventory[item].assigned or 0
+	local total = inventory[item] and inventory[item].total or 0
+	local stock = total - assigned
+
 	-- calculate how much we could craft at max, in best conditions
-	local stock = inventory[item] and inventory[item].total or 0
 	local maxCraft = recipe.craftingLimit - stock
 
 	-- taking into account how many dependencies we have, and how much we can make with them
 	local ingredientConstrainsts = fp.map(recipe.dependencies, function(ratio, ingredient)
 		local ingredientTotal = inventory[ingredient] and inventory[ingredient].total or 0
-		return math.floor(ingredientTotal / ratio)
+		local ingredientAssigned = inventory[ingredient] and inventory[ingredient].assigned or 0
+		local depStock = ingredientTotal - ingredientAssigned
+		return math.floor(depStock / ratio)
 	end)
 
 	-- the amount we can craft is maxCraft by lowest dependency
@@ -53,20 +61,30 @@ function Scheduler:removeWaiting()
 	end
 end
 
+function Scheduler:reserveMaterials(recipe, count, inventory)
+	-- if we're making an item, need to reserve it's dependencies
+	for dep, ratio in pairs(recipe.dependencies) do
+		inventory[dep].assigned = inventory[dep].assigned + count * ratio
+	end
+end
+
 function Scheduler:planCrafts(inventory)
 	-- all waiting entries in queue could be recalculated
 	self:removeWaiting()
 
-	-- items we can make
-	local craftableItemsAll = fp.map(recipes, function(recipe, item)
-		return self:calculateMaxCraftable(item, recipe, inventory)
-	end)
-	-- save only newItems, which aren't being processed atm
-	local newCraftableItems = fp.filter(craftableItemsAll, function(count, item)
-		return self.itemsProcessing[item] == nil and count > 0
-	end)
+	-- find all items that we can make
+	local newCraftableItems = {}
+	for item, recipe in pairs(recipes) do
+		if not self.itemsProcessing[item] then
+			local maxCraft = self:calculateMaxCraftable(item, recipe, inventory)
+			if maxCraft > 0 then
+				newCraftableItems[item] = maxCraft
+				self:reserveMaterials(recipe, maxCraft, inventory)
+			end
+		end
+	end
 
-	-- add new items in queue
+	-- add new items to queue
 	for item, count in pairs(newCraftableItems) do
 		local id, entry = self:generateQueueEntry(item, count)
 		self.queue[id] = entry

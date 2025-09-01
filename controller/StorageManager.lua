@@ -85,6 +85,11 @@ function StorageManager:scan()
 	end
 end
 
+function StorageManager:scanChest(chestName)
+	local chest = peripheral.wrap(name)
+	local items = chest.list()
+end
+
 function StorageManager:_scanChest(name)
 	local chest = peripheral.wrap(name)
 	local items = chest.list()
@@ -116,6 +121,7 @@ function StorageManager:_scanChest(name)
 				total = 0,
 				slots = {},
 				capacity = chestSlots * self.cachedInfo[itemInfo.name].itemLimit,
+				assigned = 0,
 			}
 		end
 
