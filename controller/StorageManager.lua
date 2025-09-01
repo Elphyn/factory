@@ -89,7 +89,7 @@ function StorageManager:scan()
 end
 
 function StorageManager:scanChest(chestName)
-	local chest = peripheral.wrap(name)
+	local chest = peripheral.wrap(chestName)
 	local items = chest.list()
 end
 
