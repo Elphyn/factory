@@ -27,9 +27,8 @@ function StorageManager:getTotalAndReset()
 	local totals = {}
 	for item, info in pairs(self.items) do
 		totals[item] = info.total
-		info.total = 0
-		info.slots = {}
 	end
+	self.items = {}
 	return totals
 end
 
@@ -104,9 +103,9 @@ function StorageManager:_scanChest(name)
 		local itemName = itemInfo.name
 
 		-- caching
-		if self.cachedInfo[itemInfo.name] == nil then
+		if self.cachedInfo[itemName] == nil then
 			-- it's possible that item could get in and out of the system, caching important values makes system work much faster
-			self.cachedInfo[itemInfo.name] = {
+			self.cachedInfo[itemName] = {
 				-- this one is really slow, the whole reason I added caching
 				displayName = chest.getItemDetail(idx).displayName,
 				itemLimit = chest.getItemLimit(idx),
