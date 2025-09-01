@@ -46,7 +46,7 @@ end
 
 function StorageManager:update()
 	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
-	local oldValuesOfItems = self:getTotalAndReset()
+	local oldValuesOfItems = self:getTotal()
 	local oldNumberOfItems = self:countItems()
 	local changed = false
 
