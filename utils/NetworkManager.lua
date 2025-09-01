@@ -52,7 +52,7 @@ function NetworkManager:handleMessage(senderId, msg)
 	elseif msg.action == "get-buffer" then
 		self:sendBuffer(senderId)
 	elseif msg.action == "order-finished" then
-	-- hmm
+	-- hmm, if we got this it's mainPC
 	else
 		error("Unknown message recieved")
 	end
