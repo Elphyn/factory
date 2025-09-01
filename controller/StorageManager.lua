@@ -23,7 +23,7 @@ function StorageManager:_getStorageUnits()
 	return storageUnits
 end
 
-function StorageManager:getTotal()
+function StorageManager:getAllTotals()
 	local totals = {}
 	for item, info in pairs(self.items) do
 		totals[item] = info.total
@@ -46,7 +46,7 @@ end
 
 function StorageManager:update()
 	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
-	local oldValuesOfItems = self:getTotal()
+	local oldValuesOfItems = self:getAllTotals()
 	local oldNumberOfItems = self:countItems()
 	local changed = false
 
