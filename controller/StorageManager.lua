@@ -52,6 +52,15 @@ function StorageManager:countItems()
 	return count
 end
 
+function StorageManager:scan()
+	self.freeChests = {}
+
+	local chests = StorageManager:_getStorageUnits()
+	for _, name in ipairs(chests) do
+		self:_scanChest(name)
+	end
+end
+
 function StorageManager:update()
 	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
 	local oldValuesOfItems = self:getAllTotals()
