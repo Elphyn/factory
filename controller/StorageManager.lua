@@ -166,7 +166,16 @@ function StorageManager:pullItem(from, item, count)
 			local slotAmount = slotInfo.count
 
 			-- for now just insert into assigned chest or take a new one
-			local chest = self.assignedChests[item] or self:getFreeChest()
+			local chest = nil
+			if self.assignedChests[item] then
+				chest = self.assignedChests[item]
+			else
+				local freeChest = self:getFreeChest()
+				chest = {
+					name = freeChest,
+					space = peripheral.call(freeChest, "size") * 64,
+				}
+			end
 			local insertAmount = math.min(count, slotAmount, chest.space)
 			count = count - insertAmount
 			peripheral.call(chest.name, "pullItems", from, idx, insertAmount)
