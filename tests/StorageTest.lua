@@ -9,6 +9,7 @@ local item = "minecraft:cobblestone"
 local function main()
 	storageManager:update()
 	storageManager:pushItem(buffer, item, 10)
+	storageManager:pullItem(buffer, "minecraft:cobblestone", 10)
 end
 
 main()
