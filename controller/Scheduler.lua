@@ -1,6 +1,5 @@
 local recipes = dofile("factory/shared/recipes.lua")
 local fp = dofile("factory/utils/fp.lua")
-local deepCopy = dofile("factory/utils/deepCopy.lua")
 
 -- local recipes = dofile("../shared/recipes.lua") -- for testing
 -- local fp = dofile("../utils/fp.lua") -- for testing

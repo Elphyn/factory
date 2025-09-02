@@ -1,6 +1,11 @@
 local deepCopy = dofile("factory/utils/deepCopy.lua")
+local recipes = dofile("factory/shared/recipes.lua")
 local empty = dofile("factory/utils/isEmpty.lua")
 local StorageManager = {}
+
+-- TODO:
+-- 1) If item.craftingLimit is > 256 then we assign a whole chest to them
+-- 2) If it's <= 256 it's a misc chest from there on
 
 StorageManager.__index = StorageManager
 
@@ -9,6 +14,7 @@ function StorageManager.new(eventEmitter)
 	self.eventEmitter = eventEmitter
 	self.items = {}
 	self.freeChests = {}
+	self.assignedChests = {}
 	self.cachedInfo = {}
 	return self
 end
@@ -84,19 +90,6 @@ function StorageManager:signalChange()
 	end
 end
 
-function StorageManager:scan()
-	self.freeChests = {}
-	local chests = StorageManager:_getStorageUnits()
-	for _, name in ipairs(chests) do
-		self:_scanChest(name)
-	end
-end
-
-function StorageManager:scanChest(chestName)
-	local chest = peripheral.wrap(chestName)
-	local items = chest.list()
-end
-
 function StorageManager:_scanChest(name)
 	local chest = peripheral.wrap(name)
 	local items = chest.list()
@@ -107,8 +100,13 @@ function StorageManager:_scanChest(name)
 	end
 
 	local chestSlots = chest.size()
+	local chestSpace = chestSlots * 64
 	for idx, itemInfo in pairs(items) do
+		chestSpace = chestSpace - itemInfo.count
 		local itemName = itemInfo.name
+		if not self.assignedChests[name] then
+			self.assignedChests[name] = { name = name }
+		end
 
 		-- caching
 		if self.cachedInfo[itemName] == nil then
@@ -135,6 +133,40 @@ function StorageManager:_scanChest(name)
 		self.items[itemName].total = self.items[itemName].total + itemInfo.count
 		table.insert(self.items[itemName].slots, { name = name, slot_idx = idx, count = itemInfo.count })
 	end
+	self.assignedChests[name].space = chestSpace
+end
+
+function StorageManager:locateSlots(searchItem, chest)
+	local items = peripheral.call(chest, "list")
+	local slots = {}
+	for idx, slot in pairs(items) do
+		if slot.name == searchItem then
+			slots[idx] = slot
+		end
+	end
+	return slots
+end
+
+function StorageManager:pullItem(from, item, count)
+	-- find all occ of item in "from" peripheral
+	local slots = self:locateSlots(item, from)
+
+	-- go through each slot, inserting
+	for idx, slotInfo in pairs(slots) do
+		if count > 0 then
+			local slotAmount = slotInfo.count
+
+			-- for now just insert into assigned chest or take a new one
+			local chest = self.assignedChests[item] or self:getFreeChest()
+			local insertAmount = math.min(count, slotAmount, chest.space)
+			count = count - insertAmount
+			peripheral.call(chest.name, "pullItems", from, idx, insertAmount)
+		end
+	end
+end
+
+function StorageManager:getFreeChest()
+	return table.remove(self.freeChests)
 end
 
 function StorageManager:pushItem(to, item, count)
