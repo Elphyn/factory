@@ -111,11 +111,12 @@ function StorageManager:_scanChest(name)
 	local chestSlots = chest.size()
 	local chestSpace = chestSlots * 64
 	for idx, itemInfo in pairs(items) do
-		chestSpace = chestSpace - itemInfo.count
 		local itemName = itemInfo.name
-		if not self.assignedChests[name] then
-			self.assignedChests[name] = { name = name }
+		if not self.assignedChests[itemName] then
+			self.assignedChests[itemName] = { name = name }
+			self.assignedChests[itemName].space = chestSpace
 		end
+		self.assignedChests[itemName].space = self.assignedChests[itemName].space - itemInfo.count
 
 		-- caching
 		if self.cachedInfo[itemName] == nil then
@@ -142,7 +143,6 @@ function StorageManager:_scanChest(name)
 		self.items[itemName].total = self.items[itemName].total + itemInfo.count
 		table.insert(self.items[itemName].slots, { name = name, slot_idx = idx, count = itemInfo.count })
 	end
-	self.assignedChests[name].space = chestSpace
 end
 
 function StorageManager:locateSlots(searchItem, chest)
