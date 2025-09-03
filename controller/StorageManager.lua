@@ -175,6 +175,7 @@ function StorageManager:pullItem(from, item, count)
 					name = freeChest,
 					space = peripheral.call(freeChest, "size") * 64,
 				}
+				self.assignedChests[item] = chest
 			end
 			local insertAmount = math.min(count, slotAmount, chest.space)
 			count = count - insertAmount
