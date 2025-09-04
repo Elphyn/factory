@@ -51,9 +51,12 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task, order
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
 	-- since it's concrete for this type of crafting, we always end up with what we needed to craft
 	if not order.yeild then
-		order.yeild = 0
+		order.yeild = {}
 	end
-	order.yeild = order.yeild + howManyToCraft
+	if not order.yeild[craftingItemName] then
+		order.yeild[craftingItemName] = 0
+	end
+	order.yeild[craftingItemName] = order.yeild[craftingItemName] + howManyToCraft
 end
 
 return standardCrafting

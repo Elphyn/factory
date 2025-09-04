@@ -13,6 +13,9 @@ local function getWorkers()
 					if workers[type] == nil then
 						workers[type] = {}
 					end
+					if not pc.isOn() then
+						pc.turnOn()
+					end
 					table.insert(workers[type], { id = pc.getID(), capacity = 1024 })
 				end
 			end

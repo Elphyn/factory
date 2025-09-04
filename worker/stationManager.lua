@@ -3,11 +3,29 @@ local StationManager = {}
 
 StationManager.__index = StationManager
 
-function StationManager.new()
+function StationManager.new(eventEmitter)
 	local self = setmetatable({}, StationManager)
 	self.stations = { states = {}, available = {} }
 	self.buffer = config.bufferName
+	self.eventEmitter = eventEmitter
+	self:setupEventListeners()
 	return self
+end
+
+function StationManager:countStations()
+	local count = 0
+	for _ in pairs(self.stations.states) do
+		count = count + 1
+	end
+	return count
+end
+
+function StationManager:setupEventListeners()
+	if self.eventEmitter then
+		self.eventEmitter:subscribe("get-stations", function(senderId)
+			self.eventEmitter.send("send-stations", senderId, self:countStations())
+		end)
+	end
 end
 
 function StationManager:findStations()

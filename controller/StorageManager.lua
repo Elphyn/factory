@@ -19,10 +19,25 @@ function StorageManager.new(eventEmitter)
 	return self
 end
 
+function StorageManager:setupEventListeners()
+	self.eventEmitter.subscribe("order-finished-received", function(info)
+		self:withdraw(info.buffer, info.yeild)
+	end)
+end
+
+function StorageManager:withdraw(buffer, yeild)
+	-- withdrawing each item we crafted from order from buffer
+	for item, crafted in pairs(yeild) do
+		self:pullItem(buffer, item, crafted)
+	end
+end
+
 function StorageManager:_getStorageUnits()
 	local list = peripheral.getNames()
 	local storageUnits = {}
 
+	-- we're looking for a all peripheral that start with minecraft:chest
+	-- subject to change
 	for _, connectedPeripheral in ipairs(list) do
 		if string.match(connectedPeripheral, "^minecraft:chest") then
 			table.insert(storageUnits, connectedPeripheral)
@@ -177,9 +192,13 @@ function StorageManager:pullItem(from, item, count)
 				}
 				self.assignedChests[item] = chest
 			end
-			local insertAmount = math.min(count, slotAmount, chest.space)
-			count = count - insertAmount
-			peripheral.call(chest.name, "pullItems", from, idx, insertAmount)
+			if chest then
+				local insertAmount = math.min(count, slotAmount, chest.space)
+				count = count - insertAmount
+				peripheral.call(chest.name, "pullItems", from, idx, insertAmount)
+				return true
+			end
+			return false
 		end
 	end
 end

@@ -2,10 +2,9 @@ local NetworkManager = {}
 local buffer = require("config").bufferName
 NetworkManager.__index = NetworkManager
 
-function NetworkManager.new(eventEmitter, storageManager)
+function NetworkManager.new(eventEmitter)
 	local self = setmetatable({}, NetworkManager)
 	self.eventEmitter = eventEmitter
-	self.storageManager = storageManager
 	self:setupEventListeners()
 	return self
 end
@@ -14,6 +13,36 @@ function NetworkManager:setupEventListeners()
 	self.eventEmitter:subscribe("order-finished", function(...)
 		self:onOrderDone(...)
 	end)
+	self.eventEmitter:subscribe("send-stations", function(senderId, n)
+		self:sendNStations(senderId, n)
+	end)
+	self.eventEmitter:subscribe("new-order", function(order)
+		self:sendOrder(order)
+	end)
+end
+
+function NetworkManager:sendOrder(order)
+	if not rednet.isOpen() then
+		error("rednet isn't open")
+	end
+	-- TODO:
+	-- 1) Add confirmation that order is in fact received
+	rednet.send(order.assignedNodeId, order)
+	order.state = "In progress"
+end
+
+function NetworkManager:getNumStations(nodeId)
+	local msg = {
+		action = "get-stations",
+	}
+	rednet.send(nodeId, msg)
+
+	local ans = rednet.receive()
+	return ans
+end
+
+function NetworkManager:sendNStations(id, n)
+	rednet.send(id, n)
 end
 
 function NetworkManager:listen()
@@ -32,13 +61,23 @@ function NetworkManager:sendBuffer(id)
 end
 
 function NetworkManager:onOrderDone(order)
-	-- there's no yeild of the craft yet so I dunno
+	if not self.mainPcId then
+		error("Node pc hasn't found the main pc")
+	end
+	if not rednet.isOpen() then
+		error("Rednet isn't open, can't send mesasges")
+	end
+
+	-- relevant info about order
 	local info = {
 		action = "order-finished",
 		orderId = order.id,
 		yeild = order.yeild,
+		buffer = buffer,
 	}
+
 	local ok = rednet.send(order.senderId, info)
+
 	if not ok then
 		error("Couldn't send finished order back to mainPC")
 	end
@@ -52,8 +91,12 @@ function NetworkManager:handleMessage(senderId, msg)
 	elseif msg.action == "get-buffer" then
 		self:sendBuffer(senderId)
 	elseif msg.action == "order-finished" then
-	-- hmm, if we got this it's mainPC
+		self.eventEmitter.emit("order-finished-received", msg)
 	else
 		error("Unknown message recieved")
 	end
+end
+
+function NetworkManager:sendToMain(info)
+	rednet.send(self.mainPcId, info)
 end

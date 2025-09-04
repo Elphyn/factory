@@ -4,8 +4,8 @@ local EventEmitter = dofile("factory/utils/EventEmitter.lua")
 local NetworkManager = dofile("factory/utils/NetworkManager.lua")
 
 local threader = Threader.new()
-local stationManager = StationManager.new()
 local eventEmitter = EventEmitter.new()
+local stationManager = StationManager.new(eventEmitter)
 local networkManager = NetworkManager.new(threader, eventEmitter)
 
 local function main()

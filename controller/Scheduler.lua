@@ -7,9 +7,10 @@ local fp = dofile("factory/utils/fp.lua")
 local Scheduler = {}
 Scheduler.__index = Scheduler
 
-function Scheduler.new(eventEmitter)
+function Scheduler.new(eventEmitter, nodeManager)
 	local self = setmetatable({}, Scheduler)
 	self.eventEmitter = eventEmitter
+	self.nodeManager = nodeManager
 	self.nextId = 1
 	self.queue = {}
 	self.itemsProcessing = {} -- set imitation
@@ -27,6 +28,10 @@ function Scheduler:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("inventory_changed", function(storage)
 			self:planCrafts(storage)
+		end)
+
+		self.eventEmitter:subscribe("order-finished-received", function(info)
+			-- ?
 		end)
 	end
 end
@@ -96,27 +101,35 @@ function Scheduler:planCrafts(inventory)
 
 	-- add new items to queue
 	for item, count in pairs(newCraftableItems) do
-		local id, entry = self:generateQueueEntry(item, count)
-		self.queue[id] = entry
+		local fullOrder = self:generateQueueEntry(item, count)
+
+		-- splitting orders into parts for each node, calculates by how many stations node has
+		-- the more stations node has, the bigger part of order it gets
+		local finalOrders = self.nodeManager:getLoadBalancedOrders(fullOrder)
+		for _, order in ipairs(finalOrders) do
+			local id = order.id
+			self.queue[id] = order
+			self:onNewOrder(order)
+		end
 	end
 
 	-- signal change, so components update
-	self:signalChange()
+	self:onChange()
 end
 
-function Scheduler:signalChange()
+function Scheduler:onNewOrder(order)
+	self.eventEmitter:emit("new-order", order)
+end
+
+function Scheduler:onChange()
 	self.eventEmitter:emit("queue_changed", self.queue)
 end
 
 function Scheduler:generateQueueEntry(item, count)
-	local id = self:generateId()
-	local entry = {
+	return {
 		name = item,
 		count = count,
-		id = id,
-		state = "waiting",
 	}
-	return id, entry
 end
 
 function Scheduler:getQueue()
