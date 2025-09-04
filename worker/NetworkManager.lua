@@ -1,5 +1,5 @@
 local NetworkManager = {}
--- local buffer = dofile("factory/").bufferName
+local buffer = require("config").bufferName
 NetworkManager.__index = NetworkManager
 
 function NetworkManager.new(eventEmitter)
