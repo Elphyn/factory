@@ -38,7 +38,7 @@ function NetworkManager:getNumStations(nodeId)
 	}
 	rednet.send(nodeId, msg)
 
-	local ans = rednet.receive()
+	local id, ans = rednet.receive()
 	print("Recieved this many stations: ", ans)
 	return ans
 end
