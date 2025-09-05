@@ -43,7 +43,7 @@ function NodeManager:getLoadBalancedOrders(order)
 	for _, node in ipairs(self.nodes[crafterType]) do
 		local nStations = self.networkManager:getNumStations(node.id)
 		print("Got this many stations: ", nStations)
-		local total = total + nStations
+		total = total + nStations
 		table.insert(stations, nStations)
 	end
 	print("nStations: ")
