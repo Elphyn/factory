@@ -56,9 +56,8 @@ function NodeManager:getLoadBalancedOrders(order)
 
 	-- finalizing orders, paritioning them evenly, assigning Nodes
 	local finalizedOrders = {}
-	for i = 1, #spread do
-		local nodeId = self.nodes[crafterType][i].id
-		local part = spread[i]
+	for nodeId, part in pairs(spread) do
+		local nodeId = self.nodes[crafterType][nodeId].id
 		local splitOrder = {
 			assignedNodeId = nodeId,
 			name = order.name,
