@@ -44,6 +44,7 @@ function NetworkManager:getNumStations(nodeId)
 end
 
 function NetworkManager:sendNStations(id, n)
+	print("sending n stations: ", n)
 	rednet.send(id, n)
 end
 
