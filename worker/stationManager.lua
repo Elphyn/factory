@@ -23,7 +23,7 @@ end
 function StationManager:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("get-stations", function(senderId)
-			self.eventEmitter.send("send-stations", senderId, self:countStations())
+			self.eventEmitter:emit("send-stations", senderId, self:countStations())
 		end)
 	end
 end
