@@ -46,7 +46,7 @@ function StationManager:getOneStation()
 		error("Trying to get station: there's none")
 	end
 	local stationName = table.remove(self.stations.available)
-	self.stations.states[name] = "working"
+	self.stations.states[stationName] = "working"
 	return stationName
 end
 
