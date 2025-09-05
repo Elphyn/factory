@@ -105,6 +105,7 @@ function Scheduler:planCrafts(inventory)
 
 		-- splitting orders into parts for each node, calculates by how many stations node has
 		-- the more stations node has, the bigger part of order it gets
+		print("Finalazing orders: ")
 		local finalOrders = self.nodeManager:getLoadBalancedOrders(fullOrder)
 		for _, order in ipairs(finalOrders) do
 			local id = order.id
