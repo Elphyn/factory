@@ -1006,7 +1006,7 @@ preload["clone"] = function(...)
 
 	local head
 	do -- Request a list of all refs
-		report("Cloning from " .. url)
+		-- report("Cloning from " .. url)
 
 		local handle = network.force_fetch(url .. "/info/refs?service=git-upload-pack")
 		local res = network.receive(handle)
@@ -1099,9 +1099,9 @@ preload["clone"] = function(...)
 	report(("Cloned to %q"):format(name))
 	print()
 end
-local clone = preload["clone"]
+return preload["clone"]
 
-if fs.exists("factory") then
-	fs.delete("factory")
-end
-clone("https://github.com/Elphyn/factory")
+-- if fs.exists("factory") then
+-- 	fs.delete("factory")
+-- end
+-- clone("https://github.com/Elphyn/factory")
