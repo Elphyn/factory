@@ -1,5 +1,5 @@
 -- first need to update
-local clone = require("upd")
+local clone = require("factory.upd")
 if fs.exists("factory") then
 	fs.delete("factory")
 end
