@@ -25,6 +25,13 @@ function StorageManager:setupEventListeners()
 	end)
 end
 
+function StorageManager:insertOrderDependencies(order, to)
+	local recipe = recipes[order.name]
+	for name, ratio in pairs(recipe) do
+		self:pushItem(to, name, order.count * ratio)
+	end
+end
+
 function StorageManager:withdraw(buffer, yeild)
 	-- withdrawing each item we crafted from order from buffer
 	for item, crafted in pairs(yeild) do

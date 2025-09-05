@@ -2,8 +2,9 @@ local NetworkManager = {}
 -- local buffer = dofile("factory/").bufferName
 NetworkManager.__index = NetworkManager
 
-function NetworkManager.new(eventEmitter)
+function NetworkManager.new(eventEmitter, storageManager)
 	local self = setmetatable({}, NetworkManager)
+	self.storageManager = storageManager
 	self.eventEmitter = eventEmitter
 	self:setupEventListeners()
 	return self
@@ -21,13 +22,40 @@ function NetworkManager:setupEventListeners()
 	end)
 end
 
+function NetworkManager:getBufferOfNode(nodeId)
+	local msg = {
+		action = "get-buffer",
+	}
+	return self:sendAwait(nodeId, msg)
+end
+
 function NetworkManager:sendOrder(order)
+	-- TODO:
+	-- 1) So far we're not sending items in buffer
+
+	-- can't send if channel isn't open
 	if not rednet.isOpen() then
 		error("rednet isn't open")
 	end
-	-- TODO:
-	-- 1) Add confirmation that order is in fact received
-	rednet.send(order.assignedNodeId, order)
+	-- we need insert items in buffer
+	-- first find the buffer
+	local buffer = self:getBufferOfNode(order.assignedNodeId)
+	self.storageManager:insertOrderDependencies(order, buffer)
+	-- try with timeout
+	while true do
+		local ok = rednet.send(order.assignedNodeId, order)
+		if not ok then
+			error("Can't send a message")
+		end
+		-- now we need a confirmation that order was received
+		local timeout = 0.1
+		local protocol = nil
+		local id, response = rednet.recieve(protocol, timeout)
+		-- if we received response + response is for this order
+		if id and response == order.id then
+			return
+		end
+	end
 	order.state = "In progress"
 end
 
@@ -70,6 +98,7 @@ function NetworkManager:listen()
 end
 
 function NetworkManager:sendBuffer(id)
+	local buffer = dofile("factory/worker/config.lua").bufferNameGlobal
 	local ok = rednet.send(id, buffer)
 	if not ok then
 		error("Wasn't able to send buffer " .. buffer .. " to " .. id)
@@ -99,10 +128,15 @@ function NetworkManager:onOrderDone(order)
 	end
 end
 
+function NetworkManager:sendConfirmation(senderId, msg)
+	rednet.send(senderId, msg.id)
+end
+
 function NetworkManager:handleMessage(senderId, msg)
 	print("Received message: ", msg)
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
+		self:sendConfirmation(senderId, msg)
 	elseif msg.action == "get-stations" then
 		self.eventEmitter:emit("get-stations", senderId)
 	elseif msg.action == "get-buffer" then
