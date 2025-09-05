@@ -32,7 +32,7 @@ function NodeManager:getLoadBalancedOrders(order)
 	if not self:anyNodesOfType(crafterType) then
 		return {}
 	end
-
+	print("In balancing")
 	-- if there's any then we're going to split evenly
 	local balancedOrders = {}
 
