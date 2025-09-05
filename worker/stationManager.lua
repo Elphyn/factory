@@ -37,6 +37,7 @@ function StationManager:findStations()
 			table.insert(self.stations.available, name)
 		end
 	end
+	print("Found this many stations: ", #self.stations.available)
 end
 
 function StationManager:getOneStation()
