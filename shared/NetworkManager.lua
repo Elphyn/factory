@@ -138,6 +138,7 @@ function NetworkManager:handleMessage(senderId, msg)
 	print("Received message: ")
 	print(textutils.serialize(msg))
 	if msg.action == "crafting-order" then
+		print("Emitting crafting order: ")
 		self.eventEmitter:emit("crafting-order", msg)
 		self:sendConfirmation(senderId, msg)
 	elseif msg.action == "get-stations" then
