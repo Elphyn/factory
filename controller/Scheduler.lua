@@ -108,8 +108,10 @@ function Scheduler:planCrafts(inventory)
 		local finalOrders = self.nodeManager:getLoadBalancedOrders(fullOrder)
 		for _, order in ipairs(finalOrders) do
 			local id = order.id
-			self.queue[id] = order
-			self:onNewOrder(order)
+			if order.count > 0 then
+				self.queue[id] = order
+				self:onNewOrder(order)
+			end
 		end
 	end
 
