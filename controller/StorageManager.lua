@@ -27,7 +27,7 @@ end
 
 function StorageManager:insertOrderDependencies(order, to)
 	local recipe = recipes[order.name]
-	for name, ratio in pairs(recipe) do
+	for name, ratio in pairs(recipe.dependencies) do
 		self:pushItem(to, name, order.count * ratio)
 	end
 end
