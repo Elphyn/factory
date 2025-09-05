@@ -95,3 +95,5 @@ function NodeManager:scan()
 		end
 	end
 end
+
+return NodeManager
