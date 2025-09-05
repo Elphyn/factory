@@ -22,6 +22,7 @@ end
 function OrderManager:onNewOrder(order)
 	-- supposed to trigger on event
 	self.orders[order.id] = order
+	print("Starting order:")
 	self.threader:addThread(function()
 		self:startOrder(order)
 	end, function()
@@ -57,6 +58,7 @@ function OrderManager:startCrafting(task, order, station)
 	order.aliveProcesses = order.aliveProcesses + 1
 	self.threader:addThread(function()
 		-- main function
+		print("Started crafting: ")
 		craft(buffer, buffer, station, task, order)
 	end, function()
 		-- callback when it's done
