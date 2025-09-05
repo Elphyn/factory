@@ -108,9 +108,6 @@ function NetworkManager:sendBuffer(id)
 end
 
 function NetworkManager:onOrderDone(order)
-	if not self.mainPcId then
-		error("Node pc hasn't found the main pc")
-	end
 	if not rednet.isOpen() then
 		error("Rednet isn't open, can't send mesasges")
 	end
@@ -138,7 +135,6 @@ function NetworkManager:handleMessage(senderId, msg)
 	print("Received message: ")
 	print(textutils.serialize(msg))
 	if msg.action == "crafting-order" then
-		print("Emitting crafting order: ")
 		self.eventEmitter:emit("crafting-order", msg)
 		self:sendConfirmation(senderId, msg)
 	elseif msg.action == "get-stations" then

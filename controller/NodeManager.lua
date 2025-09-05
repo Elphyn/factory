@@ -56,10 +56,12 @@ function NodeManager:getLoadBalancedOrders(order)
 
 	-- finalizing orders, paritioning them evenly, assigning Nodes
 	local finalizedOrders = {}
+	local senderId = os.getComputerID()
 	for nodeId, part in pairs(spread) do
 		local nodeId = self.nodes[crafterType][nodeId].id
 		local splitOrder = {
 			action = "crafting-order",
+			senderId = nodeId,
 			assignedNodeId = nodeId,
 			name = order.name,
 			count = part,
