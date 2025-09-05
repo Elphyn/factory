@@ -14,6 +14,7 @@ local function main()
 	threader:addThread(function()
 		-- listening for commands
 		while true do
+			print("listening for instructions: ")
 			networkManager:listen()
 			sleep(0.05)
 		end
