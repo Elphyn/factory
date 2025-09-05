@@ -32,12 +32,14 @@ function NetworkManager:sendOrder(order)
 end
 
 function NetworkManager:getNumStations(nodeId)
+	print("Requesting number of stations from: ", nodeId)
 	local msg = {
 		action = "get-stations",
 	}
 	rednet.send(nodeId, msg)
 
 	local ans = rednet.receive()
+	print("Recieved this many stations: ", ans)
 	return ans
 end
 
