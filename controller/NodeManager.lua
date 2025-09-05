@@ -31,6 +31,7 @@ function NodeManager:getLoadBalancedOrders(order)
 	print("In balancing")
 	local crafterType = recipes[order.name].crafter
 	if not self:anyNodesOfType(crafterType) then
+		print("No nodes of type:", crafterType)
 		return {}
 	end
 	-- if there's any then we're going to split evenly
