@@ -135,7 +135,8 @@ function NetworkManager:sendConfirmation(senderId, msg)
 end
 
 function NetworkManager:handleMessage(senderId, msg)
-	print("Received message: ", msg)
+	print("Received message: ")
+	print(textutils.serialize(msg))
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
 		self:sendConfirmation(senderId, msg)
