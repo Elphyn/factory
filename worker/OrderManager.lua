@@ -48,7 +48,7 @@ function OrderManager:generateTask(order)
 		error("Trying to generateTask for finished order")
 	end
 	local task = {
-		order = order.item,
+		name = order.name,
 		count = 1,
 	}
 	order.count = order.count - 1
