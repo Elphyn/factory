@@ -31,14 +31,24 @@ function NetworkManager:sendOrder(order)
 	order.state = "In progress"
 end
 
+function NetworkManager:awaitAnswer()
+	while true do
+		local id, msg = rednet.receive(nil, 1)
+		if id then
+			return msg
+		end
+	end
+end
+
 function NetworkManager:getNumStations(nodeId)
 	print("Requesting number of stations from: ", nodeId)
 	local msg = {
 		action = "get-stations",
 	}
+
 	rednet.send(nodeId, msg)
 
-	local id, ans = rednet.receive()
+	local ans = self:awaitAnswer()
 	print("Recieved this many stations: ", ans)
 	return ans
 end
