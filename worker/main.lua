@@ -6,7 +6,7 @@ local NetworkManager = dofile("factory/shared/NetworkManager.lua")
 local threader = Threader.new()
 local eventEmitter = EventEmitter.new()
 local stationManager = StationManager.new(eventEmitter)
-local networkManager = NetworkManager.new(threader, eventEmitter)
+local networkManager = NetworkManager.new(eventEmitter)
 
 local function main()
 	rednet.open(config.modemLocation)
