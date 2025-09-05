@@ -17,7 +17,7 @@ local function main()
 	end)
 
 	while true do
-		threader.run()
+		threader:run()
 	end
 end
 
