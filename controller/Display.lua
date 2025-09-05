@@ -68,7 +68,7 @@ function Display:render()
 	for _, order in pairs(queue) do
 		local name = recipes[order.name].displayName
 		monitor.setCursorPos(1, line)
-		local itemInfoString = string.format("%s | Can craft: %d", name, order.count)
+		local itemInfoString = string.format("%s | Can craft: %d | %s", name, order.count, order.state)
 		monitor.write(itemInfoString)
 		line = line + 1
 	end
