@@ -13,7 +13,7 @@ local function main()
 	rednet.open(config.modemLocation)
 	threader:addThread(function()
 		-- listening for commands
-		networkManager.listen()
+		networkManager:listen()
 	end)
 
 	while true do
