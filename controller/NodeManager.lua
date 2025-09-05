@@ -44,6 +44,8 @@ function NodeManager:getLoadBalancedOrders(order)
 		local total = total + nStations
 		table.insert(stations, nStations)
 	end
+	print("nStations: ")
+	print(textutils.serialize(nStations))
 
 	-- spreading order across nodes
 	local spread = split(total, stations)
