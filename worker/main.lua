@@ -3,11 +3,13 @@ local config = require("config")
 local StationManager = require("stationManager")
 local EventEmitter = dofile("factory/utils/EventEmitter.lua")
 local NetworkManager = dofile("factory/shared/NetworkManager.lua")
+local OrderManager = require("OrderManager")
 
 local threader = Threader.new()
 local eventEmitter = EventEmitter.new()
 local stationManager = StationManager.new(eventEmitter)
 local networkManager = NetworkManager.new(eventEmitter)
+local orderManager = OrderManager.new(threader, stationManager, eventEmitter)
 
 local function main()
 	rednet.open(config.modemLocation)
