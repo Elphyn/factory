@@ -115,6 +115,9 @@ function Scheduler:planCrafts(inventory)
 				self:onNewOrder(order)
 			end
 		end
+		if not self.itemsProcessing[item] then
+			self.itemsProcessing[item] = true
+		end
 	end
 
 	-- signal change, so components update
