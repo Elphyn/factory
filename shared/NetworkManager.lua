@@ -84,6 +84,7 @@ function NetworkManager:onOrderDone(order)
 end
 
 function NetworkManager:handleMessage(senderId, msg)
+	print("Received message: ", msg)
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
 	elseif msg.action == "get-stations" then
