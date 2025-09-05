@@ -14,8 +14,8 @@ function OrderManager.new(threader, stationManager, eventEmitter)
 end
 
 function OrderManager:setupEventListeners()
-	self.eventEmitter:subscribe("crafting-order", function(...)
-		self:onNewOrder(...)
+	self.eventEmitter:subscribe("crafting-order", function(order)
+		self:onNewOrder(order)
 	end)
 end
 
