@@ -95,7 +95,7 @@ function NetworkManager:handleMessage(senderId, msg)
 	elseif msg.action == "get-buffer" then
 		self:sendBuffer(senderId)
 	elseif msg.action == "order-finished" then
-		self.eventEmitter.emit("order-finished-received", msg)
+		self.eventEmitter:emit("order-finished-received", msg)
 	else
 		error("Unknown message recieved")
 	end

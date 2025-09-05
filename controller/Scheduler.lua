@@ -100,12 +100,9 @@ function Scheduler:planCrafts(inventory)
 	end
 
 	--
-	print(textutils.serialize(newCraftableItems))
 	-- add new items to queue
 	for item, count in pairs(newCraftableItems) do
 		local fullOrder = self:generateQueueEntry(item, count)
-		print("Full order: ")
-		print(textutils.serialize(fullOrder))
 		-- splitting orders into parts for each node, calculates by how many stations node has
 		-- the more stations node has, the bigger part of order it gets
 		print("Finalazing orders: ")

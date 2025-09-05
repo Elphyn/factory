@@ -28,11 +28,11 @@ end
 
 function NodeManager:getLoadBalancedOrders(order)
 	-- if there aren't any nodes that could fulfil the order, we can't finalize order
+	print("In balancing")
 	local crafterType = recipes[order.name].crafter
 	if not self:anyNodesOfType(crafterType) then
 		return {}
 	end
-	print("In balancing")
 	-- if there's any then we're going to split evenly
 	local balancedOrders = {}
 
