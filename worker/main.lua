@@ -11,7 +11,7 @@ local networkManager = NetworkManager.new(eventEmitter)
 
 local function main()
 	rednet.open(config.modemLocation)
-	threader.addThread(function()
+	threader:addThread(function()
 		-- listening for commands
 		networkManager.listen()
 	end)
