@@ -15,6 +15,7 @@ local scheduler = Scheduler.new(eventEmitter, nodeManager)
 local display = Display.new(eventEmitter)
 
 local function main()
+	rednet.open("back")
 	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
