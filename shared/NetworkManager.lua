@@ -31,11 +31,15 @@ function NetworkManager:sendOrder(order)
 	order.state = "In progress"
 end
 
-function NetworkManager:awaitAnswer()
+function NetworkManager:sendAwait(id, msg)
+	-- since it's possible that in the moment we send
+	-- node could not listen
+	-- so we need to try a few times
 	while true do
-		local id, msg = rednet.receive(nil, 1)
+		rednet.send(id, msg)
+		local _, answ = rednet.receive(nil, 1)
 		if id then
-			return msg
+			return answ
 		end
 	end
 end
@@ -46,9 +50,8 @@ function NetworkManager:getNumStations(nodeId)
 		action = "get-stations",
 	}
 
-	rednet.send(nodeId, msg)
+	local ans = self:sendAwait(nodeId, msg)
 
-	local ans = self:awaitAnswer()
 	print("Recieved this many stations: ", ans)
 	return ans
 end
