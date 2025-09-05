@@ -50,7 +50,7 @@ function NetworkManager:sendOrder(order)
 		-- now we need a confirmation that order was received
 		local timeout = 0.1
 		local protocol = nil
-		local id, response = rednet.recieve(protocol, timeout)
+		local id, response = rednet.receive(protocol, timeout)
 		-- if we received response + response is for this order
 		if id and response == order.id then
 			return
