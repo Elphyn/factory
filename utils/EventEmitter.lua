@@ -20,6 +20,7 @@ function EventEmitter:emit(event, ...)
 	if not self.callbacks[event] then
 		return
 	end
+	print("Received an event: ", event)
 	for _, callback in ipairs(self.callbacks[event]) do
 		callback(...)
 	end
