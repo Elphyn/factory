@@ -23,7 +23,7 @@ function OrderManager:onNewOrder(order)
 	-- supposed to trigger on event
 	self.orders[order.id] = order
 	self.threader:addThread(function()
-		self:execute(order)
+		self:startOrder(order)
 	end, function()
 		self:onOrderFinished(order)
 	end)

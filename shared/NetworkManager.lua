@@ -30,27 +30,29 @@ function NetworkManager:getBufferOfNode(nodeId)
 end
 
 function NetworkManager:sendOrder(order)
-	-- TODO:
-	-- 1) So far we're not sending items in buffer
-
 	-- can't send if channel isn't open
 	if not rednet.isOpen() then
 		error("rednet isn't open")
 	end
-	-- we need insert items in buffer
-	-- first find the buffer
+
+	-- we need insert items in buffer of Node
 	local buffer = self:getBufferOfNode(order.assignedNodeId)
 	self.storageManager:insertOrderDependencies(order, buffer)
-	-- try with timeout
+
+	-- sending order, and confirming it was received
+	-- if it wasn't, we try again
 	while true do
+		--  sending the order
 		local ok = rednet.send(order.assignedNodeId, order)
 		if not ok then
 			error("Can't send a message")
 		end
+
 		-- now we need a confirmation that order was received
-		local timeout = 0.1
+		local timeout = 0.1 -- time before trying again
 		local protocol = nil
 		local id, response = rednet.receive(protocol, timeout)
+
 		-- if we received response + response is for this order
 		if id and response == order.id then
 			order.state = "In progress"
