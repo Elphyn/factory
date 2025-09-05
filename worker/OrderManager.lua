@@ -15,6 +15,7 @@ end
 
 function OrderManager:setupEventListeners()
 	self.eventEmitter:subscribe("crafting-order", function(order)
+		print("Got crafting-order in OrderManager")
 		self:onNewOrder(order)
 	end)
 end
