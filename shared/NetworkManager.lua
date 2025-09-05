@@ -37,7 +37,7 @@ function NetworkManager:sendAwait(id, msg)
 	-- so we need to try a few times
 	while true do
 		rednet.send(id, msg)
-		local senderId, answ = rednet.receive(nil, 1)
+		local senderId, answ = rednet.receive(nil, 0.1)
 		if senderId then
 			return answ
 		end
