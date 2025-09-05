@@ -9,6 +9,7 @@ function StationManager.new(eventEmitter)
 	self.buffer = config.bufferName
 	self.eventEmitter = eventEmitter
 	self:setupEventListeners()
+	self:findStations()
 	return self
 end
 
