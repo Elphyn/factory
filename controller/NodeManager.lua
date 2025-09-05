@@ -47,6 +47,8 @@ function NodeManager:getLoadBalancedOrders(order)
 
 	-- spreading order across nodes
 	local spread = split(total, stations)
+	print("spread: ")
+	print(textutils.serialize(spread))
 
 	-- finalizing orders, paritioning them evenly, assigning Nodes
 	local finalizedOrders = {}
