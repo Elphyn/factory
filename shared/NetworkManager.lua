@@ -100,3 +100,5 @@ end
 function NetworkManager:sendToMain(info)
 	rednet.send(self.mainPcId, info)
 end
+
+return NetworkManager
