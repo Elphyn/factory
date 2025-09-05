@@ -53,10 +53,10 @@ function NetworkManager:sendOrder(order)
 		local id, response = rednet.receive(protocol, timeout)
 		-- if we received response + response is for this order
 		if id and response == order.id then
+			order.state = "In progress"
 			return
 		end
 	end
-	order.state = "In progress"
 end
 
 function NetworkManager:sendAwait(id, msg)
