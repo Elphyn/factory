@@ -32,6 +32,8 @@ end
 function standardCrafting(takeFromName, placeWhereName, stationName, task, order)
 	-- Should note, that if we got here, we must assume we have enough items
 	-- Also, this crafting assumes we get one to one ratio, no, when it's concrete how many items you get
+	print("task to craft: ")
+	print(textutils.serialize(task))
 	local craftingItemName = task.name
 	local howManyToCraft = task.count
 	local recipeItemList = recipes[craftingItemName].dependencies
