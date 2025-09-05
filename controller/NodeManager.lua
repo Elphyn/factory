@@ -100,6 +100,8 @@ function NodeManager:scan()
 			end
 		end
 	end
+	print("Scan finished:")
+	print(textutils.serialize(self.nodes))
 end
 
 return NodeManager
