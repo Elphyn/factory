@@ -150,8 +150,6 @@ function NetworkManager:handleMessage(senderId, msg)
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
 		self:sendConfirmation(senderId, msg)
-	elseif msg.action == "order-finished" then
-		self:sendOrderConfirmation(senderId, msg)
 	elseif msg.action == "confirmation" then
 		self.eventEmitter:emit("confirmation", msg)
 	elseif msg.action == "buffer" then
@@ -164,6 +162,7 @@ function NetworkManager:handleMessage(senderId, msg)
 		self:sendBuffer(senderId)
 	elseif msg.action == "order-finished" then
 		self.eventEmitter:emit("order-finished-received", msg)
+		self:sendOrderConfirmation(senderId, msg)
 	else
 		error("Unknown message recieved")
 	end
