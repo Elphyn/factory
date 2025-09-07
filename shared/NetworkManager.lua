@@ -46,24 +46,16 @@ function NetworkManager:sendOrder(order)
 
 	-- sending order, and confirming it was received
 	-- if it wasn't, we try again
-	while true do
+	self.eventEmitter:awaitWithRetry("confirmation", function()
 		--  sending the order
 		local ok = rednet.send(order.assignedNodeId, order)
 		if not ok then
 			error("Can't send a message")
 		end
-
-		-- now we need a confirmation that order was received
-		local timeout = 0.1 -- time before trying again
-		local protocol = nil
-		local id, response = rednet.receive(protocol, timeout)
-
-		-- if we received response + response is for this order
-		if id and response == order.id then
-			order.state = "In progress"
-			return
-		end
-	end
+	end, function(data)
+		return order.id == data.id
+	end)
+	order.state = "In progress"
 end
 
 function NetworkManager:getNumStations(nodeId)
@@ -132,16 +124,22 @@ function NetworkManager:onOrderDone(order)
 	end
 end
 
--- function NetworkManager:sendConfirmation(senderId, msg)
--- 	rednet.send(senderId, msg.id)
--- end
+function NetworkManager:sendConfirmation(senderId, msg)
+	local response = {
+		action = "confirmation",
+		id = msg.id,
+	}
+	rednet.send(senderId, response)
+end
 
 function NetworkManager:handleMessage(senderId, msg)
 	print("Received message: ")
 	print(textutils.serialize(msg))
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
-		-- self:sendConfirmation(senderId, msg)
+		self:sendConfirmation(senderId, msg)
+	elseif msg.action == "confirmation" then
+		self.eventEmitter:emit("confirmation", msg)
 	elseif msg.action == "buffer" then
 		self.eventEmitter:emit("buffer", msg)
 	elseif msg.action == "n-stations" then
