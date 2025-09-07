@@ -132,16 +132,16 @@ function NetworkManager:onOrderDone(order)
 	end
 end
 
-function NetworkManager:sendConfirmation(senderId, msg)
-	rednet.send(senderId, msg.id)
-end
+-- function NetworkManager:sendConfirmation(senderId, msg)
+-- 	rednet.send(senderId, msg.id)
+-- end
 
 function NetworkManager:handleMessage(senderId, msg)
 	print("Received message: ")
 	print(textutils.serialize(msg))
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
-		self:sendConfirmation(senderId, msg)
+		-- self:sendConfirmation(senderId, msg)
 	elseif msg.action == "buffer" then
 		self.eventEmitter:emit("buffer", msg)
 	elseif msg.action == "n-stations" then
