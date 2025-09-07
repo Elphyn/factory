@@ -26,7 +26,12 @@ function NetworkManager:getBufferOfNode(nodeId)
 	local msg = {
 		action = "get-buffer",
 	}
-	return self:sendAwait(nodeId, msg)
+	local res = self.eventEmitter:awaitWithRetry("buffer", function()
+		rednet.send(nodeId, msg)
+	end, function(data)
+		return nodeId == data.senderId
+	end)
+	return res
 end
 
 function NetworkManager:sendOrder(order)
@@ -99,10 +104,12 @@ end
 
 function NetworkManager:sendBuffer(id)
 	local buffer = dofile("factory/worker/config.lua").bufferNameGlobal
-	local ok = rednet.send(id, buffer)
-	if not ok then
-		error("Wasn't able to send buffer " .. buffer .. " to " .. id)
-	end
+	local msg = {
+		action = "buffer",
+		buffer = buffer,
+		senderId = os.getComputerID(),
+	}
+	rednet.send(id, msg)
 end
 
 function NetworkManager:onOrderDone(order)
@@ -135,6 +142,8 @@ function NetworkManager:handleMessage(senderId, msg)
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
 		self:sendConfirmation(senderId, msg)
+	elseif msg.action == "buffer" then
+		self.eventEmitter:emit("buffer", msg)
 	elseif msg.action == "n-stations" then
 		self.eventEmitter:emit("n-stations", msg)
 	elseif msg.action == "get-stations" then
