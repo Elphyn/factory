@@ -31,7 +31,7 @@ function NetworkManager:getBufferOfNode(nodeId)
 	end, function(data)
 		return nodeId == data.senderId
 	end)
-	return res
+	return res.buffer
 end
 
 function NetworkManager:sendOrder(order)
