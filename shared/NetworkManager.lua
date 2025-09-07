@@ -61,34 +61,30 @@ function NetworkManager:sendOrder(order)
 	end
 end
 
-function NetworkManager:sendAwait(id, msg)
-	-- since it's possible that in the moment we send
-	-- node could not listen
-	-- so we need to try a few times
-	while true do
-		rednet.send(id, msg)
-		local senderId, answ = rednet.receive(nil, 0.1)
-		if senderId then
-			return answ
-		end
-	end
-end
-
 function NetworkManager:getNumStations(nodeId)
 	print("Requesting number of stations from: ", nodeId)
 	local msg = {
 		action = "get-stations",
 	}
 
-	local ans = self:sendAwait(nodeId, msg)
+	local res = self.eventEmitter:awaitWithRetry("n-stations", function()
+		rednet.send(nodeId, msg)
+	end, function(data)
+		return nodeId == data.senderId
+	end)
 
-	print("Recieved this many stations: ", ans)
-	return ans
+	print("Recieved this many stations: ", res.n)
+	return res.n
 end
 
 function NetworkManager:sendNStations(id, n)
 	print("sending n stations: ", n)
-	rednet.send(id, n)
+	local msg = {
+		action = "n-stations",
+		n = n,
+		senderId = os.getComputerID(),
+	}
+	rednet.send(id, msg)
 end
 
 function NetworkManager:listen()
@@ -137,6 +133,8 @@ function NetworkManager:handleMessage(senderId, msg)
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
 		self:sendConfirmation(senderId, msg)
+	elseif msg.action == "n-stations" then
+		self.eventEmitter:emit("n-stations", msg)
 	elseif msg.action == "get-stations" then
 		self.eventEmitter:emit("get-stations", senderId)
 	elseif msg.action == "get-buffer" then
