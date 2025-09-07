@@ -19,7 +19,7 @@ local function main()
 
 	threader:addThread(function()
 		while true do
-			networkManager.listen()
+			networkManager:listen()
 		end
 	end)
 
