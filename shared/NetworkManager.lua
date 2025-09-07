@@ -68,6 +68,8 @@ function NetworkManager:getNumStations(nodeId)
 	}
 
 	local res = self.eventEmitter:awaitWithRetry("n-stations", function()
+		print("Sending: ")
+		print(textutils.serialize(msg))
 		rednet.send(nodeId, msg)
 	end, function(data)
 		return nodeId == data.senderId
