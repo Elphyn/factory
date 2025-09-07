@@ -45,6 +45,7 @@ function EventEmitter:awaitWithRetry(event, fn, predictate)
 	if not resolved then
 		unsubcribe()
 		-- recursion, really didn't want to bother with timers
+		print("Didn't receive an event, retrying")
 		return self:awaitWithRetry(event, fn, predictate)
 	end
 	unsubcribe()
