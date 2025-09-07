@@ -18,6 +18,12 @@ local function main()
 	rednet.open("back")
 
 	threader:addThread(function()
+		while true do
+			networkManager.listen()
+		end
+	end)
+
+	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
 			storageManager:update()
