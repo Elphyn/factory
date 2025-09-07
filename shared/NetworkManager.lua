@@ -117,11 +117,15 @@ function NetworkManager:onOrderDone(order)
 		buffer = buffer,
 	}
 
-	local ok = rednet.send(order.senderId, info)
+	self.eventEmitter:awaitWithRetry("confirmation", function()
+		local ok = rednet.send(order.senderId, info)
 
-	if not ok then
-		error("Couldn't send finished order back to mainPC")
-	end
+		if not ok then
+			error("Couldn't send finished order back to mainPC")
+		end
+	end, function(data)
+		return order.id == data.id
+	end)
 end
 
 function NetworkManager:sendConfirmation(senderId, msg)
@@ -132,12 +136,22 @@ function NetworkManager:sendConfirmation(senderId, msg)
 	rednet.send(senderId, response)
 end
 
+function NetworkManager:sendOrderConfirmation(senderId, msg)
+	local response = {
+		action = "confirmation",
+		id = msg.orderId,
+	}
+	rednet.send(senderId, response)
+end
+
 function NetworkManager:handleMessage(senderId, msg)
 	print("Received message: ")
 	print(textutils.serialize(msg))
 	if msg.action == "crafting-order" then
 		self.eventEmitter:emit("crafting-order", msg)
 		self:sendConfirmation(senderId, msg)
+	elseif msg.action == "order-finished" then
+		self:sendOrderConfirmation(senderId, msg)
 	elseif msg.action == "confirmation" then
 		self.eventEmitter:emit("confirmation", msg)
 	elseif msg.action == "buffer" then
