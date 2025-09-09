@@ -52,8 +52,8 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 			end
 		end)
 
-		while os.clock() - startTime < 1 do
-			sleep(1) -- switching
+		while os.clock() - startTime < 5 do
+			sleep(0.05) -- switching
 		end
 
 		removeListener()
