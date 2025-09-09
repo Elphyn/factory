@@ -29,9 +29,9 @@ function Scheduler:setupEventListeners()
 		self.eventEmitter:subscribe("inventory_changed", function(storage)
 			self:planCrafts(storage)
 		end)
-
 		self.eventEmitter:subscribe("order-finished", function(msg)
 			self.queue[msg.orderID].state = "Finished"
+			self.eventEmitter:emit("queue_changed", self.queue)
 		end)
 	end
 end
