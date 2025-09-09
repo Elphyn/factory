@@ -33,7 +33,7 @@ function ControllerNetworkManager:requestStationCount(nodeID)
 	local msg = {
 		action = "get-stations",
 	}
-	local response = self:sendMessage(nodeID, msg, 0.1, true)
+	local response = self:sendMessage(nodeID, msg, nil, true)
 	return response.n
 end
 
