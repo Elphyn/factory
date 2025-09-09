@@ -39,7 +39,6 @@ local function main()
 	end)
 
 	while true do
-		print("Cycling the threads")
 		threader:run()
 	end
 end
