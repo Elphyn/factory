@@ -60,6 +60,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 		if resolved then
 			return captured
 		end
+		print("retry attempt : ", retryCount)
 		retryCount = retryCount + 1
 	end
 	error("Request: " .. textutils.serialize(request) .. "Wasn't fulfilled")
