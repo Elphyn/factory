@@ -21,7 +21,7 @@ function StorageManager.new(eventEmitter)
 end
 
 function StorageManager:setupEventListeners()
-	self.eventEmitter.subscribe("order-finished", function(info)
+	self.eventEmitter:subscribe("order-finished", function(info)
 		print("Triggering withdrawing")
 		self:withdraw(info.buffer, info.yeild)
 	end)
