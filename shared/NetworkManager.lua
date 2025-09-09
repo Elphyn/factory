@@ -27,22 +27,6 @@ function NetworkManager:generateID()
 	return id
 end
 
-function NetworkManager:respond(senderID, messageID, additionalData)
-	print("responding: ")
-	local response = {
-		action = "confirm",
-		messageID = messageID,
-	}
-	-- any additianal data
-	local anyAdditionalData = false
-	for k, v in pairs(additionalData) do
-		anyAdditionalData = true
-		response[k] = v
-	end
-	-- if there's additianal data you want confirmation
-	self:sendMessage(senderID, response, 0, anyAdditionalData)
-end
-
 function NetworkManager:awaitResponse(messageID, timeout)
 	local resolved = false
 	local data = nil
@@ -124,45 +108,6 @@ end
 
 function NetworkManager:handleMessage(msg)
 	self.eventEmitter:emit(msg.action, msg)
-end
-
-function NetworkManager:sendMessage(id, msg, timeout, needConfirm, responseEvent)
-	-- sending anythign but table with action would break the event system
-	if type(msg) ~= "table" then
-		error("We can only send messages of table format")
-	end
-	if not msg.action then
-		error("Message doesn't have an event attached")
-	end
-
-	-- message id is required to know which message is being confirmed
-	msg.messageID = self:generateID()
-	-- just to make life easier
-	msg.senderID = os.getComputerID()
-
-	while true do
-		print("Sending: ")
-		print(textutils.serialize(msg))
-		local ok = rednet.send(id, msg)
-		print("Sent an event: ", msg.action)
-		-- we check if message was sent, not if it was received
-		if not ok then
-			error("Couldn't send a message: ", msg.action)
-		end
-
-		-- if we don't need a confirmation then we just quit early, made for confirm messages
-		if not needConfirm then
-			break
-		end
-
-		-- here we check if it was received
-		print("Waiting for response for id: ", msg.messageID)
-		local ok, data = self:awaitResponse(msg.messageID, timeout)
-		if ok then
-			print("Got response for id: ", msg.messageID)
-			return data
-		end
-	end
 end
 
 return NetworkManager

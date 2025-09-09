@@ -23,9 +23,16 @@ function WorkerNetworkManager:setupEvents()
 		print("handling event get-stations")
 		self:sendStationsCount(msg)
 	end)
+	self.eventEmitter:subscribe("crafting-order", function(order)
+		self:confirmOrder(order)
+	end)
 	self.eventEmitter:subscribe("order-finished", function(order)
 		self:notifyOrderFinished(order)
 	end)
+end
+
+function WorkerNetworkManager:confirmOrder(order)
+	self:fulfilRequest(order, {})
 end
 
 function WorkerNetworkManager:notifyOrderFinished(order)
@@ -35,7 +42,7 @@ function WorkerNetworkManager:notifyOrderFinished(order)
 		buffer = buffer,
 	}
 
-	self:fulfilRequest(order, msg)
+	-- self:fulfilRequest(order, msg)
 end
 
 function WorkerNetworkManager:sendStationsCount(request)
@@ -43,7 +50,6 @@ function WorkerNetworkManager:sendStationsCount(request)
 	local msg = {
 		n = count,
 	}
-	-- self:respond(request.senderID, request.messageID, msg)
 	self:fulfilRequest(request, msg)
 end
 
