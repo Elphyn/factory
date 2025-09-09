@@ -52,3 +52,5 @@ function WorkerNetworkManager:sendBuffer(request)
 	-- since it's waiting for a response, we don't send, we confirm
 	self:respond(request.senderID, request.messageID, msg)
 end
+
+return WorkerNetworkManager

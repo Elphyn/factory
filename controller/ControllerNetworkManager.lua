@@ -44,3 +44,5 @@ function ControllerNetworkManager:sendOrder(order)
 	self:sendMessage(order.assignedNodeId, order, 0.1, true)
 	order.state = "Sent"
 end
+
+return ControllerNetworkManager
