@@ -21,6 +21,7 @@ end
 
 function StorageManager:setupEventListeners()
 	self.eventEmitter.subscribe("order-finished", function(info)
+		print("Triggering withdrawing")
 		self:withdraw(info.buffer, info.yeild)
 	end)
 end
@@ -35,6 +36,7 @@ end
 function StorageManager:withdraw(buffer, yeild)
 	-- withdrawing each item we crafted from order from buffer
 	for item, crafted in pairs(yeild) do
+		print("Withdrawing item: ", item)
 		self:pullItem(buffer, item, crafted)
 	end
 end
