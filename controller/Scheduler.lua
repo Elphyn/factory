@@ -31,6 +31,7 @@ function Scheduler:setupEventListeners()
 		end)
 		self.eventEmitter:subscribe("order-finished", function(msg)
 			print("setting order to finished")
+			print(textutils.serialize(self.queue))
 			self.queue[msg.orderID].state = "Finished"
 			self.eventEmitter:emit("queue_changed", self.queue)
 		end)
