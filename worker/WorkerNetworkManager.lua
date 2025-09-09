@@ -40,7 +40,7 @@ function WorkerNetworkManager:notifyOrderFinished(order)
 end
 
 function WorkerNetworkManager:sendStationsCount(request)
-	local count = self.stationsManager:countStations()
+	local count = self.stationManager:countStations()
 	local msg = {
 		n = count,
 	}
