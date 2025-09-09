@@ -55,7 +55,6 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 		end)
 
 		while os.clock() - startTime < 5 do
-			print("switching")
 			sleep(0.05) -- switch
 		end
 
