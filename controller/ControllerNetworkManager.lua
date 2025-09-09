@@ -47,10 +47,7 @@ function ControllerNetworkManager:confirmOrderReceived(msg)
 	print(textutils.serialize(response))
 	print("Sending response to: ", msg.senderID)
 
-	while true do
-		rednet.send(msg.senderID, response)
-		sleep(0.3)
-	end
+	rednet.send(msg.senderID, response)
 end
 
 function ControllerNetworkManager:sendOrder(order)

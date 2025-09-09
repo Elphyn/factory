@@ -37,8 +37,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 	local resolved = false
 	local captured = nil
 
-	while retryCount < 5 do
-		local startTime = os.clock()
+	while not resolved do
 		local ok = rednet.send(nodeID, request)
 		if not ok then
 			error("Couldn't send a message: ", textutils.serialize(request))
@@ -52,14 +51,15 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 			end
 		end)
 
-		while os.clock() - startTime < 5 do
-			sleep(0.05) -- switching
-		end
+		-- while os.clock() - startTime < 5 do
+		-- 	sleep(0.05) -- switching
+		-- end
 
 		removeListener()
 		if resolved then
 			return captured
 		end
+		sleep(0.05)
 		print("retry attempt : ", retryCount)
 		retryCount = retryCount + 1
 	end
