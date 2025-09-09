@@ -103,6 +103,8 @@ function NetworkManager:sendMessage(id, msg, timeout, needConfirm, responseEvent
 	msg.senderID = os.getComputerID()
 
 	while true do
+		print("Sending: ")
+		print(textutils.serialize(msg))
 		local ok = rednet.send(id, msg)
 		print("Sent an event: ", msg.action)
 		-- we check if message was sent, not if it was received
