@@ -3,13 +3,13 @@ local StorageManager = require("StorageManager")
 local Scheduler = require("Scheduler")
 local Display = require("Display")
 local EventEmitter = dofile("factory/utils/EventEmitter.lua")
-local NetworkManager = dofile("factory/shared/NetworkManager.lua")
+local ControllerNetworkManager = require("ControllerNetworkManager")
 local NodeManager = require("NodeManager")
 
 local threader = Threader.new()
 local eventEmitter = EventEmitter.new()
 local storageManager = StorageManager.new(eventEmitter)
-local networkManager = NetworkManager.new(eventEmitter, storageManager)
+local networkManager = ControllerNetworkManager.new(eventEmitter, storageManager)
 local nodeManager = NodeManager.new(eventEmitter, networkManager)
 local scheduler = Scheduler.new(eventEmitter, nodeManager)
 local display = Display.new(eventEmitter)
@@ -30,6 +30,7 @@ local function main()
 			sleep(0.05)
 		end
 	end)
+
 	while true do
 		threader:run()
 	end

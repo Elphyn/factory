@@ -2,13 +2,13 @@ local Threader = dofile("factory/utils/threader.lua")
 local config = require("config")
 local StationManager = require("stationManager")
 local EventEmitter = dofile("factory/utils/EventEmitter.lua")
-local NetworkManager = dofile("factory/shared/NetworkManager.lua")
+local WorkerNetworkManager = require("WorkerNetworkManager")
 local OrderManager = require("OrderManager")
 
 local threader = Threader.new()
 local eventEmitter = EventEmitter.new()
 local stationManager = StationManager.new(eventEmitter)
-local networkManager = NetworkManager.new(eventEmitter)
+local workerNetworkManager = WorkerNetworkManager.new(eventEmitter, stationManager)
 local orderManager = OrderManager.new(threader, stationManager, eventEmitter)
 
 local function main()
@@ -17,7 +17,7 @@ local function main()
 		-- listening for commands
 		while true do
 			print("listening for instructions: ")
-			networkManager:listen()
+			workerNetworkManager:listen()
 		end
 	end)
 
