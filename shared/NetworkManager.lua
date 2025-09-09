@@ -30,6 +30,7 @@ end
 function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 	print("Making a request to: ", nodeID)
 	local retryCount = 0
+	local startTime = os.clock()
 
 	request.messageID = self:generateID()
 	request.senderID = os.getComputerID()
