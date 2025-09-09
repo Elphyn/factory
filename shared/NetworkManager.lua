@@ -71,6 +71,8 @@ function NetworkManager:listen()
 
 	print("listening for instructions: ")
 	local _, msg = rednet.receive()
+	print("received : ")
+	print(textutils.serialize(msg))
 	self:handleMessage(msg)
 end
 
