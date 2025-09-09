@@ -16,6 +16,7 @@ function StorageManager.new(eventEmitter)
 	self.freeChests = {}
 	self.assignedChests = {}
 	self.cachedInfo = {}
+	self:setupEventListeners()
 	return self
 end
 
