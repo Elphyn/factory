@@ -28,6 +28,7 @@ function NetworkManager:generateID()
 end
 
 function NetworkManager:respond(senderID, messageID, additionalData)
+	print("responding: ")
 	local response = {
 		action = "confirm",
 		messageID = messageID,
