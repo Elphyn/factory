@@ -1,175 +1,128 @@
+-- function NetworkManager:sendConfirmation(senderId, msg)✔️
+-- function NetworkManager:sendOrderConfirmation(senderId, msg)✔️
+-- function NetworkManager:handleMessage(senderId, msg)✔️
+-- function NetworkManager:listen() ✔️
+--
+-- function NetworkManager:getBufferOfNode(nodeId)
+-- function NetworkManager:sendOrder(order)
+-- function NetworkManager:getNumStations(nodeId)
+-- function NetworkManager:sendNStations(id, n)
+-- function NetworkManager:sendBuffer(id)
+-- function NetworkManager:onOrderDone(order)
+-- function NetworkManager:sendToMain(info)
+
 local NetworkManager = {}
--- local buffer = dofile("factory/").bufferName
 NetworkManager.__index = NetworkManager
 
-function NetworkManager.new(eventEmitter, storageManager)
+function NetworkManager.new(eventEmitter)
 	local self = setmetatable({}, NetworkManager)
-	self.storageManager = storageManager
 	self.eventEmitter = eventEmitter
-	self:setupEventListeners()
+	self.nextID = 1
 	return self
 end
 
-function NetworkManager:setupEventListeners()
-	self.eventEmitter:subscribe("order-finished", function(...)
-		self:onOrderDone(...)
-	end)
-	self.eventEmitter:subscribe("send-stations", function(senderId, n)
-		self:sendNStations(senderId, n)
-	end)
-	self.eventEmitter:subscribe("new-order", function(order)
-		self:sendOrder(order)
-	end)
+function NetworkManager:generateID()
+	local id = self.nextID
+	self.nextID = self.nextID + 1
+	return id
 end
 
-function NetworkManager:getBufferOfNode(nodeId)
-	local msg = {
-		action = "get-buffer",
+function NetworkManager:respond(senderID, messageID, additionalData)
+	local response = {
+		action = "confirm",
+		messageID = messageID,
 	}
-	local res = self.eventEmitter:awaitWithRetry("buffer", function()
-		rednet.send(nodeId, msg)
-	end, function(data)
-		return nodeId == data.senderId
-	end)
-	return res.buffer
+	-- any additianal data
+	local anyAdditionalData = false
+	for k, v in pairs(additionalData) do
+		anyAdditionalData = true
+		response[k] = v
+	end
+	-- if there's additianal data you want confirmation
+	self:sendMessage(senderID, response, 0, anyAdditionalData)
 end
 
-function NetworkManager:sendOrder(order)
-	-- can't send if channel isn't open
-	if not rednet.isOpen() then
-		error("rednet isn't open")
+function NetworkManager:awaitResponse(messageID, timeout)
+	local resolved = false
+	local data = nil
+
+	-- using event system to detect if message is confirmed
+	local unsubscribe = self.eventEmitter:subscribe("confirm", function(msg)
+		-- this is to know which exact message was confirmed
+		if msg.messageID == messageID then
+			resolved = true
+			data = msg
+		end
+	end)
+
+	-- if no timeout is set, we wait indefinitely
+	if not timeout then
+		while true do
+			if resolved then
+				break
+			end
+			sleep(0.05)
+		end
 	end
 
-	-- we need insert items in buffer of Node
-	local buffer = self:getBufferOfNode(order.assignedNodeId)
-	self.storageManager:insertOrderDependencies(order, buffer)
+	-- if there's timeout, then we wait set amount of time
+	if timeout then
+		sleep(timeout)
+	end
 
-	-- sending order, and confirming it was received
-	-- if it wasn't, we try again
-	self.eventEmitter:awaitWithRetry("confirmation", function()
-		--  sending the order
-		local ok = rednet.send(order.assignedNodeId, order)
-		if not ok then
-			error("Can't send a message")
-		end
-	end, function(data)
-		return order.id == data.id
-	end)
-	order.state = "In progress"
-end
-
-function NetworkManager:getNumStations(nodeId)
-	print("Requesting number of stations from: ", nodeId)
-	local msg = {
-		action = "get-stations",
-	}
-
-	local res = self.eventEmitter:awaitWithRetry("n-stations", function()
-		print("Sending: ")
-		print(textutils.serialize(msg))
-		rednet.send(nodeId, msg)
-	end, function(data)
-		return nodeId == data.senderId
-	end)
-
-	print("Recieved this many stations: ", res.n)
-	return res.n
-end
-
-function NetworkManager:sendNStations(id, n)
-	print("sending n stations: ", n)
-	local msg = {
-		action = "n-stations",
-		n = n,
-		senderId = os.getComputerID(),
-	}
-	rednet.send(id, msg)
+	-- clean up
+	unsubscribe()
+	return resolved, data
 end
 
 function NetworkManager:listen()
 	if not rednet.isOpen() then
-		error("Rednet isn't open, can't listen")
-	end
-	local id, msg = rednet.receive()
-	self:handleMessage(id, msg)
-end
-
-function NetworkManager:sendBuffer(id)
-	local buffer = dofile("factory/worker/config.lua").bufferNameGlobal
-	local msg = {
-		action = "buffer",
-		buffer = buffer,
-		senderId = os.getComputerID(),
-	}
-	rednet.send(id, msg)
-end
-
-function NetworkManager:onOrderDone(order)
-	if not rednet.isOpen() then
-		error("Rednet isn't open, can't send mesasges")
+		error("Can't listen if rednet isn't open")
 	end
 
-	-- relevant info about order
-	local info = {
-		action = "order-finished",
-		orderId = order.id,
-		yeild = order.yeild,
-		buffer = buffer,
-	}
+	local _, msg = rednet.receive()
+	self:handleMessage(msg)
+end
 
-	self.eventEmitter:awaitWithRetry("confirmation", function()
-		local ok = rednet.send(order.senderId, info)
+function NetworkManager:handleMessage(msg)
+	self.eventEmitter:emit(msg.action, msg)
+end
 
+function NetworkManager:sendMessage(id, msg, timeout, needConfirm, responseEvent)
+	-- sending anythign but table with action would break the event system
+	if type(msg) ~= "table" then
+		error("We can only send messages of table format")
+	end
+	if not msg.action then
+		error("Message doesn't have an event attached")
+	end
+
+	-- message id is required to know which message is being confirmed
+	msg.messageID = self:generateID()
+	-- just to make life easier
+	msg.senderID = os.getComputerID()
+
+	while true do
+		local ok = rednet.send(id, msg)
+		print("Sent an event: ", msg.action)
+		-- we check if message was sent, not if it was received
 		if not ok then
-			error("Couldn't send finished order back to mainPC")
+			error("Couldn't send a message: ", msg.action)
 		end
-	end, function(data)
-		return order.id == data.id
-	end)
-end
 
-function NetworkManager:sendConfirmation(senderId, msg)
-	local response = {
-		action = "confirmation",
-		id = msg.id,
-	}
-	rednet.send(senderId, response)
-end
+		-- if we don't need a confirmation then we just quit early, made for confirm messages
+		if not needConfirm then
+			break
+		end
 
-function NetworkManager:sendOrderConfirmation(senderId, msg)
-	local response = {
-		action = "confirmation",
-		id = msg.orderId,
-	}
-	rednet.send(senderId, response)
-end
-
-function NetworkManager:handleMessage(senderId, msg)
-	print("Received message: ")
-	print(textutils.serialize(msg))
-	if msg.action == "crafting-order" then
-		self.eventEmitter:emit("crafting-order", msg)
-		self:sendConfirmation(senderId, msg)
-	elseif msg.action == "confirmation" then
-		self.eventEmitter:emit("confirmation", msg)
-	elseif msg.action == "buffer" then
-		self.eventEmitter:emit("buffer", msg)
-	elseif msg.action == "n-stations" then
-		self.eventEmitter:emit("n-stations", msg)
-	elseif msg.action == "get-stations" then
-		self.eventEmitter:emit("get-stations", senderId)
-	elseif msg.action == "get-buffer" then
-		self:sendBuffer(senderId)
-	elseif msg.action == "order-finished" then
-		self.eventEmitter:emit("order-finished-received", msg)
-		self:sendOrderConfirmation(senderId, msg)
-	else
-		error("Unknown message recieved")
+		-- here we check if it was received
+		print("Waiting for response for id: ", msg.messageID)
+		local ok, data = self:awaitResponse(msg.messageID, timeout)
+		if ok then
+			print("Got response for id: ", msg.messageID)
+			return data
+		end
 	end
-end
-
-function NetworkManager:sendToMain(info)
-	rednet.send(self.mainPcId, info)
 end
 
 return NetworkManager
