@@ -13,6 +13,7 @@ local orderManager = OrderManager.new(threader, stationManager, eventEmitter)
 
 local function main()
 	rednet.open(config.modemLocation)
+
 	threader:addThread(function()
 		-- listening for commands
 		while true do
@@ -29,6 +30,7 @@ local function main()
 	end)
 
 	while true do
+		print("Cycling the threads")
 		threader:run()
 	end
 end
