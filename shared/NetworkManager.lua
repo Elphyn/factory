@@ -14,8 +14,9 @@
 local NetworkManager = {}
 NetworkManager.__index = NetworkManager
 
-function NetworkManager.new(eventEmitter)
+function NetworkManager.new(eventEmitter, threader)
 	local self = setmetatable({}, NetworkManager)
+	self.threader = threader
 	self.eventEmitter = eventEmitter
 	self.nextID = 1
 	return self
@@ -53,7 +54,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 		end)
 
 		while os.clock() - startTime < 5 do
-			sleep(0.05) -- switching
+			sleep(0.05) -- switch
 		end
 
 		removeListener()
@@ -75,7 +76,10 @@ function NetworkManager:listen()
 	local _, msg = rednet.receive()
 	print("received : ")
 	print(textutils.serialize(msg))
-	self:handleMessage(msg)
+
+	self.threader:addThread(function()
+		self:handleMessage(msg)
+	end)
 end
 
 function NetworkManager:handleMessage(msg)

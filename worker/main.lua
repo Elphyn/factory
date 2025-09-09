@@ -8,7 +8,7 @@ local OrderManager = require("OrderManager")
 local threader = Threader.new()
 local eventEmitter = EventEmitter.new()
 local stationManager = StationManager.new(eventEmitter)
-local workerNetworkManager = WorkerNetworkManager.new(eventEmitter, stationManager)
+local workerNetworkManager = WorkerNetworkManager.new(eventEmitter, stationManager, threader)
 local orderManager = OrderManager.new(threader, stationManager, eventEmitter)
 
 local function main()

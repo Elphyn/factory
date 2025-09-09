@@ -8,8 +8,8 @@ local ControllerNetworkManager = {}
 ControllerNetworkManager.__index = ControllerNetworkManager
 setmetatable(ControllerNetworkManager, { __index = NetworkManager })
 
-function ControllerNetworkManager.new(eventEmitter, storageManager)
-	local self = setmetatable(NetworkManager.new(eventEmitter), ControllerNetworkManager)
+function ControllerNetworkManager.new(eventEmitter, storageManager, threader)
+	local self = setmetatable(NetworkManager.new(eventEmitter, threader), ControllerNetworkManager)
 	self.storageManager = storageManager
 	self:setupEvents()
 	return self
