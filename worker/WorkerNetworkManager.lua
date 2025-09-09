@@ -46,7 +46,8 @@ function WorkerNetworkManager:notifyOrderFinished(order)
 	print("order-finished")
 	print(textutils.serialize(order))
 
-	self:makeRequest(order.senderID, msg, "response-order-received")
+	-- self:makeRequest(order.senderID, msg, "response-order-received")
+	rednet.send(order.senderID, msg)
 end
 
 function WorkerNetworkManager:sendStationsCount(request)
