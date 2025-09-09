@@ -39,7 +39,7 @@ function WorkerNetworkManager:notifyOrderFinished(order)
 	local msg = {
 		action = "order-finished",
 		yeild = order.yeild,
-		orderId = order.id,
+		orderID = order.id,
 		buffer = buffer,
 	}
 
