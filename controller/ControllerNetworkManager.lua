@@ -25,14 +25,14 @@ function ControllerNetworkManager:getNodeBuffer(nodeID)
 	local msg = {
 		action = "get-buffer",
 	}
-	return self:makeRequest(nodeID, msg, "response-buffer")
+	return self:makeRequest(nodeID, msg, "response-buffer").buffer
 end
 
 function ControllerNetworkManager:requestStationCount(nodeID)
 	local msg = {
 		action = "get-stations",
 	}
-	return self:makeRequest(nodeID, msg, "response-stations")
+	return self:makeRequest(nodeID, msg, "response-stations").n
 end
 
 function ControllerNetworkManager:sendOrder(order)
