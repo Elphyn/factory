@@ -81,6 +81,7 @@ function NetworkManager:listen()
 		error("Can't listen if rednet isn't open")
 	end
 
+	print("listening for instructions: ")
 	local _, msg = rednet.receive()
 	self:handleMessage(msg)
 end
