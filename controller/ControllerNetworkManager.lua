@@ -43,6 +43,7 @@ function ControllerNetworkManager:confirmOrderReceived(msg)
 		action = "response-order-received",
 		messageID = msg.messageID,
 	}
+	print("responding to orderReceived")
 	rednet.send(msg.senderID, response)
 end
 

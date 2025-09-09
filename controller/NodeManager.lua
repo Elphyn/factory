@@ -61,7 +61,6 @@ function NodeManager:getLoadBalancedOrders(order)
 		local nodeId = self.nodes[crafterType][nodeId].id
 		local splitOrder = {
 			action = "crafting-order",
-			senderId = nodeId,
 			assignedNodeId = nodeId,
 			name = order.name,
 			count = part,
