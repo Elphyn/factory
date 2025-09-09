@@ -20,7 +20,7 @@ function StorageManager.new(eventEmitter)
 end
 
 function StorageManager:setupEventListeners()
-	self.eventEmitter.subscribe("order-finished-received", function(info)
+	self.eventEmitter.subscribe("order-finished", function(info)
 		self:withdraw(info.buffer, info.yeild)
 	end)
 end
