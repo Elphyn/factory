@@ -24,6 +24,13 @@ local function main()
 	end)
 
 	threader:addThread(function()
+		while true do
+			networkManager:handleMessages()
+			sleep(0.05)
+		end
+	end)
+
+	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
 			storageManager:update()

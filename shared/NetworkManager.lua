@@ -19,6 +19,7 @@ function NetworkManager.new(eventEmitter, threader)
 	self.threader = threader
 	self.eventEmitter = eventEmitter
 	self.nextID = 1
+	self.messages = {}
 	return self
 end
 
@@ -77,9 +78,14 @@ function NetworkManager:listen()
 	print("received : ")
 	print(textutils.serialize(msg))
 
-	self.threader:addThread(function()
+	table.insert(self.messages, msg)
+end
+
+function NetworkManager:handleMessages()
+	while #self.messages > 0 do
+		local msg = table.remove(self.messages)
 		self:handleMessage(msg)
-	end)
+	end
 end
 
 function NetworkManager:handleMessage(msg)
