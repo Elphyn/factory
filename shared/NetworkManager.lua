@@ -76,6 +76,42 @@ function NetworkManager:awaitResponse(messageID, timeout)
 	return resolved, data
 end
 
+function NetworkManager:makeRequest(nodeID, request, awaitEvent)
+	local retryCount = 0
+
+	request.messageID = self:generateID()
+	request.senderID = os.getComputerID()
+
+	local resolved = false
+	local captured = nil
+
+	while retryCount < 5 do
+		local startTime = os.clock()
+		local ok = rednet.send(nodeID, request)
+		if not ok then
+			error("Couldn't send a message: ", textutils.serialize(request))
+		end
+
+		local removeListener = self.eventEmitter:subscribe(awaitEvent, function(response)
+			if response.messageID == request.messageID then
+				resolved = true
+				captured = response
+			end
+		end)
+
+		while os.clock() - startTime < 1 do
+			sleep(0.05) -- switching
+		end
+
+		removeListener()
+		if resolved then
+			return captured
+		end
+		retryCount = retryCount + 1
+	end
+	error("Request: " .. textutils.serialize(request) .. "Wasn't fulfilled")
+end
+
 function NetworkManager:listen()
 	if not rednet.isOpen() then
 		error("Can't listen if rednet isn't open")

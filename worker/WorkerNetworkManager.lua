@@ -30,13 +30,12 @@ end
 
 function WorkerNetworkManager:notifyOrderFinished(order)
 	local msg = {
-		action = "order-finished-received",
 		yeild = order.yeild,
 		orderId = order.id,
 		buffer = buffer,
 	}
 
-	self:sendMessage(order.senderId, msg, 0.1, true)
+	self:fulfilRequest(order, msg)
 end
 
 function WorkerNetworkManager:sendStationsCount(request)
@@ -44,7 +43,21 @@ function WorkerNetworkManager:sendStationsCount(request)
 	local msg = {
 		n = count,
 	}
-	self:respond(request.senderID, request.messageID, msg)
+	-- self:respond(request.senderID, request.messageID, msg)
+	self:fulfilRequest(request, msg)
+end
+
+function WorkerNetworkManager:fulfilRequest(request, data)
+	if request.action == "get-stations" then
+		data.action = "response-stations"
+	elseif request.action == "get-buffer" then
+		data.action = "response-buffer"
+	elseif request.action == "crafting-order" then
+		data.action = "response-order"
+	end
+
+	data.messageID = request.messageID
+	rednet.send(request.senderID, data)
 end
 
 function WorkerNetworkManager:sendBuffer(request)
@@ -52,8 +65,7 @@ function WorkerNetworkManager:sendBuffer(request)
 	local msg = {
 		buffer = buffer,
 	}
-	-- since it's waiting for a response, we don't send, we confirm
-	self:respond(request.senderID, request.messageID, msg)
+	self:fulfilRequest(request, msg)
 end
 
 return WorkerNetworkManager

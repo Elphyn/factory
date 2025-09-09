@@ -25,23 +25,21 @@ function ControllerNetworkManager:getNodeBuffer(nodeID)
 	local msg = {
 		action = "get-buffer",
 	}
-	local response = self:sendMessage(nodeID, msg, 0.1, true)
-	return response.buffer
+	return self:makeRequest(nodeID, msg, "response-buffer")
 end
 
 function ControllerNetworkManager:requestStationCount(nodeID)
 	local msg = {
 		action = "get-stations",
 	}
-	local response = self:sendMessage(nodeID, msg, nil, true)
-	return response.n
+	return self:makeRequest(nodeID, msg, "response-stations")
 end
 
 function ControllerNetworkManager:sendOrder(order)
 	local buffer = self:getNodeBuffer(order.assignedNodeId)
 	self.storageManager:insertOrderDependencies(order, buffer)
 
-	self:sendMessage(order.assignedNodeId, order, nil, true)
+	self:makeRequest(order.assignedNodeId, order, "response-order")
 	order.state = "Sent"
 end
 
