@@ -27,39 +27,6 @@ function NetworkManager:generateID()
 	return id
 end
 
-function NetworkManager:awaitResponse(messageID, timeout)
-	local resolved = false
-	local data = nil
-
-	-- using event system to detect if message is confirmed
-	local unsubscribe = self.eventEmitter:subscribe("confirm", function(msg)
-		-- this is to know which exact message was confirmed
-		if msg.messageID == messageID then
-			resolved = true
-			data = msg
-		end
-	end)
-
-	-- if no timeout is set, we wait indefinitely
-	if not timeout then
-		while true do
-			if resolved then
-				break
-			end
-			sleep(0.05)
-		end
-	end
-
-	-- if there's timeout, then we wait set amount of time
-	if timeout then
-		sleep(timeout)
-	end
-
-	-- clean up
-	unsubscribe()
-	return resolved, data
-end
-
 function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 	local retryCount = 0
 

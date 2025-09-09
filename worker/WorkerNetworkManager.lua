@@ -37,12 +37,16 @@ end
 
 function WorkerNetworkManager:notifyOrderFinished(order)
 	local msg = {
+		action = "order-finished",
 		yeild = order.yeild,
 		orderId = order.id,
 		buffer = buffer,
 	}
 
-	-- self:fulfilRequest(order, msg)
+	print("order-finished")
+	print(textutils.serialize(order))
+
+	self:makeRequest(order.senderID, msg, "response-order-received")
 end
 
 function WorkerNetworkManager:sendStationsCount(request)
