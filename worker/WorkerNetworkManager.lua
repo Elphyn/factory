@@ -10,6 +10,7 @@ setmetatable(WorkerNetworkManager, { __index = NetworkManager })
 function WorkerNetworkManager.new(eventEmitter, stationManager)
 	local self = setmetatable(NetworkManager.new(eventEmitter), WorkerNetworkManager)
 	self.stationManager = stationManager
+	self.setupEvents()
 	return self
 end
 
