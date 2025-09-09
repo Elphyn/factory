@@ -44,6 +44,7 @@ function ControllerNetworkManager:confirmOrderReceived(msg)
 		messageID = msg.messageID,
 	}
 	print("responding to orderReceived")
+	print(textutils.serialize(response))
 	rednet.send(msg.senderID, response)
 end
 
