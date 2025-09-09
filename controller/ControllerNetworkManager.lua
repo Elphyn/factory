@@ -19,9 +19,6 @@ function ControllerNetworkManager:setupEvents()
 	self.eventEmitter:subscribe("new-order", function(order)
 		self:sendOrder(order)
 	end)
-	self.eventEmitter:subscribe("order-finished", function(msg)
-		self:confirmOrderReceived(msg)
-	end)
 end
 
 function ControllerNetworkManager:getNodeBuffer(nodeID)
@@ -36,18 +33,6 @@ function ControllerNetworkManager:requestStationCount(nodeID)
 		action = "get-stations",
 	}
 	return self:makeRequest(nodeID, msg, "response-stations").n
-end
-
-function ControllerNetworkManager:confirmOrderReceived(msg)
-	local response = {
-		action = "response-order-received",
-		messageID = msg.messageID,
-	}
-	print("responding to orderReceived")
-	print(textutils.serialize(response))
-	print("Sending response to: ", msg.senderID)
-
-	rednet.send(msg.senderID, response)
 end
 
 function ControllerNetworkManager:sendOrder(order)
