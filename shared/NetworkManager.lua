@@ -28,6 +28,7 @@ function NetworkManager:generateID()
 end
 
 function NetworkManager:makeRequest(nodeID, request, awaitEvent)
+	print("Making a request to: ", nodeID)
 	local retryCount = 0
 
 	request.messageID = self:generateID()
