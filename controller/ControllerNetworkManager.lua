@@ -41,7 +41,7 @@ function ControllerNetworkManager:sendOrder(order)
 	local buffer = self:getNodeBuffer(order.assignedNodeId)
 	self.storageManager:insertOrderDependencies(order, buffer)
 
-	self:sendMessage(order.assignedNodeId, order, 0.1, true)
+	self:sendMessage(order.assignedNodeId, order, nil, true)
 	order.state = "Sent"
 end
 
