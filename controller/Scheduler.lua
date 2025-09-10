@@ -30,9 +30,9 @@ function Scheduler:setupEventListeners()
 			self:planCrafts(storage)
 		end)
 		self.eventEmitter:subscribe("order-finished", function(msg)
-			self.queue[msg.orderID].state = "Finished"
-			self:onChange()
+			self.queue[msg.orderID] = nil
 		end)
+		self:onChange()
 	end
 end
 
