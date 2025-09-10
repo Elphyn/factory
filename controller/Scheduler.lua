@@ -42,7 +42,7 @@ function Scheduler:handleFinishedOrder(msg)
 		self.itemsProcessing[msg.name] = nil -- could be dangerous, it's array'ish table, not a regular one
 	end
 	self:onChange()
-	print(self.itemsProcessing)
+	print(textutils.serialize(self.itemsProcessing))
 end
 
 function Scheduler:calculateMaxCraftable(item, recipe, inventory)
