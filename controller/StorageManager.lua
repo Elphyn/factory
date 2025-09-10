@@ -40,6 +40,7 @@ function StorageManager:withdraw(buffer, yeild)
 	-- withdrawing each item we crafted from order from buffer
 	for item, crafted in pairs(yeild) do
 		print("Withdrawing item: ", item)
+		print("pull: " .. buffer .. "|" .. item .. "|" .. crafted)
 		self:pullItem(buffer, item, crafted)
 	end
 end
