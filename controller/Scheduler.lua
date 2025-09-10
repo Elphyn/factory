@@ -38,8 +38,9 @@ end
 
 function Scheduler:handleFinishedOrder(msg)
 	self.queue[msg.orderID] = nil
+	self.itemsProcessing[msg.orderID] = nil
 	if empty(self.itemsProcessing[msg.name]) then
-		self.itemsProcessing[msg.name] = nil -- could be dangerous, it's array'ish table, not a regular one
+		self.itemsProcessing[msg.name] = nil
 	end
 	self:onChange()
 	print(textutils.serialize(self.itemsProcessing))
@@ -123,7 +124,7 @@ function Scheduler:planCrafts(inventory)
 					self.itemsProcessing[item] = {}
 				end
 				self.queue[id] = order
-				table.insert(self.itemsProcessing[item], order)
+				self.itemsProcessing[id] = order
 				self:onNewOrder(order)
 			end
 		end
