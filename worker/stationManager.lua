@@ -33,7 +33,8 @@ function StationManager:findStations()
 	-- TODO: could only be used once, otherwise would break everything
 	local devices = peripheral.getNames()
 	for _, name in ipairs(devices) do
-		if string.match(name, string.format("^create:%s", config.stationType)) then
+		local stationPattern = require("stationBlocks")[config.stationType]
+		if string.match(name, string.format("^create:%s", stationPattern)) then
 			self.stations.states[name] = "idle"
 			table.insert(self.stations.available, name)
 		end
