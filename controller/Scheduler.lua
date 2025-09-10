@@ -99,7 +99,6 @@ function Scheduler:planCrafts(inventory)
 		end
 	end
 
-	--
 	-- add new items to queue
 	for item, count in pairs(newCraftableItems) do
 		local fullOrder = self:generateQueueEntry(item, count)

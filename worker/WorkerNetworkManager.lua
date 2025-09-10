@@ -1,6 +1,3 @@
--- function NetworkManager:sendNStations(id, n)
--- function NetworkManager:sendBuffer(id)
--- function NetworkManager:onOrderDone(order)
 local NetworkManager = dofile("factory/shared/NetworkManager.lua")
 
 local WorkerNetworkManager = {}
@@ -20,7 +17,6 @@ function WorkerNetworkManager:setupEvents()
 		self:sendBuffer(msg)
 	end)
 	self.eventEmitter:subscribe("get-stations", function(msg)
-		print("handling event get-stations")
 		self:sendStationsCount(msg)
 	end)
 	self.eventEmitter:subscribe("crafting-order", function(order)
@@ -43,10 +39,6 @@ function WorkerNetworkManager:notifyOrderFinished(order)
 		buffer = buffer,
 	}
 
-	print("order-finished")
-	print(textutils.serialize(order))
-
-	-- self:makeRequest(order.senderID, msg, "response-order-received")
 	rednet.send(order.senderID, msg)
 end
 
