@@ -149,6 +149,7 @@ function Scheduler:onNewOrder(order)
 end
 
 function Scheduler:onChange()
+	print(textutils.serialize(self.queue))
 	self.eventEmitter:emit("queue_changed", self.queue)
 end
 
