@@ -1,10 +1,4 @@
-function generateConfig(stationType, bufferName)
-	local config = {
-		stationType = stationType,
-		bufferName = bufferName,
-		modemLocation = "top",
-	}
-
+function generateConfig(config)
 	-- open file for writing
 	local file = fs.open("factory/worker/config.lua", "w")
 	file.write("return {\n")

@@ -11,8 +11,23 @@ local function setupMain()
 	end
 end
 
-local function setupNode(stationType, bufferName)
-	local pcLabel = string.format("worker:%s", stationType)
+local function collectInputForNode()
+	local collected = {
+		modemLocation = "top", -- a default for now
+	}
+	print("Enter what type of station this pc should manage: ")
+	collected.stationType = read()
+	print("Enter a buffer peripheral name(local): ")
+	collected.bufferName = read()
+	print("Enter a buffer peripheral name(global): ")
+	collected.bufferNameGlobal = read()
+
+	return collected
+end
+
+local function setupNode()
+	local config = collectInputForNode()
+	local pcLabel = string.format("worker:%s", config.stationType)
 	os.setComputerLabel(pcLabel)
 
 	if fs.exists("startup.lua") then
@@ -21,7 +36,7 @@ local function setupNode(stationType, bufferName)
 	if fs.exists("factory/worker/startup.lua") then
 		fs.copy("factory/worker/startup.lua", "startup.lua")
 	end
-	generateConfig(stationType, bufferName)
+	generateConfig(config)
 end
 
 local function setup()
@@ -31,14 +46,8 @@ local function setup()
 
 	if type == "main" then
 		setupMain()
-		return
 	elseif type == "node" then
-		-- if it's a node prompt as to which type of station it's going to manage
-		print("Enter what type of station this pc should manage: ")
-		local stationType = read()
-		print("Enter a buffer peripheral name: ")
-		local bufferName = read()
-		setupNode(stationType, bufferName)
+		setupNode()
 	else
 		print("Wrong type, try again")
 		setup()

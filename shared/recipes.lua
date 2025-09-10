@@ -15,4 +15,12 @@ return {
 		},
 		craftingLimit = 3,
 	},
+	["minecraft:iron_ingot"] = {
+		displayName = "Iron ingot",
+		crafter = "press",
+		dependencies = {
+			["minecraft:iron_nugget"] = 9,
+		},
+		craftingLimit = 3,
+	},
 }
