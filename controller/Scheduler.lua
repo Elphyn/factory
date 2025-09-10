@@ -2,9 +2,6 @@ local recipes = dofile("factory/shared/recipes.lua")
 local fp = dofile("factory/utils/fp.lua")
 local empty = dofile("factory/utils/isEmpty.lua")
 
--- local recipes = dofile("../shared/recipes.lua") -- for testing
--- local fp = dofile("../utils/fp.lua") -- for testing
-
 local Scheduler = {}
 Scheduler.__index = Scheduler
 
@@ -36,14 +33,20 @@ function Scheduler:setupEventListeners()
 	end
 end
 
-function Scheduler:handleFinishedOrder(msg)
-	self.queue[msg.orderID] = nil
-	self.itemsProcessing[msg.orderID] = nil
-	if empty(self.itemsProcessing[msg.name]) then
-		self.itemsProcessing[msg.name] = nil
+function Scheduler:removeOrderFromQueue(id, item)
+	-- setting order to nil would remove the order
+	self.queue[id] = nil
+	self.itemsProcessing[item][id] = nil
+
+	-- if there's no orders that process this item,
+	if empty(self.itemsProcessing[item]) then
+		self.itemsProcessing[item] = nil
 	end
+end
+
+function Scheduler:handleFinishedOrder(msg)
+	self:removeOrderFromQueue(msg.orderID, msg.name)
 	self:onChange()
-	print(textutils.serialize(self.itemsProcessing))
 end
 
 function Scheduler:calculateMaxCraftable(item, recipe, inventory)
@@ -62,8 +65,8 @@ function Scheduler:calculateMaxCraftable(item, recipe, inventory)
 		local depStock = ingredientTotal - ingredientAssigned
 		return math.floor(depStock / ratio)
 	end)
-
 	-- the amount we can craft is maxCraft by lowest dependency
+
 	return fp.reduce(ingredientConstrainsts, math.min, maxCraft)
 end
 
@@ -91,6 +94,23 @@ function Scheduler:resetReservedMaterials(inventory)
 	end
 end
 
+function Scheduler:findCraftableItems(inventory)
+	local CraftableItems = {}
+	-- going through each item in recipes
+	for item, recipe in pairs(recipes) do
+		-- if item is being processed right now, we skip it for now
+		if not self.itemsProcessing[item] then
+			-- checking how much we can make
+			local maxCraft = self:calculateMaxCraftable(item, recipe, inventory)
+			if maxCraft > 0 then
+				CraftableItems[item] = maxCraft
+				self:reserveMaterials(recipe, maxCraft, inventory)
+			end
+		end
+	end
+	return CraftableItems
+end
+
 function Scheduler:planCrafts(inventory)
 	-- need to reset items that we reserved
 	self:resetReservedMaterials(inventory)
@@ -98,23 +118,13 @@ function Scheduler:planCrafts(inventory)
 	self:removeWaiting()
 
 	-- find all items that we can make
-	local newCraftableItems = {}
-	for item, recipe in pairs(recipes) do
-		if not self.itemsProcessing[item] then
-			local maxCraft = self:calculateMaxCraftable(item, recipe, inventory)
-			if maxCraft > 0 then
-				newCraftableItems[item] = maxCraft
-				self:reserveMaterials(recipe, maxCraft, inventory)
-			end
-		end
-	end
+	local newCraftableItems = self:findCraftableItems(inventory)
 
 	-- add new items to queue
 	for item, count in pairs(newCraftableItems) do
 		local fullOrder = self:generateQueueEntry(item, count)
 		-- splitting orders into parts for each node, calculates by how many stations node has
 		-- the more stations node has, the bigger part of order it gets
-		print("Finalazing orders: ")
 		local finalOrders = self.nodeManager:getLoadBalancedOrders(fullOrder)
 
 		for _, order in ipairs(finalOrders) do
@@ -124,7 +134,7 @@ function Scheduler:planCrafts(inventory)
 					self.itemsProcessing[item] = {}
 				end
 				self.queue[id] = order
-				self.itemsProcessing[id] = order
+				self.itemsProcessing[item][id] = order
 				self:onNewOrder(order)
 			end
 		end

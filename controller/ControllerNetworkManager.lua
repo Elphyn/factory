@@ -1,7 +1,3 @@
--- function NetworkManager:getBufferOfNode(nodeId)
--- function NetworkManager:sendOrder(order)
--- function NetworkManager:getNumStations(nodeId)
---
 local NetworkManager = dofile("factory/shared/NetworkManager.lua")
 
 local ControllerNetworkManager = {}

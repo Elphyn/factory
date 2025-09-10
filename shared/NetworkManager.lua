@@ -1,16 +1,3 @@
--- function NetworkManager:sendConfirmation(senderId, msg)✔️
--- function NetworkManager:sendOrderConfirmation(senderId, msg)✔️
--- function NetworkManager:handleMessage(senderId, msg)✔️
--- function NetworkManager:listen() ✔️
---
--- function NetworkManager:getBufferOfNode(nodeId)
--- function NetworkManager:sendOrder(order)
--- function NetworkManager:getNumStations(nodeId)
--- function NetworkManager:sendNStations(id, n)
--- function NetworkManager:sendBuffer(id)
--- function NetworkManager:onOrderDone(order)
--- function NetworkManager:sendToMain(info)
-
 local NetworkManager = {}
 NetworkManager.__index = NetworkManager
 
@@ -30,7 +17,6 @@ function NetworkManager:generateID()
 end
 
 function NetworkManager:makeRequest(nodeID, request, awaitEvent)
-	print("Making a request to: ", nodeID)
 	local retryCount = 0
 	local startTime = os.clock()
 
@@ -47,7 +33,6 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 		end
 
 		local removeListener = self.eventEmitter:subscribe(awaitEvent, function(response)
-			print(response.messageID .. " ? " .. request.messageID)
 			if response.messageID == request.messageID then
 				resolved = true
 				captured = response
@@ -62,7 +47,6 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 		if resolved then
 			return captured
 		end
-		print("retry attempt : ", retryCount)
 		retryCount = retryCount + 1
 	end
 	error("Request: " .. textutils.serialize(request) .. "Wasn't fulfilled")
@@ -73,10 +57,7 @@ function NetworkManager:listen()
 		error("Can't listen if rednet isn't open")
 	end
 
-	print("listening for instructions: ")
 	local _, msg = rednet.receive()
-	print("received : ")
-	print(textutils.serialize(msg))
 
 	table.insert(self.messages, msg)
 end

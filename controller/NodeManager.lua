@@ -28,10 +28,8 @@ end
 
 function NodeManager:getLoadBalancedOrders(order)
 	-- if there aren't any nodes that could fulfil the order, we can't finalize order
-	print("In balancing")
 	local crafterType = recipes[order.name].crafter
 	if not self:anyNodesOfType(crafterType) then
-		print("No nodes of type:", crafterType)
 		return {}
 	end
 	-- if there's any then we're going to split evenly
@@ -42,17 +40,12 @@ function NodeManager:getLoadBalancedOrders(order)
 	local total = 0
 	for _, node in ipairs(self.nodes[crafterType]) do
 		local nStations = self.networkManager:requestStationCount(node.id)
-		print("Got this many stations: ", nStations)
 		total = total + nStations
 		table.insert(stations, nStations)
 	end
-	print("nStations: ")
-	print(textutils.serialize(stations))
 
 	-- spreading order across nodes
 	local spread = split(total, stations)
-	print("spread: ")
-	print(textutils.serialize(spread))
 
 	-- finalizing orders, paritioning them evenly, assigning Nodes
 	local finalizedOrders = {}
@@ -101,8 +94,6 @@ function NodeManager:scan()
 			end
 		end
 	end
-	print("Scan finished:")
-	print(textutils.serialize(self.nodes))
 end
 
 return NodeManager
