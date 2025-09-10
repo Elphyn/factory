@@ -35,6 +35,7 @@ end
 function WorkerNetworkManager:notifyOrderFinished(order)
 	local msg = {
 		action = "order-finished",
+		name = order.name,
 		yeild = order.yeild,
 		orderID = order.id,
 		buffer = buffer,

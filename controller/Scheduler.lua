@@ -1,5 +1,6 @@
 local recipes = dofile("factory/shared/recipes.lua")
 local fp = dofile("factory/utils/fp.lua")
+local empty = dofile("factory/utils/isEmpty.lua")
 
 -- local recipes = dofile("../shared/recipes.lua") -- for testing
 -- local fp = dofile("../utils/fp.lua") -- for testing
@@ -13,7 +14,7 @@ function Scheduler.new(eventEmitter, nodeManager)
 	self.nodeManager = nodeManager
 	self.nextId = 1
 	self.queue = {}
-	self.itemsProcessing = {} -- set imitation
+	self.itemsProcessing = {}
 	self:setupEventListeners()
 	return self
 end
@@ -30,10 +31,17 @@ function Scheduler:setupEventListeners()
 			self:planCrafts(storage)
 		end)
 		self.eventEmitter:subscribe("order-finished", function(msg)
-			self.queue[msg.orderID] = nil
+			self:handleFinishedOrder(msg)
 		end)
-		self:onChange()
 	end
+end
+
+function Scheduler:handleFinishedOrder(msg)
+	self.queue[msg.orderID] = nil
+	if empty(self.itemsProcessing[msg.name]) then
+		self.itemsProcessing[msg.name] = nil -- could be dangerous, it's array'ish table, not a regular one
+	end
+	self:onChange()
 end
 
 function Scheduler:calculateMaxCraftable(item, recipe, inventory)
@@ -110,12 +118,13 @@ function Scheduler:planCrafts(inventory)
 		for _, order in ipairs(finalOrders) do
 			local id = order.id
 			if order.count > 0 then
+				if not self.itemsProcessing[item] then
+					self.itemsProcessing[item] = {}
+				end
 				self.queue[id] = order
+				table.insert(self.itemsProcessing[item], order)
 				self:onNewOrder(order)
 			end
-		end
-		if not self.itemsProcessing[item] then
-			self.itemsProcessing[item] = true
 		end
 	end
 
