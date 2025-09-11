@@ -90,7 +90,7 @@ function OrderManager:startOrder(order)
 	while not self:orderFinished(order) do
 		self:awaitStations() -- wait for stations to be free
 
-		while self.stationsManager:anyFreeStations() and order.count > 0 do
+		while self.stationManager:anyFreeStations() and order.count > 0 do
 			self:assignStation(order)
 		end
 
