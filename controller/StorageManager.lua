@@ -132,6 +132,7 @@ function StorageManager:_scanChest(name)
 	local items = chest.list()
 
 	if empty(items) then
+		print("Found an empty chest")
 		table.insert(self.freeChests, name)
 		return
 	end
