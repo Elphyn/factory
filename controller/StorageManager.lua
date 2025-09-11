@@ -187,6 +187,8 @@ end
 function StorageManager:pullItem(from, item, count)
 	-- find all occ of item in "from" peripheral
 	local slots = self:locateSlots(item, from)
+	print("Located item in slots: ")
+	print(textutils.serialize(slots))
 
 	-- go through each slot, inserting
 	for idx, slotInfo in pairs(slots) do
