@@ -63,7 +63,7 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task, order
 	order.yeild[craftingItemName] = order.yeild[craftingItemName] + howManyToCraft
 
 	if station.clearFilterItem ~= nil then
-		stationName.clearFilterItem()
+		station.clearFilterItem()
 	end
 end
 
