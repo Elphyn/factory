@@ -34,8 +34,6 @@ function NodeManager:getLoadBalancedOrders(order)
 	if not self:anyNodesOfType(crafterType) then
 		return {}
 	end
-	-- if there's any then we're going to split evenly
-	local balancedOrders = {}
 
 	-- collecting info on how many stations each node of type has
 	local stations = {}
@@ -48,6 +46,8 @@ function NodeManager:getLoadBalancedOrders(order)
 	-- spreading order across nodes
 	local spread = split(total, stations)
 
+	print("Available nodes:")
+	print(textutils.serialize(self.nodex[crafterType]))
 	-- finalizing orders, paritioning them evenly, assigning Nodes
 	local finalizedOrders = {}
 	for nodeId, part in pairs(spread) do
