@@ -56,6 +56,10 @@ function StationManager:onFinished(station)
 	table.insert(self.stations.available, station)
 end
 
+function StationManager:anyFreeStations()
+	return #self.stations.available > 0
+end
+
 function StationManager:available()
 	return #self.stations.available
 end

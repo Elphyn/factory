@@ -15,7 +15,6 @@ end
 
 function OrderManager:setupEventListeners()
 	self.eventEmitter:subscribe("crafting-order", function(order)
-		print("Got crafting-order in OrderManager")
 		self:onNewOrder(order)
 	end)
 end
@@ -23,7 +22,6 @@ end
 function OrderManager:onNewOrder(order)
 	-- supposed to trigger on event
 	self.orders[order.id] = order
-	print("Starting order:")
 	self.threader:addThread(function()
 		self:startOrder(order)
 	end, function()
@@ -59,7 +57,6 @@ function OrderManager:startCrafting(task, order, station)
 	order.aliveProcesses = order.aliveProcesses + 1
 	self.threader:addThread(function()
 		-- main function
-		print("Started crafting: ")
 		craft(buffer, buffer, station, task, order)
 	end, function()
 		-- callback when it's done
@@ -77,15 +74,24 @@ function OrderManager:assignStations(order)
 	end
 end
 
+function OrderManager:assignStation(order)
+	if self.stationManager:available() <= 0 then
+		error("Trying to assign a task, but no free stations")
+	end
+	local task = self:generateTask(order)
+	local station = self.stationManager:getOneStation()
+	self:startCrafting(task, order, station)
+end
+
 function OrderManager:startOrder(order)
 	-- self.queue[id]= { name = item, count = maxCraft, state = "waiting", id = id}
 	order.aliveProcesses = 0
 
 	while not self:orderFinished(order) do
-		self:awaitStations()
+		self:awaitStations() -- wait for stations to be free
 
-		if order.count > 0 then
-			self:assignStations(order)
+		while self.stationsManager:anyFreeStations() and order.count > 0 do
+			self:assignStation(order)
 		end
 
 		sleep(0.05)
