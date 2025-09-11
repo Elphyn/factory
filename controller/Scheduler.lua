@@ -119,6 +119,9 @@ function Scheduler:planCrafts(inventory)
 
 	-- find all items that we can make
 	local newCraftableItems = self:findCraftableItems(inventory)
+	print("Items: ")
+	print(textutils.serialize(newCraftableItems))
+	sleep(2)
 
 	-- add new items to queue
 	for item, count in pairs(newCraftableItems) do
@@ -126,6 +129,8 @@ function Scheduler:planCrafts(inventory)
 		-- splitting orders into parts for each node, calculates by how many stations node has
 		-- the more stations node has, the bigger part of order it gets
 		local finalOrders = self.nodeManager:getLoadBalancedOrders(fullOrder)
+		print("finalOrders: ")
+		print(textutils.serialize(finalOrders))
 
 		for _, order in ipairs(finalOrders) do
 			local id = order.id
@@ -149,7 +154,6 @@ function Scheduler:onNewOrder(order)
 end
 
 function Scheduler:onChange()
-	print(textutils.serialize(self.queue))
 	self.eventEmitter:emit("queue_changed", self.queue)
 end
 
