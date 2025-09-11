@@ -39,8 +39,6 @@ end
 function StorageManager:withdraw(buffer, yeild)
 	-- withdrawing each item we crafted from order from buffer
 	for item, crafted in pairs(yeild) do
-		print("Withdrawing item: ", item)
-		print("pull: " .. buffer .. "|" .. item .. "|" .. crafted)
 		self:pullItem(buffer, item, crafted)
 	end
 end
@@ -187,12 +185,9 @@ end
 function StorageManager:pullItem(from, item, count)
 	-- find all occ of item in "from" peripheral
 	local slots = self:locateSlots(item, from)
-	print("Located item in slots: ")
-	print(textutils.serialize(slots))
 
 	-- go through each slot, inserting
 	for idx, slotInfo in pairs(slots) do
-		print("Pulling item from slot: " .. idx)
 		if count > 0 then
 			local slotAmount = slotInfo.count
 

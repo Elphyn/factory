@@ -92,6 +92,8 @@ function NodeManager:scan()
 			end
 		end
 	end
+	print("Nodes:")
+	print(textutils.serialize(self.nodes))
 end
 
 return NodeManager
