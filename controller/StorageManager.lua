@@ -219,6 +219,9 @@ function StorageManager:pullItem(from, item, count)
 end
 
 function StorageManager:getFreeChest()
+	if #self.freeChests == 0 then
+		error("Trying to get a free chest, there's none")
+	end
 	return table.remove(self.freeChests)
 end
 
