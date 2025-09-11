@@ -50,8 +50,8 @@ function NodeManager:getLoadBalancedOrders(order)
 	print(textutils.serialize(self.nodes[crafterType]))
 	-- finalizing orders, paritioning them evenly, assigning Nodes
 	local finalizedOrders = {}
-	for nodeId, part in pairs(spread) do
-		local nodeId = self.nodes[crafterType][nodeId].id
+	for idx, part in pairs(spread) do
+		local nodeId = self.nodes[crafterType][idx].id
 		local splitOrder = {
 			action = "crafting-order",
 			assignedNodeId = nodeId,
