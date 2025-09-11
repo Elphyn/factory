@@ -39,6 +39,10 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task, order
 	-- place itmes in a station
 	local station = peripheral.wrap(stationName)
 
+	if station.setFilterItem ~= nil then
+		station.setFilterItem(craftingItemName)
+	end
+
 	for key, value in pairs(recipeItemList) do
 		-- local ok, result = pcall(station.pullItem(takeFromName, key, value * howManyToCraft))
 		station.pullItem(takeFromName, key, value * howManyToCraft)
@@ -57,6 +61,10 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task, order
 		order.yeild[craftingItemName] = 0
 	end
 	order.yeild[craftingItemName] = order.yeild[craftingItemName] + howManyToCraft
+
+	if station.clearFilterItem ~= nil then
+		stationName.clearFilterItem()
+	end
 end
 
 return standardCrafting
