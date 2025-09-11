@@ -47,7 +47,7 @@ function NodeManager:getLoadBalancedOrders(order)
 	local spread = split(total, stations)
 
 	print("Available nodes:")
-	print(textutils.serialize(self.node[crafterType]))
+	print(textutils.serialize(self.nodes[crafterType]))
 	-- finalizing orders, paritioning them evenly, assigning Nodes
 	local finalizedOrders = {}
 	for nodeId, part in pairs(spread) do
