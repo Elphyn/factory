@@ -29,7 +29,7 @@ end
 function NodeManager:getLoadBalancedOrders(order)
 	-- if there aren't any nodes that could fulfil the order, we can't finalize order
 	local crafterType = recipes[order.name].crafter
-	print("Crafting type for recipe: ")
+	print("Crafting type for recipe of: " .. order.name)
 	print(crafterType)
 	if not self:anyNodesOfType(crafterType) then
 		return {}
