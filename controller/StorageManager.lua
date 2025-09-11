@@ -191,7 +191,7 @@ function StorageManager:pullItem(from, item, count)
 	print(textutils.serialize(slots))
 
 	-- go through each slot, inserting
-	for idx, slotInfo in ipairs(slots) do
+	for idx, slotInfo in pairs(slots) do
 		print("Pulling item from slot: " .. idx)
 		if count > 0 then
 			local slotAmount = slotInfo.count
@@ -212,9 +212,7 @@ function StorageManager:pullItem(from, item, count)
 				local insertAmount = math.min(count, slotAmount, chest.space)
 				count = count - insertAmount
 				peripheral.call(chest.name, "pullItems", from, idx, insertAmount)
-				return true
 			end
-			return false
 		end
 	end
 end
