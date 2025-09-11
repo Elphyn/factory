@@ -40,13 +40,12 @@ function NodeManager:getLoadBalancedOrders(order)
 
 	-- collecting info on how many stations each node of type has
 	local stations = {}
-	local total = 0
 	for _, node in ipairs(self.nodes[crafterType]) do
 		local nStations = self.networkManager:requestStationCount(node.id)
-		total = total + nStations
 		table.insert(stations, nStations)
 	end
 
+	local total = order.count
 	-- spreading order across nodes
 	local spread = split(total, stations)
 
