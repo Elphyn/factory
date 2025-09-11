@@ -191,7 +191,7 @@ function StorageManager:pullItem(from, item, count)
 	print(textutils.serialize(slots))
 
 	-- go through each slot, inserting
-	for idx, slotInfo in pairs(slots) do
+	for idx, slotInfo in ipairs(slots) do
 		print("Pulling item from slot: " .. idx)
 		if count > 0 then
 			local slotAmount = slotInfo.count
