@@ -1,8 +1,8 @@
 -- default
 --
 return {
-	stationType = "mill",
+	stationType = "press",
 	modemLocation = "top",
-	bufferName = "minecraft:barrel_6",
-	bufferNameGlobal = "minecraft:barrel_7",
+	bufferName = "minecraft:barrel_12",
+	bufferNameGlobal = "minecraft:barrel_13",
 }
