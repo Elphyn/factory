@@ -98,8 +98,9 @@ function Scheduler:findCraftableItems(inventory)
 	local CraftableItems = {}
 	-- going through each item in recipes
 	for item, recipe in pairs(recipes) do
+		-- if there's no nodes that handle this type of recipe, then we skip
 		-- if item is being processed right now, we skip it for now
-		if not self.itemsProcessing[item] then
+		if self.nodeManager:anyNodesOfType(recipe.crafter) and not self.itemsProcessing[item] then
 			-- checking how much we can make
 			local maxCraft = self:calculateMaxCraftable(item, recipe, inventory)
 			if maxCraft > 0 then
