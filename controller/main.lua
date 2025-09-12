@@ -25,7 +25,6 @@ local function main()
 
 	threader:addThread(function()
 		while true do
-			print("In network message handler: ")
 			networkManager:handleMessages()
 			sleep(0.05)
 		end
@@ -33,7 +32,6 @@ local function main()
 
 	threader:addThread(function()
 		while true do
-			print("In event handler: ")
 			eventEmitter:handleEvents()
 			sleep(0.05)
 		end
@@ -42,7 +40,6 @@ local function main()
 	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
-			print("In sotrage manager: ")
 			storageManager:update()
 			sleep(0.05)
 		end
