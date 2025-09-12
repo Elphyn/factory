@@ -36,7 +36,7 @@ function EventEmitter:subscribe(event, callback)
 end
 
 function EventEmitter:handleEvents()
-	while #self.events > 0 do
+	while self.events:length() > 0 do
 		local unprocessedEvent = self.events:pop() -- stack behaiviour, might change to fifo in the future if there's issues
 		local event = unprocessedEvent.event
 		local data = unprocessedEvent.data
