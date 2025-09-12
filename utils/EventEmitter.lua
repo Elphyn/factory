@@ -41,6 +41,7 @@ function EventEmitter:subscribe(event, callback, async)
 end
 
 function EventEmitter:handleEvents()
+	print("Draining events: ")
 	while #self.events > 0 do
 		local unprocessedEvent = table.remove(self.events) -- stack behaiviour, might change to fifo in the future if there's issues
 		local event = unprocessedEvent.event
