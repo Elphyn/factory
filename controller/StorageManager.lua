@@ -252,6 +252,7 @@ end
 
 function StorageManager:debug()
 	term.clear()
+	term.setCursorPos(1, 1)
 	for _, chestName in ipairs(self.freeChests) do
 		print(chestName)
 	end
