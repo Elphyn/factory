@@ -17,7 +17,7 @@ function NetworkManager:generateID()
 end
 
 function NetworkManager:makeRequest(nodeID, request, awaitEvent)
-	local retryCount = 0
+	-- local retryCount = 0
 	local startTime = os.clock()
 
 	request.messageID = self:generateID()
@@ -26,7 +26,8 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 	local resolved = false
 	local captured = nil
 
-	while retryCount < 5 do
+	-- while retryCount < 5 do
+	while true do
 		local ok = rednet.send(nodeID, request)
 		if not ok then
 			error("Couldn't send a message: ", textutils.serialize(request))
@@ -40,7 +41,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 			end
 		end, async)
 
-		while os.clock() - startTime < 5 do
+		while os.clock() - startTime < 1 do
 			sleep(0.05) -- switch
 		end
 
@@ -48,9 +49,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 		if resolved then
 			return captured
 		end
-		retryCount = retryCount + 1
 	end
-	error("Request: " .. textutils.serialize(request) .. "Wasn't fulfilled")
 end
 
 function NetworkManager:listen()

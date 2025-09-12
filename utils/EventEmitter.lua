@@ -56,7 +56,7 @@ function EventEmitter:handleEvents()
 end
 
 function EventEmitter:emit(event, ...)
-	print("Received an event")
+	print("Received an event: ", event)
 	local unprocessedEvent = {
 		event = event,
 		data = table.pack(...),
