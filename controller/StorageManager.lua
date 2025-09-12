@@ -224,7 +224,7 @@ function StorageManager:pushItem(to, item, count)
 	local total = self:getTotal(item)
 
 	if total == 0 or count > total then
-		error("Storage doesn't have/not enough of this item: ", item)
+		error("Storage doesn't have/not enough of item")
 	end
 
 	local slots = self.items[item].slots
