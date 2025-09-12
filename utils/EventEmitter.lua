@@ -39,8 +39,8 @@ function EventEmitter:handleEvents()
 		local event = unprocessedEvent.event
 		local data = unprocessedEvent.data
 
-		if self.events[event] then
-			for _, callback in pairs(self.events[event]) do
+		if self.callbacks[event] then
+			for _, callback in pairs(self.callbacks[event]) do
 				self.threader:addThread(function()
 					callback(table.unpack(data))
 				end)
