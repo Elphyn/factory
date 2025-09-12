@@ -37,6 +37,7 @@ function EventEmitter:handleEvents()
 	while #self.events > 0 do
 		local unprocessedEvent = table.remove(self.events) -- stack behaiviour, might change to fifo in the future if there's issues
 		local event = unprocessedEvent.event
+		print("Processing event: ", event)
 		local data = unprocessedEvent.data
 		if self.callbacks[event] then
 			for _, fn in ipairs(self.callbacks[event]) do
@@ -55,6 +56,7 @@ function EventEmitter:handleEvents()
 end
 
 function EventEmitter:emit(event, ...)
+	print("Received an event")
 	local unprocessedEvent = {
 		event = event,
 		data = table.pack(...),
