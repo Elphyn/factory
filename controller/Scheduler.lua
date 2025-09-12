@@ -1,6 +1,7 @@
 local recipes = dofile("factory/shared/recipes.lua")
 local fp = dofile("factory/utils/fp.lua")
 local empty = dofile("factory/utils/isEmpty.lua")
+local split = require("even")
 
 local Scheduler = {}
 Scheduler.__index = Scheduler
