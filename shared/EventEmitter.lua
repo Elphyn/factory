@@ -1,7 +1,7 @@
 local EventEmitter = {}
 EventEmitter.__index = EventEmitter
 
-local Queue = require("Queue")
+local Queue = dofile("factory/shared/Queue.lua")
 
 function EventEmitter.new(threader)
 	local self = setmetatable({}, EventEmitter)
