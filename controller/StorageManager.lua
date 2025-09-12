@@ -219,6 +219,8 @@ function StorageManager:getFreeChest()
 end
 
 function StorageManager:pushItem(to, item, count)
+	print("pushItem started with these arguments")
+	print(to .. " " .. item .. " " .. count)
 	local total = self:getTotal(item)
 
 	if total == 0 or count > total then
