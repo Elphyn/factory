@@ -1,6 +1,7 @@
-local Queue = require("Queue")
 local EventEmitter = {}
 EventEmitter.__index = EventEmitter
+
+local Queue = require("Queue")
 
 function EventEmitter.new(threader)
 	local self = setmetatable({}, EventEmitter)
