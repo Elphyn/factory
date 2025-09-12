@@ -43,7 +43,7 @@ function EventEmitter:handleEvents()
 			for _, fn in ipairs(self.callbacks[event]) do
 				if fn.async then
 					self.threader:addThread(
-						function(data) -- if callback async, it's might be blocking, we need to separate it from others
+						function() -- if callback async, it's might be blocking, we need to separate it from others
 							fn.callback(table.unpack(data))
 						end
 					)
