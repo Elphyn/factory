@@ -32,7 +32,7 @@ local function main()
 
 	threader:addThread(function()
 		while true do
-			eventEmitter:handleMessages()
+			eventEmitter:handleEvents()
 			sleep(0.05)
 		end
 	end)
