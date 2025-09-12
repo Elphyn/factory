@@ -40,10 +40,12 @@ function EventEmitter:handleEvents()
 		local event = unprocessedEvent.event
 		local data = unprocessedEvent.data
 
-		for _, callback in pairs(self.events[event]) do
-			self.threader:addThread(function()
-				callback(table.unpack(data))
-			end)
+		if self.events[event] then
+			for _, callback in pairs(self.events[event]) do
+				self.threader:addThread(function()
+					callback(table.unpack(data))
+				end)
+			end
 		end
 	end
 end
