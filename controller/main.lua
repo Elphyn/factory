@@ -2,7 +2,7 @@ local Threader = dofile("factory/utils/threader.lua")
 local StorageManager = require("StorageManager")
 local Scheduler = require("Scheduler")
 local Display = require("Display")
-local EventEmitter = dofile("factory/utils/EventEmitter.lua")
+local EventEmitter = dofile("factory/shared/EventEmitter.lua")
 local ControllerNetworkManager = require("ControllerNetworkManager")
 local NodeManager = require("NodeManager")
 

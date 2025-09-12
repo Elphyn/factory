@@ -1,7 +1,7 @@
 local Threader = dofile("factory/utils/threader.lua")
 local config = require("config")
 local StationManager = require("stationManager")
-local EventEmitter = dofile("factory/utils/EventEmitter.lua")
+local EventEmitter = dofile("factory/shared/EventEmitter.lua")
 local WorkerNetworkManager = require("WorkerNetworkManager")
 local OrderManager = require("OrderManager")
 

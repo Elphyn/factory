@@ -1,3 +1,4 @@
+local Queue = require("Queue")
 local EventEmitter = {}
 EventEmitter.__index = EventEmitter
 
@@ -6,7 +7,7 @@ function EventEmitter.new(threader)
 	self.threader = threader
 	self.callbacks = {}
 	self.asyncCallbacks = {}
-	self.events = {}
+	self.events = Queue.new()
 	self.nextID = 1
 	return self
 end
@@ -35,12 +36,14 @@ end
 
 function EventEmitter:handleEvents()
 	while #self.events > 0 do
-		local unprocessedEvent = table.remove(self.events) -- stack behaiviour, might change to fifo in the future if there's issues
+		local unprocessedEvent = self.events:pop() -- stack behaiviour, might change to fifo in the future if there's issues
 		local event = unprocessedEvent.event
 		local data = unprocessedEvent.data
 
 		if self.callbacks[event] then
 			for _, callback in pairs(self.callbacks[event]) do
+				-- there's a bunch of blocking operations and they take time
+				-- so we need to make them work in parallel
 				self.threader:addThread(function()
 					callback(table.unpack(data))
 				end)
@@ -55,7 +58,7 @@ function EventEmitter:emit(event, ...)
 		event = event,
 		data = table.pack(...),
 	}
-	table.insert(self.events, unprocessedEvent)
+	self.events:push(unprocessedEvent)
 end
 
 return EventEmitter
