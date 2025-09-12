@@ -63,7 +63,6 @@ function WorkerNetworkManager:fulfilRequest(request, data)
 
 	data.messageID = request.messageID
 	local ok = rednet.send(request.senderID, data)
-	print("Sent a request: " .. data.event .. " | " .. ok)
 end
 
 function WorkerNetworkManager:sendBuffer(request)
