@@ -35,7 +35,6 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 
 		local removeListener = self.eventEmitter:subscribe(awaitEvent, function(response)
 			if response.messageID == request.messageID then
-				print("Resolved")
 				resolved = true
 				captured = response
 			end

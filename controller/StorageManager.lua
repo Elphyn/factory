@@ -250,6 +250,13 @@ function StorageManager:_exist(item)
 	return false
 end
 
+function StorageManager:debug()
+	term.clear()
+	for _, chestName in ipairs(self.freeChests) do
+		print(chestName)
+	end
+end
+
 function StorageManager:getItems()
 	return self.items
 end

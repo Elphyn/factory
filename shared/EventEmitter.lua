@@ -37,7 +37,7 @@ end
 
 function EventEmitter:handleEvents()
 	while self.events:length() > 0 do
-		local unprocessedEvent = self.events:pop() -- stack behaiviour, might change to fifo in the future if there's issues
+		local unprocessedEvent = self.events:pop()
 		local event = unprocessedEvent.event
 		local data = unprocessedEvent.data
 
@@ -54,7 +54,6 @@ function EventEmitter:handleEvents()
 end
 
 function EventEmitter:emit(event, ...)
-	print("Received an event: ", event)
 	local unprocessedEvent = {
 		event = event,
 		data = table.pack(...),
