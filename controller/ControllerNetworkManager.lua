@@ -19,14 +19,14 @@ end
 
 function ControllerNetworkManager:getNodeBuffer(nodeID)
 	local msg = {
-		action = "get-buffer",
+		event = "get-buffer",
 	}
 	return self:makeRequest(nodeID, msg, "response-buffer").buffer
 end
 
 function ControllerNetworkManager:requestStationCount(nodeID)
 	local msg = {
-		action = "get-stations",
+		event = "get-stations",
 	}
 	return self:makeRequest(nodeID, msg, "response-stations").n
 end

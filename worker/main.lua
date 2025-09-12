@@ -6,7 +6,7 @@ local WorkerNetworkManager = require("WorkerNetworkManager")
 local OrderManager = require("OrderManager")
 
 local threader = Threader.new()
-local eventEmitter = EventEmitter.new()
+local eventEmitter = EventEmitter.new(threader)
 local stationManager = StationManager.new(eventEmitter)
 local workerNetworkManager = WorkerNetworkManager.new(eventEmitter, stationManager, threader)
 local orderManager = OrderManager.new(threader, stationManager, eventEmitter)

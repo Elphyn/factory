@@ -32,12 +32,13 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 			error("Couldn't send a message: ", textutils.serialize(request))
 		end
 
+		local async = true
 		local removeListener = self.eventEmitter:subscribe(awaitEvent, function(response)
 			if response.messageID == request.messageID then
 				resolved = true
 				captured = response
 			end
-		end)
+		end, async)
 
 		while os.clock() - startTime < 5 do
 			sleep(0.05) -- switch
@@ -70,7 +71,7 @@ function NetworkManager:handleMessages()
 end
 
 function NetworkManager:handleMessage(msg)
-	self.eventEmitter:emit(msg.action, msg)
+	self.eventEmitter:emit(msg.event, msg)
 end
 
 return NetworkManager

@@ -34,7 +34,7 @@ end
 
 function WorkerNetworkManager:notifyOrderFinished(order)
 	local msg = {
-		action = "order-finished",
+		event = "order-finished",
 		name = order.name,
 		yeild = order.yeild,
 		orderID = order.id,
@@ -53,12 +53,12 @@ function WorkerNetworkManager:sendStationsCount(request)
 end
 
 function WorkerNetworkManager:fulfilRequest(request, data)
-	if request.action == "get-stations" then
-		data.action = "response-stations"
-	elseif request.action == "get-buffer" then
-		data.action = "response-buffer"
-	elseif request.action == "crafting-order" then
-		data.action = "response-order"
+	if request.event == "get-stations" then
+		data.event = "response-stations"
+	elseif request.event == "get-buffer" then
+		data.event = "response-buffer"
+	elseif request.event == "crafting-order" then
+		data.event = "response-order"
 	end
 
 	data.messageID = request.messageID

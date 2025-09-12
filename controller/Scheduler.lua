@@ -112,6 +112,16 @@ function Scheduler:findCraftableItems(inventory)
 	return CraftableItems
 end
 
+function Scheduler:updateSchedule(inventory)
+	-- need to reset items that we reserved
+	self:resetReservedMaterials(inventory)
+	-- all waiting entries in queue could be recalculated
+	self:removeWaiting()
+
+	-- find items we can make, and how much
+	local items = self:findCraftableItems(inventory)
+end
+
 function Scheduler:planCrafts(inventory)
 	-- need to reset items that we reserved
 	self:resetReservedMaterials(inventory)
@@ -123,12 +133,11 @@ function Scheduler:planCrafts(inventory)
 
 	-- add new items to queue
 	for item, count in pairs(newCraftableItems) do
-		local fullOrder = self:generateQueueEntry(item, count)
 		-- splitting orders into parts for each node, calculates by how many stations node has
 		-- the more stations node has, the bigger part of order it gets
-		local finalOrders = self.nodeManager:getLoadBalancedOrders(fullOrder)
+		local orders = self:balanceLoad(item, count)
 
-		for _, order in ipairs(finalOrders) do
+		for _, order in ipairs(orders) do
 			local id = order.id
 			if order.count > 0 then
 				if not self.itemsProcessing[item] then
@@ -141,8 +150,44 @@ function Scheduler:planCrafts(inventory)
 		end
 	end
 
-	-- signal change, so components update
+	-- -- signal change, so components update
 	self:onChange()
+end
+
+function Scheduler:balanceLoad(item, count)
+	-- if there aren't any nodes that could fulfil the order, we can't finalize order
+	local nodeType = recipes[item].crafter
+
+	-- if there's no nodes that handle this typoe of crafting, then we return nothing
+	if not self.nodeManager:anyNodesOfType(nodeType) then
+		return {}
+	end
+
+	-- collecting info on how many stations each node of type has
+	local nodeStations = self.nodeManager:getNodesStaitionsCount(nodeType)
+
+	-- calculating how to split order across nodes of same type
+	local spread = split(count, nodeStations)
+
+	-- finalizing orders, paritioning them evenly, assigning nodes
+	local finalizedOrders = {}
+	for nodeID, share in pairs(spread) do
+		local order = self:generateOrder(nodeID, item, share)
+		table.insert(finalizedOrders, order)
+	end
+	return finalizedOrders
+end
+
+function Scheduler:generateOrder(nodeID, item, count)
+	local order = {
+		event = "crafting-order",
+		assignedNodeId = nodeID,
+		name = item,
+		count = count,
+		state = "waiting",
+		id = self:generateId(),
+	}
+	return order
 end
 
 function Scheduler:onNewOrder(order)

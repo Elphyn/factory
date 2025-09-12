@@ -26,43 +26,13 @@ function NodeManager:anyNodesOfType(type)
 	return false
 end
 
-function NodeManager:getLoadBalancedOrders(order)
-	-- if there aren't any nodes that could fulfil the order, we can't finalize order
-	local crafterType = recipes[order.name].crafter
-	print("Crafting type for recipe of: " .. order.name)
-	print(crafterType)
-	if not self:anyNodesOfType(crafterType) then
-		return {}
-	end
-
-	-- collecting info on how many stations each node of type has
+function NodeManager:getNodesStaitionsCount(nodeType)
 	local stations = {}
-	for _, node in ipairs(self.nodes[crafterType]) do
+	for _, node in ipairs(self.nodes[nodeType]) do
 		local nStations = self.networkManager:requestStationCount(node.id)
-		table.insert(stations, nStations)
+		stations[node.id] = nStations
 	end
-
-	local total = order.count
-	-- spreading order across nodes
-	local spread = split(total, stations)
-
-	print("Available nodes:")
-	print(textutils.serialize(self.nodes[crafterType]))
-	-- finalizing orders, paritioning them evenly, assigning Nodes
-	local finalizedOrders = {}
-	for idx, part in pairs(spread) do
-		local nodeId = self.nodes[crafterType][idx].id
-		local splitOrder = {
-			action = "crafting-order",
-			assignedNodeId = nodeId,
-			name = order.name,
-			count = part,
-			state = "waiting",
-			id = self:generateId(),
-		}
-		table.insert(finalizedOrders, splitOrder)
-	end
-	return finalizedOrders
+	return stations
 end
 
 function NodeManager:scan()
@@ -94,8 +64,6 @@ function NodeManager:scan()
 			end
 		end
 	end
-	print("Nodes:")
-	print(textutils.serialize(self.nodes))
 end
 
 return NodeManager

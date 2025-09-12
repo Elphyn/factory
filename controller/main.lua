@@ -7,7 +7,7 @@ local ControllerNetworkManager = require("ControllerNetworkManager")
 local NodeManager = require("NodeManager")
 
 local threader = Threader.new()
-local eventEmitter = EventEmitter.new()
+local eventEmitter = EventEmitter.new(threader)
 local storageManager = StorageManager.new(eventEmitter)
 local networkManager = ControllerNetworkManager.new(eventEmitter, storageManager, threader)
 local nodeManager = NodeManager.new(eventEmitter, networkManager)
@@ -26,6 +26,13 @@ local function main()
 	threader:addThread(function()
 		while true do
 			networkManager:handleMessages()
+			sleep(0.05)
+		end
+	end)
+
+	threader:addThread(function()
+		while true do
+			eventEmitter:handleMessages()
 			sleep(0.05)
 		end
 	end)

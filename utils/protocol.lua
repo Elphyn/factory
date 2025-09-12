@@ -8,7 +8,7 @@ local message = {
 }
 
 local request = {
-	action = { "get-stations", "crafting-order" },
+	event = { "get-stations", "crafting-order" },
 	-- if it's an order
 	order = {
 		id = 8,
@@ -20,9 +20,9 @@ local request = {
 }
 
 local message = {
-	-- an example would we action = "withdraw", and not a table
+	-- an example would we event = "withdraw", and not a table
 	-- table is for listing possible actions you choose from
-	action = { "get-stations", "withdraw" },
+	event = { "get-stations", "withdraw" },
 	-- get-station field
 	nStations = 7,
 	-- withdraw field
@@ -31,7 +31,7 @@ local message = {
 }
 
 local request = {
-	action = { "get-stations", "get-buffer", "crafting-order" },
+	event = { "get-stations", "get-buffer", "crafting-order" },
 	assignedWorkerId = 3,
 	id = 10,
 	status = { "waiting", "sent", "finished" },
@@ -42,7 +42,7 @@ local request = {
 }
 
 local request = {
-	action = { "get-stations", "get-buffer", "crafting-order" },
+	event = { "get-stations", "get-buffer", "crafting-order" },
 	senderId = 1,
 	assignedWorkerId = 3,
 	id = 10,
