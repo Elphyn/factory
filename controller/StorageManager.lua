@@ -268,6 +268,8 @@ function StorageManager:getTotal(item)
 	if not self:_exist(item) then
 		return 0
 	end
+
+	print("got this total of item: " .. self.items[item].total)
 	return self.items[item].total
 end
 
