@@ -18,7 +18,6 @@ end
 
 function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 	-- local retryCount = 0
-	local startTime = os.clock()
 
 	request.messageID = self:generateID()
 	request.senderID = os.getComputerID()
@@ -28,6 +27,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 
 	-- while retryCount < 5 do
 	while true do
+		local startTime = os.clock()
 		local ok = rednet.send(nodeID, request)
 		if not ok then
 			error("Couldn't send a message: ", textutils.serialize(request))
