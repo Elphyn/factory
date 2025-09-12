@@ -7,7 +7,14 @@ function EventEmitter.new(threader)
 	self.callbacks = {}
 	self.asyncCallbacks = {}
 	self.events = {}
+	self.nextID = 1
 	return self
+end
+
+function EventEmitter:generateID()
+	local id = self.nextID
+	self.nextID = self.nextID + 1
+	return id
 end
 
 function EventEmitter:subscribe(event, callback, async)
@@ -22,14 +29,14 @@ function EventEmitter:subscribe(event, callback, async)
 		callback = callback,
 	}
 
+	local eventID = self:generateID() -- to safely remove in the future
 	if callback then
-		table.insert(self.callbacks[event], fn)
+		self.callbacks[event][eventID] = fn
 	end
 
 	-- for clear up, unsubcribe function
-	local index = #self.callbacks[event]
 	return function()
-		table.remove(self.callbacks[event], index)
+		self.callbacks[event][eventID] = nil
 	end
 end
 
@@ -40,7 +47,7 @@ function EventEmitter:handleEvents()
 		print("Processing event: ", event)
 		local data = unprocessedEvent.data
 		if self.callbacks[event] then
-			for _, fn in ipairs(self.callbacks[event]) do
+			for _, fn in pairs(self.callbacks[event]) do
 				if fn.async then
 					self.threader:addThread(
 						function() -- if callback async, it's might be blocking, we need to separate it from others
