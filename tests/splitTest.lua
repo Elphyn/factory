@@ -1,6 +1,8 @@
 local split = dofile("../controller/even.lua")
+local serialize = dofile("../utils/serialize.lua")
 
-local stations = {}
+local stations = { [8] = 2, [2] = 1 }
 
-table.insert(stations, 1)
-print(split(7, stations))
+local res = split(10, stations)
+
+print(serialize(res))
