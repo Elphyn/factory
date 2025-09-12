@@ -29,6 +29,13 @@ local function main()
 		end
 	end)
 
+	threader:addThread(function()
+		while true do
+			eventEmitter:handleEvents()
+			sleep(0.05)
+		end
+	end)
+
 	while true do
 		threader:run()
 	end
