@@ -1,12 +1,14 @@
 local NetworkManager = {}
 NetworkManager.__index = NetworkManager
 
+local Queue = dofile("factory/shared/Queue.lua")
+
 function NetworkManager.new(eventEmitter, threader)
 	local self = setmetatable({}, NetworkManager)
 	self.threader = threader
 	self.eventEmitter = eventEmitter
 	self.nextID = 1
-	self.messages = {}
+	self.messages = Queue.new()
 	return self
 end
 
@@ -59,12 +61,12 @@ function NetworkManager:listen()
 	print("Listening: ")
 	local _, msg = rednet.receive()
 
-	table.insert(self.messages, msg)
+	self.messages:push(msg)
 end
 
 function NetworkManager:handleMessages()
-	while #self.messages > 0 do
-		local msg = table.remove(self.messages)
+	while self.messages:length() > 0 do
+		local msg = self.messages:pop()
 		self:handleMessage(msg)
 	end
 end
