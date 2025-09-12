@@ -41,7 +41,6 @@ local function main()
 		-- updating and displaying contents of storage
 		while true do
 			storageManager:update()
-			storageManager:debug()
 			sleep(0.05)
 		end
 	end)

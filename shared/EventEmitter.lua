@@ -58,6 +58,7 @@ function EventEmitter:emit(event, ...)
 		event = event,
 		data = table.pack(...),
 	}
+	print("Received an event: ", event)
 	self.events:push(unprocessedEvent)
 end
 
