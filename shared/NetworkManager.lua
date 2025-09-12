@@ -58,6 +58,7 @@ function NetworkManager:listen()
 		error("Can't listen if rednet isn't open")
 	end
 
+	print("Listening: ")
 	local _, msg = rednet.receive()
 
 	table.insert(self.messages, msg)
