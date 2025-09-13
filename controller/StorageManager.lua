@@ -219,13 +219,13 @@ function StorageManager:getFreeChest()
 end
 
 function StorageManager:pushItem(to, item, count)
-	print("pushItem started with these arguments")
+	print("DEBUG: pushItem started with these arguments")
 	print(to .. " " .. item .. " " .. count)
-	local total = self:getTotal(item)
+	-- local total = self:getTotal(item)
 
-	if total == 0 or count > total then
-		error("Storage doesn't have/not enough of item")
-	end
+	-- if total == 0 or count > total then
+	-- 	error("Storage doesn't have/not enough of item")
+	-- end
 
 	local slots = self.items[item].slots
 	for _, slot in ipairs(slots) do
