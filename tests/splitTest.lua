@@ -1,8 +1,5 @@
-local split = dofile("../controller/even.lua")
-local serialize = dofile("../utils/serialize.lua")
+local res = { 1, 3, 4, 7 }
 
-local stations = { [8] = 2, [2] = 1 }
-
-local res = split(10, stations)
-
-print(serialize(res))
+for i, content in ipairs(res) do
+	print(i .. " " .. content)
+end

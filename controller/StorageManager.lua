@@ -23,7 +23,7 @@ end
 function StorageManager:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("order-finished", function(info)
-			self:withdraw(info.buffer, info.yeild)
+			self:withdraw(info.buffer, info.yield)
 		end)
 	end
 end
@@ -35,9 +35,9 @@ function StorageManager:insertOrderDependencies(order, to)
 	end
 end
 
-function StorageManager:withdraw(buffer, yeild)
+function StorageManager:withdraw(buffer, yield)
 	-- withdrawing each item we crafted from order from buffer
-	for item, crafted in pairs(yeild) do
+	for item, crafted in pairs(yield) do
 		self:pullItem(buffer, item, crafted)
 	end
 end
@@ -221,7 +221,7 @@ end
 function StorageManager:pushItem(to, item, count)
 	print("DEBUG: pushItem started with these arguments")
 	print(to .. " " .. item .. " " .. count)
-	-- local total = self:getTotal(item)
+	local total = self:getTotal(item)
 
 	-- if total == 0 or count > total then
 	-- 	error("Storage doesn't have/not enough of item")

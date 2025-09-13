@@ -113,16 +113,6 @@ function Scheduler:findCraftableItems(inventory)
 	return CraftableItems
 end
 
-function Scheduler:updateSchedule(inventory)
-	-- need to reset items that we reserved
-	self:resetReservedMaterials(inventory)
-	-- all waiting entries in queue could be recalculated
-	self:removeWaiting()
-
-	-- find items we can make, and how much
-	local items = self:findCraftableItems(inventory)
-end
-
 function Scheduler:planCrafts(inventory)
 	-- need to reset items that we reserved
 	self:resetReservedMaterials(inventory)
