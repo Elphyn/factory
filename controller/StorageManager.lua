@@ -150,23 +150,26 @@ end
 function StorageManager:update()
 	self.updateLock = true
 
-	local snapshot = self:getSnapshot()
 	-- is for comparison
-	local oldItems = snapshot.items
-	local oldFreeSlots = snapshot.freeSlots
+	local oldTotals = self:getTotals()
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
 
 	self:reset()
 	self:scan()
+	local newTotals = self:getTotals()
 
 	self.updateLock = false
-	if not deepEqual(oldItems, self.items) then
+	if not deepEqual(oldItems, newTotals) then
 		self:inventoryChange()
 	end
+end
 
-	if not deepEqual(oldFreeSlots, self.freeSlots) then
-		self:capacityChange()
+function StorageManager:getTotals()
+	local res = {}
+	for item, details in pairs(self.items) do
+		res[item] = details.total
 	end
+	return res
 end
 
 function StorageManager:getTotal(item)
