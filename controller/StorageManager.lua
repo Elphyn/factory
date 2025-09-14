@@ -159,6 +159,8 @@ function StorageManager:update()
 
 	for k, v in pairs(oldTotals) do
 		if newTotals[k] ~= v then
+			print("comparison failed")
+			print(newTotals[k] .. " ~= " .. v)
 			changed = true
 			break
 		end
@@ -166,6 +168,8 @@ function StorageManager:update()
 
 	for k, v in pairs(newTotals) do
 		if oldTotals[k] ~= v then
+			print("comparison failed")
+			print(oldTotals[k] .. " ~= " .. v)
 			changed = true
 			break
 		end
