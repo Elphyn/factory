@@ -210,6 +210,7 @@ function StorageManager:getTotal(item)
 end
 
 function StorageManager:pushItem(to, item, count)
+	log("Asked this resource: " .. item .. " " .. count)
 	local total = self:getTotal(item)
 	-- theoretically we shouldn't get this error if shceduler did calculations right
 	-- and we have an accurate representation of item storage
