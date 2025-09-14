@@ -234,7 +234,7 @@ end
 
 function StorageManager:fill(from, slots, item, count, outputSlots)
 	local insertSlots = outputSlots or self.freeSlots
-	print("Got this many slots in fill: ", #insertSlots)
+	print("Got this many slots in fill: ", insertSlots:length())
 	local slot = table.remove(slots)
 	-- we run this until we either exhaust count
 	-- or until we exhaust slots
