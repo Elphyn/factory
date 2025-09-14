@@ -21,6 +21,6 @@ return {
 		dependencies = {
 			["minecraft:iron_nugget"] = 9,
 		},
-		craftingLimit = 10,
+		craftingLimit = 5,
 	},
 }
