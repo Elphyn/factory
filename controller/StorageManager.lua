@@ -291,6 +291,7 @@ end
 
 function StorageManager:withdraw(buffer, yield)
 	-- withdrawing each item we crafted from order from buffer
+	self:update()
 	for item, crafted in pairs(yield) do
 		self:pullItem(buffer, item, crafted)
 	end
