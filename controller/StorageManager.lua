@@ -160,7 +160,10 @@ function StorageManager:update()
 	for k, v in pairs(oldTotals) do
 		if newTotals[k] ~= v then
 			print("comparison failed")
-			print(newTotals[k] .. " ~= " .. v)
+			local old = newTotals[k] or 0
+			local new = v or 0
+			print("item: ", k)
+			print(old .. " ~= " .. new)
 			changed = true
 			break
 		end
@@ -169,7 +172,10 @@ function StorageManager:update()
 	for k, v in pairs(newTotals) do
 		if oldTotals[k] ~= v then
 			print("comparison failed")
-			print(oldTotals[k] .. " ~= " .. v)
+			local old = oldTotals[k] or 0
+			local new = v or 0
+			print("item: ", k)
+			print(old .. " ~= " .. new)
 			changed = true
 			break
 		end
