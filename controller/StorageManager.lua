@@ -222,7 +222,7 @@ function StorageManager:locateSlots(searchItem, chest)
 end
 
 function StorageManager:getItemLimit(item, chest, slot)
-	local cached = self.cachedDetails[item].itemLimit
+	local cached = self.cachedDetails[item] and self.cachedDetails[item].itemLimit
 	if cached ~= nil then
 		return cached
 	end
