@@ -151,6 +151,7 @@ end
 
 function StorageManager:update()
 	log("Update started: ")
+	print("Update started:")
 	-- is for comparison
 	local oldTotals = self:getTotals()
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
@@ -192,6 +193,7 @@ function StorageManager:update()
 	if changed then
 		self:inventoryChange()
 	end
+	print("Update finished")
 end
 
 function StorageManager:getTotals()
