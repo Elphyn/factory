@@ -168,11 +168,8 @@ function StorageManager:update()
 
 	for k, v in pairs(oldTotals) do
 		if newTotals[k] ~= v then
-			print("comparison failed")
 			local old = newTotals[k] or 0
 			local new = v or 0
-			print("item: ", k)
-			print(old .. " ~= " .. new)
 			changed = true
 			break
 		end
@@ -180,11 +177,8 @@ function StorageManager:update()
 
 	for k, v in pairs(newTotals) do
 		if oldTotals[k] ~= v then
-			print("comparison failed")
 			local old = oldTotals[k] or 0
 			local new = v or 0
-			print("item: ", k)
-			print(old .. " ~= " .. new)
 			changed = true
 			break
 		end
@@ -212,11 +206,7 @@ function StorageManager:getTotal(item)
 end
 
 function StorageManager:pushItem(to, item, count)
-	log("Asked this resource: " .. item .. " " .. count)
 	local total = self:getTotal(item)
-	log("Total of an item: " .. total)
-	log("Total if you grab yourself: ")
-	log(textutils.serialize(self:getTotals()))
 	-- theoretically we shouldn't get this error if shceduler did calculations right
 	-- and we have an accurate representation of item storage
 	if total == 0 or count > total then
@@ -323,7 +313,6 @@ function StorageManager:pullItem(from, item, count)
 	if self.items[item] then
 		local partiallyFilled = self.items[item].partiallyFilledSlots
 		left = self:fill(from, slots, item, left, partiallyFilled)
-		print("Items left after fill: ", left)
 	end
 
 	--
@@ -333,7 +322,6 @@ function StorageManager:pullItem(from, item, count)
 	-- throwing an error, because we should check if we can insert, before inserting
 	-- so if leftover more then 0, means logic higher was wrong
 	if left > 0 then
-		print("Left: ", left)
 		error("Coudln't insert item fully")
 	end
 end
