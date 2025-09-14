@@ -53,7 +53,7 @@ function Display:render()
 	for name, info in pairs(itemTable) do
 		if info.total > 0 then
 			monitor.setCursorPos(1, line)
-			local itemInfoString = string.format("%d/%d | %s", info.total, info.capacity, info.displayName)
+			local itemInfoString = string.format("%d | %s", info.total, info.displayName)
 			monitor.write(itemInfoString)
 			line = line + 1
 		end
