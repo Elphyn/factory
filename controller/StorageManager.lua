@@ -21,6 +21,7 @@ function StorageManager:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("order-finished", function(info)
 			self:withdraw(info.buffer, info.yield)
+			self:update()
 		end)
 	end
 end
