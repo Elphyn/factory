@@ -12,6 +12,7 @@ function Scheduler.new(eventEmitter, nodeManager)
 	self.nodeManager = nodeManager
 	self.nextId = 1
 	self.queue = {}
+	self.assigned = {}
 	self.itemsProcessing = {}
 	self:setupEventListeners()
 	return self
@@ -62,7 +63,7 @@ function Scheduler:calculateMaxCraftable(item, recipe, inventory)
 	-- taking into account how many dependencies we have, and how much we can make with them
 	local ingredientConstrainsts = fp.map(recipe.dependencies, function(ratio, ingredient)
 		local ingredientTotal = inventory[ingredient] and inventory[ingredient].total or 0
-		local ingredientAssigned = inventory[ingredient] and inventory[ingredient].assigned or 0
+		local ingredientAssigned = self.assigned[item] or 0
 		local depStock = ingredientTotal - ingredientAssigned
 		return math.floor(depStock / ratio)
 	end)
@@ -82,17 +83,16 @@ end
 function Scheduler:reserveMaterials(recipe, count, inventory)
 	-- if we're making an item, need to reserve it's dependencies
 	for dep, ratio in pairs(recipe.dependencies) do
-		inventory[dep].assigned = inventory[dep].assigned + count * ratio
-		if inventory[dep].assigned > inventory[dep].total then
+		self.assigned[dep] = self.assigned[dep] or 0
+		self.assigned[dep] = self.assigned[dep] + count * ratio
+		if self.assigned[dep] > inventory[dep].total then
 			error("Can't assign more resources then there is, were trying to assign: " .. count .. " " .. dep)
 		end
 	end
 end
 
 function Scheduler:resetReservedMaterials(inventory)
-	for item, _ in pairs(inventory) do
-		inventory[item].assigned = 0
-	end
+	self.assigned = {}
 end
 
 function Scheduler:findCraftableItems(inventory)
