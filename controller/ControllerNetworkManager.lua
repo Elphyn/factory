@@ -32,11 +32,13 @@ function ControllerNetworkManager:requestStationCount(nodeID)
 end
 
 function ControllerNetworkManager:sendOrder(order)
-	local buffer = self:getNodeBuffer(order.assignedNodeId)
-	self.storageManager:insertOrderDependencies(order, buffer)
+	self.threader:addThread(function()
+		local buffer = self:getNodeBuffer(order.assignedNodeId)
+		self.storageManager:insertOrderDependencies(order, buffer)
 
-	self:makeRequest(order.assignedNodeId, order, "response-order")
-	order.state = "Sent"
+		self:makeRequest(order.assignedNodeId, order, "response-order")
+		order.state = "Sent"
+	end)
 end
 
 return ControllerNetworkManager
