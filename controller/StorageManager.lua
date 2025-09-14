@@ -221,8 +221,13 @@ function StorageManager:locateSlots(searchItem, chest)
 	return slots
 end
 
-function StorageManager:getItemLimit(item)
-	return self.cachedDetails[item].itemLimit
+function StorageManager:getItemLimit(item, chest, slot)
+	local cached = self.cachedDetails[item].itemLimit
+	if cached ~= nil then
+		return cached
+	end
+	-- need to add if it's not cached
+	return peripheral.call(chest, "getItemLimit", slot)
 end
 
 function StorageManager:fill(from, slots, item, count, outputSlots)
@@ -232,7 +237,7 @@ function StorageManager:fill(from, slots, item, count, outputSlots)
 	-- or until we exhaust slots
 	while count > 0 and insertSlots:length() > 0 do
 		local insertSlot = insertSlots:peek()
-		local itemLimit = self:getItemLimit(item)
+		local itemLimit = self:getItemLimit(item, insertSlot.chest, insertSlot.index)
 		local maxInsertAmount = itemLimit - insertSlot.count
 		local insertAmount = math.min(slot.count, maxInsertAmount)
 
