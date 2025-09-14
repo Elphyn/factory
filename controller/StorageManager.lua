@@ -200,6 +200,7 @@ function StorageManager:pushItem(to, item, count)
 end
 
 function StorageManager:insertOrderDependencies(order, to)
+	self:update()
 	local recipe = recipes[order.name]
 	for name, ratio in pairs(recipe.dependencies) do
 		self:pushItem(to, name, order.count * ratio)
