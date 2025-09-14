@@ -9,7 +9,6 @@ StorageManager.__index = StorageManager
 function StorageManager.new(eventEmitter)
 	local self = setmetatable({}, StorageManager)
 	self.eventEmitter = eventEmitter
-	self.updateLock = false
 	self.items = {}
 	self.freeSlots = Queue.new()
 	self.cachedDetails = {}
@@ -148,8 +147,6 @@ function StorageManager:getSnapshot()
 end
 
 function StorageManager:update()
-	self.updateLock = true
-
 	-- is for comparison
 	local oldTotals = self:getTotals()
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
@@ -158,7 +155,6 @@ function StorageManager:update()
 	self:scan()
 	local newTotals = self:getTotals()
 
-	self.updateLock = false
 	if not deepEqual(oldTotals, newTotals) then
 		self:inventoryChange()
 	end
@@ -181,9 +177,6 @@ function StorageManager:getTotal(item)
 end
 
 function StorageManager:pushItem(to, item, count)
-	while self.updateLock do
-		sleep(0.05)
-	end
 	local total = self:getTotal(item)
 	-- theoretically we shouldn't get this error if shceduler did calculations right
 	-- and we have an accurate representation of item storage
@@ -247,10 +240,6 @@ function StorageManager:fill(from, slots, item, count, outputSlots)
 	-- we run this until we either exhaust count
 	-- or until we exhaust slots
 	while count > 0 do
-		while self.updateLock do
-			sleep(0.05)
-		end
-
 		local insertSlot = insertSlots:peek()
 		local itemLimit = self:getItemLimit(item, insertSlot.chest, insertSlot.index)
 		local maxInsertAmount = itemLimit - insertSlot.count
