@@ -91,7 +91,6 @@ function StorageManager:scanChest(chestName)
 		-- saving where item is being held, it's count, updaing total count
 		self:saveItemDetails(item, i, chestName)
 	end
-
 	-- saving free slots in qeuue, so when we need to insert something, we insert at the first empty, not last
 	for i = 1, numSlots do
 		if not filledSlots[i] then

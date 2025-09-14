@@ -4,6 +4,7 @@ local Queue = {}
 Queue.__index = Queue
 
 local deepEqual = dofile("factory/utils/deepEqual.lua")
+local deepCopy = dofile("factory/utils/deepCopy.lua")
 
 function Queue.new()
 	local self = setmetatable({}, Queue)
@@ -59,7 +60,7 @@ function Queue.initFromTable(data)
 	local queue = Queue.new()
 	queue.first = data.first
 	queue.last = data.last
-	queue.table = data.table
+	queue.table = deepCopy(data.table)
 	return queue
 end
 
