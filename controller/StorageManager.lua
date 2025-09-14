@@ -155,8 +155,11 @@ function StorageManager:update()
 
 	self:reset()
 	self:scan()
-	log(textutils.serialize(self.items))
+	log("Old totals: ")
+	log(textutils.serialize(oldTotals))
 	local newTotals = self:getTotals()
+	log("New totals")
+	log(textutils.serialize(newTotals))
 
 	local changed = false
 
