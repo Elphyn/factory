@@ -21,7 +21,6 @@ function StorageManager:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("order-finished", function(info)
 			self:withdraw(info.buffer, info.yield)
-			self:update()
 		end)
 	end
 end
@@ -325,7 +324,6 @@ end
 
 function StorageManager:withdraw(buffer, yield)
 	-- withdrawing each item we crafted from order from buffer
-	self:update()
 	for item, crafted in pairs(yield) do
 		self:pullItem(buffer, item, crafted)
 	end
