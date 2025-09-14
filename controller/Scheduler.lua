@@ -25,14 +25,14 @@ function Scheduler:generateId()
 end
 
 function Scheduler:setupEventListeners()
-	if self.eventEmitter then
-		self.eventEmitter:subscribe("inventory_changed", function(storage)
-			self:planCrafts(storage)
-		end)
-		self.eventEmitter:subscribe("order-finished", function(msg)
-			self:handleFinishedOrder(msg)
-		end)
-	end
+	-- if self.eventEmitter then
+	-- 	self.eventEmitter:subscribe("inventory_changed", function(storage)
+	-- 		self:planCrafts(storage)
+	-- 	end)
+	-- 	self.eventEmitter:subscribe("order-finished", function(msg)
+	-- 		self:handleFinishedOrder(msg)
+	-- 	end)
+	-- end
 end
 
 function Scheduler:removeOrderFromQueue(id, item)

@@ -59,6 +59,8 @@ function StorageManager:saveItemDetails(item, slotIndex, chestName)
 		index = slotIndex,
 		count = item.count,
 	}
+	print("Item found: ")
+	print("old: " .. self.items[item.name].total .. " + " .. item.count)
 	self.items[item.name].total = self.items[item.name].total + item.count
 
 	-- if slot isn't full, meaning it's 64 or 16 for pearls, we can push it into this slot
