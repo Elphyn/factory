@@ -21,9 +21,7 @@ end
 function StorageManager:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("order-finished", function(info)
-			self.updateLock = true
 			self:withdraw(info.buffer, info.yield)
-			self.updateLock = false
 			self:update()
 		end)
 	end
@@ -151,9 +149,7 @@ function StorageManager:getSnapshot()
 end
 
 function StorageManager:update()
-	if self.updateLock then
-		return
-	end
+	self.updateLock = true
 
 	local snapshot = self:getSnapshot()
 	-- is for comparison
@@ -171,6 +167,8 @@ function StorageManager:update()
 	if not deepEqual(oldFreeSlots, self.freeSlots) then
 		self:capacityChange()
 	end
+
+	self.updateLock = false
 end
 
 function StorageManager:getTotal(item)
@@ -241,37 +239,41 @@ end
 
 function StorageManager:fill(from, slots, item, count, outputSlots)
 	local insertSlots = outputSlots or self.freeSlots
-	print("Got this many slots in fill: ", insertSlots:length())
+	local slot = table.remove(slots)
+	-- we run this until we either exhaust count
+	-- or until we exhaust slots
+	while count > 0 do
+		while self.updateLock do
+			sleep(0.05)
+		end
 
-	-- take slots in order
-	local slot = table.remove(slots, 1)
-
-	while count > 0 and slot and insertSlots:length() > 0 do
 		local insertSlot = insertSlots:peek()
 		local itemLimit = self:getItemLimit(item, insertSlot.chest, insertSlot.index)
 		local maxInsertAmount = itemLimit - insertSlot.count
-		local requested = math.min(slot.count, maxInsertAmount, count)
+		local insertAmount = math.min(slot.count, maxInsertAmount)
 
-		if requested > 0 then
-			local moved = peripheral.call(insertSlot.chest, "pullItems", from, slot.index, requested, insertSlot.index)
+		-- inserting
+		peripheral.call(insertSlot.chest, "pullItems", from, slot.index, insertAmount, insertSlot.index)
 
-			-- update with actual moved
-			count = count - moved
-			slot.count = slot.count - moved
-			insertSlot.count = insertSlot.count + moved
-		end
+		-- aftermath
+		count = count - insertAmount
+		slot.count = slot.count - insertAmount
+		insertSlot.count = insertSlot.count + insertAmount
 
-		-- if slot we were inserting in is now full, pop it
-		if insertSlot.count >= itemLimit then
+		-- if slot we were inserting in is now full, we remove it from slots
+		if insertSlot.count == itemLimit then
 			insertSlots:pop()
 		end
 
-		-- if we exhausted the source slot, grab the next one
-		if slot.count <= 0 then
-			slot = table.remove(slots, 1)
+		-- if we exhausted slot, we move on to the next one
+		if slot.count == 0 then
+			if #slots > 0 then
+				slot = table.remove(slots)
+			else
+				break -- if all slots were exhausted
+			end
 		end
 	end
-
 	return count -- leftover
 end
 
