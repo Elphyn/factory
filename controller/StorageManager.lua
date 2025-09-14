@@ -151,13 +151,13 @@ end
 
 function StorageManager:update()
 	log("Update started: ")
-	print("Update started:")
 	-- is for comparison
 	local oldTotals = self:getTotals()
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
-
+	self.updating = true
 	self:reset()
 	self:scan()
+	self.updating = false
 	log("Old totals: ")
 	log(textutils.serialize(oldTotals))
 	local newTotals = self:getTotals()
@@ -193,7 +193,6 @@ function StorageManager:update()
 	if changed then
 		self:inventoryChange()
 	end
-	print("Update finished")
 end
 
 function StorageManager:getTotals()
@@ -213,7 +212,6 @@ function StorageManager:getTotal(item)
 end
 
 function StorageManager:pushItem(to, item, count)
-	self.updateLock = true
 	log("Asked this resource: " .. item .. " " .. count)
 	local total = self:getTotal(item)
 	log("Total of an item: " .. total)
@@ -240,10 +238,13 @@ function StorageManager:pushItem(to, item, count)
 			break
 		end
 	end
-	self.updateLock = false
 end
 
 function StorageManager:insertOrderDependencies(order, to)
+	while self.updating do
+		sleep(0.05)
+	end
+
 	self.updateLock = true
 	local recipe = recipes[order.name]
 	for name, ratio in pairs(recipe.dependencies) do
@@ -339,6 +340,11 @@ end
 
 function StorageManager:withdraw(buffer, yield)
 	-- withdrawing each item we crafted from order from buffer
+
+	while self.updating do
+		sleep(0.05)
+	end
+
 	self.updateLock = true
 	for item, crafted in pairs(yield) do
 		self:pullItem(buffer, item, crafted)
