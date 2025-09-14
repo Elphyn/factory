@@ -116,6 +116,7 @@ function StorageManager:searchForChests()
 end
 
 function StorageManager:scan()
+	print("Scan called")
 	local chests = self:searchForChests()
 
 	for _, chestName in ipairs(chests) do
@@ -151,7 +152,9 @@ function StorageManager:update()
 	local oldTotals = self:getTotals()
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
 
+	print("Reset in update")
 	self:reset()
+	print("Update before scan")
 	self:scan()
 	local newTotals = self:getTotals()
 
