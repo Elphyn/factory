@@ -53,7 +53,7 @@ end
 
 function Scheduler:calculateMaxCraftable(item, recipe, inventory)
 	-- assigned - reserved ammount for other orders, that were queued before this one
-	local assigned = inventory[item] and inventory[item].assigned or 0
+	local assigned = self.assigned[item] or 0
 	local total = inventory[item] and inventory[item].total or 0
 	local stock = total - assigned
 
