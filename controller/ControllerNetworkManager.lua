@@ -13,7 +13,9 @@ end
 
 function ControllerNetworkManager:setupEvents()
 	self.eventEmitter:subscribe("new-order", function(order)
-		self:sendOrder(order)
+		self.threader:addThread(function()
+			self:sendOrder(order)
+		end)
 	end)
 end
 
