@@ -1,21 +1,18 @@
 local deepCopy = dofile("factory/utils/deepCopy.lua")
+local deepEqual = dofile("factory/utils/deepEqual.lua")
 local recipes = dofile("factory/shared/recipes.lua")
 local empty = dofile("factory/utils/isEmpty.lua")
+local Queue = dofile("factory/shared/Queue.lua")
 local StorageManager = {}
 
--- TODO:
--- 1) If item.craftingLimit is > 256 then we assign a whole chest to them
--- 2) If it's <= 256 it's a misc chest from there on
-
 StorageManager.__index = StorageManager
-
 function StorageManager.new(eventEmitter)
 	local self = setmetatable({}, StorageManager)
 	self.eventEmitter = eventEmitter
 	self.items = {}
-	self.freeChests = {}
-	self.assignedChests = {}
-	self.cachedInfo = {}
+	self.freeSlots = Queue.new()
+	self.cachedDetails = {}
+	self.capacity = 0
 	self:setupEventListeners()
 	return self
 end
@@ -28,10 +25,257 @@ function StorageManager:setupEventListeners()
 	end
 end
 
+function StorageManager:itemDetailsCached(item)
+	if self.cachedDetails[item] ~= nil then
+		return true
+	end
+	return false
+end
+
+function StorageManager:cacheItemDetails(chestName, slotIDX, item)
+	-- you need to know where item is stored to request details
+	local chest = peripheral.wrap(chestName)
+
+	self.cachedDetails[item] = {
+		-- this one might slow system down quite a bit if not cached
+		displayName = chest.getItemDetail(slotIDX).displayName,
+		itemLimit = chest.getItemLimit(slotIDX),
+	}
+end
+
+function StorageManager:saveItemDetails(item, slotIndex, chestName)
+	if self.items[item.name] == nil then
+		self.items[item.name] = {
+			name = item.name,
+			displayName = self.cachedDetails[item.name].displayName,
+			total = 0,
+			slots = {}, -- for pulling out
+			partiallyFilledSlots = Queue.new(), -- for pushing in
+		}
+	end
+	local slotDetails = {
+		chest = chestName,
+		index = slotIndex,
+		count = item.count,
+	}
+	self.items[item.name].total = self.items[item.name].total + item.count
+
+	-- if slot isn't full, meaning it's 64 or 16 for pearls, we can push it into this slot
+	if slotDetails.count < self.cachedDetails[item.name].itemLimit then
+		self.items[item.name].partiallyFilledSlots:push(slotDetails)
+	end
+	table.insert(self.items[item.name].slots, slotDetails)
+end
+
+function StorageManager:scanChest(chestName)
+	local chest = peripheral.wrap(chestName)
+
+	local filledSlots = chest.list()
+	local numSlots = chest.size()
+	local chestSpace = numSlots * 64
+
+	-- updaing how many items storage can hold
+	self.capacity = self.capacity + chestSpace
+
+	-- filling in item details, generating free slots table
+	for i, item in pairs(filledSlots) do
+		local name = item.name
+
+		-- caching details about an item, so it happens only once per new item
+		if not self:itemDetailsCached(name) then
+			self:cacheItemDetails(chestName, i, name)
+		end
+
+		-- saving where item is being held, it's count, updaing total count
+		self:saveItemDetails(item, i, chestName)
+	end
+
+	-- saving free slots in qeuue, so when we need to insert something, we insert at the first empty, not last
+	for i = 1, numSlots do
+		if not filledSlots[i] then
+			local slot = {
+				chest = chestName,
+				index = i,
+				count = 0,
+			}
+			self.freeSlots:push(slot)
+		end
+	end
+end
+
+function StorageManager:searchForChests()
+	local peripherals = peripheral.getNames()
+	local chests = {}
+
+	for _, periph in ipairs(peripherals) do
+		if string.match(periph, "^minecraft:chest") then
+			table.insert(chests, periph)
+		end
+	end
+	return chests
+end
+
+function StorageManager:scan()
+	local chests = self:searchForChests()
+
+	for _, chestName in ipairs(chests) do
+		self:scanChest(chestName)
+	end
+end
+
+function StorageManager:reset()
+	self.items = {}
+	self.freeSlots:reset()
+	self.capacity = 0
+end
+
+function StorageManager:inventoryChange()
+	self.eventEmitter:emit("inventory_changed", self.items)
+end
+
+function StorageManager:capacityChange()
+	self.eventEmitter:emit("capacity_changed", self.capacity)
+end
+
+function StorageManager:getSnapshot()
+	local snapshot = {
+		items = deepCopy(self.items),
+		freeSlots = deepCopy(self.freeSlots), -- no point in making that a queue here
+	}
+
+	return snapshot
+end
+
+function StorageManager:update()
+	local snapshot = self:getSnapshot()
+	-- is for comparison
+	local oldItems = snapshot.items
+	local oldFreeSlots = snapshot.freeSlots
+	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
+
+	self:reset()
+	self:scan()
+
+	if not deepEqual(oldItems, self.items) then
+		self:inventoryChange()
+	end
+
+	if not deepEqual(oldFreeSlots, self.freeSlots) then
+		self:capacityChange()
+	end
+end
+
+function StorageManager:getTotal(item)
+	local total = 0
+	if self.items[item] ~= nil then
+		total = self.items[item].total
+	end
+	return total
+end
+
+function StorageManager:pushItem(to, item, count)
+	local total = self:getTotal(item)
+	-- theoretically we shouldn't get this error if shceduler did calculations right
+	-- and we have an accurate representation of item storage
+	if total == 0 or count > total then
+		error("Storage doesn't have/not enough of item")
+	end
+
+	local slots = self.items[item].slots
+	for i = #slots, 1, -1 do
+		local slot = slots[i]
+		local take = 0
+		if count >= slot.count then
+			take = slot.count
+		else
+			take = count
+		end
+		peripheral.call(slot.chest, "pushItems", to, slot.index, take)
+		count = count - take
+		if count == 0 then
+			break
+		end
+	end
+end
+
 function StorageManager:insertOrderDependencies(order, to)
 	local recipe = recipes[order.name]
 	for name, ratio in pairs(recipe.dependencies) do
 		self:pushItem(to, name, order.count * ratio)
+	end
+end
+
+function StorageManager:locateSlots(searchItem, chest)
+	local items = peripheral.call(chest, "list")
+	local slots = {}
+	for i, slot in pairs(items) do
+		if slot.name == searchItem then
+			local slotInfo = {
+				name = slot.name,
+				count = slot.count,
+				index = i,
+			}
+			table.insert(slots, slotInfo)
+		end
+	end
+	return slots
+end
+
+function StorageManager:getItemLimit(item)
+	return self.cachedDetails[item].itemLimit
+end
+
+function StorageManager:fill(from, slots, item, count, outputSlots)
+	local insertSlots = outputSlots or self.freeSlots
+	local slot = table.remove(slots)
+	-- we run this until we either exhaust count
+	-- or until we exhaust slots
+	while count > 0 and insertSlots:length() > 0 do
+		local insertSlot = insertSlots:peek()
+		local itemLimit = self:getItemLimit(item)
+		local maxInsertAmount = itemLimit - insertSlot.count
+		local insertAmount = math.min(slot.count, maxInsertAmount)
+
+		-- inserting
+		peripheral.call(insertSlot.chest, "pullItems", from, slot.index, insertAmount, insertSlot.index)
+
+		-- aftermath
+		count = count - insertAmount
+		slot.count = slot.count - insertAmount
+		insertSlot.count = insertSlot.count + insertAmount
+
+		-- if slot we were inserting in is now full, we remove it from slots
+		if insertSlot.count == itemLimit then
+			insertSlots:pop()
+		end
+
+		-- if we exhausted slot, we move on to the next one
+		if slot.count == 0 then
+			if #slots > 0 then
+				slot = table.remove(slots)
+			else
+				break -- if all slots were exhausted
+			end
+		end
+	end
+	return count -- leftover
+end
+
+function StorageManager:pullItem(from, item, count)
+	-- get all slots in which item is located
+	local slots = self:locateSlots(item, from)
+	local partiallyFilled = self.items[item].partiallyFilledSlots
+
+	-- first fill partially filled slots
+	local leftover = self:fill(from, slots, item, count, partiallyFilled)
+
+	-- what's left is filled into impty slots
+	leftover = self:fill(from, slots, item, leftover)
+
+	-- throwing an error, because we should check if we can insert, before inserting
+	-- so if leftover more then 0, means logic higher was wrong
+	if leftover > 0 then
+		error("Coudln't insert item fully")
 	end
 end
 
@@ -40,242 +284,6 @@ function StorageManager:withdraw(buffer, yield)
 	for item, crafted in pairs(yield) do
 		self:pullItem(buffer, item, crafted)
 	end
-end
-
-function StorageManager:_getStorageUnits()
-	local list = peripheral.getNames()
-	local storageUnits = {}
-
-	-- we're looking for a all peripheral that start with minecraft:chest
-	-- subject to change
-	for _, connectedPeripheral in ipairs(list) do
-		if string.match(connectedPeripheral, "^minecraft:chest") then
-			table.insert(storageUnits, connectedPeripheral)
-		end
-	end
-	return storageUnits
-end
-
-function StorageManager:getAllTotals()
-	local totals = {}
-	for item, info in pairs(self.items) do
-		totals[item] = info.total
-	end
-	return totals
-end
-
-function StorageManager:reset()
-	self.items = {}
-end
-
-function StorageManager:countItems()
-	-- returns how many items there are in the system
-	local count = 0
-	for _ in pairs(self.items) do
-		count = count + 1
-	end
-	return count
-end
-
-function StorageManager:scan()
-	self.freeChests = {}
-
-	local chests = StorageManager:_getStorageUnits()
-	for _, name in ipairs(chests) do
-		self:_scanChest(name)
-	end
-end
-
-function StorageManager:update()
-	-- snapshot of old values, so we can compare if there are any changes(relevant changes)
-	local oldValuesOfItems = self:getAllTotals()
-	local oldNumberOfItems = self:countItems()
-	local changed = false
-
-	self:reset()
-	-- updating storage
-	self:scan()
-
-	-- now we compare
-	for item, info in pairs(self.items) do
-		local old = oldValuesOfItems[item] or 0
-		local new = info.total
-
-		if old ~= new then
-			changed = true
-			break
-		end
-	end
-
-	if not changed then
-		local newNumberOfItems = self:countItems()
-		changed = oldNumberOfItems ~= newNumberOfItems
-	end
-
-	-- if there are any changes emit event
-	if changed then
-		self:signalChange()
-	end
-end
-
-function StorageManager:signalChange()
-	if self.eventEmitter then
-		self.eventEmitter:emit("inventory_changed", self:getItems())
-	end
-end
-
-function StorageManager:_scanChest(name)
-	local chest = peripheral.wrap(name)
-	local items = chest.list()
-
-	if empty(items) then
-		table.insert(self.freeChests, name)
-		return
-	end
-
-	local chestSlots = chest.size()
-	local chestSpace = chestSlots * 64
-	for idx, itemInfo in pairs(items) do
-		local itemName = itemInfo.name
-		if not self.assignedChests[itemName] then
-			self.assignedChests[itemName] = { name = name }
-			self.assignedChests[itemName].space = chestSpace
-		end
-		self.assignedChests[itemName].space = self.assignedChests[itemName].space - itemInfo.count
-
-		-- caching
-		if self.cachedInfo[itemName] == nil then
-			-- it's possible that item could get in and out of the system, caching important values makes system work much faster
-			self.cachedInfo[itemName] = {
-				-- this one is really slow, the whole reason I added caching
-				displayName = chest.getItemDetail(idx).displayName,
-				itemLimit = chest.getItemLimit(idx),
-			}
-		end
-
-		-- init
-		if self.items[itemName] == nil then
-			self.items[itemName] = {
-				name = itemName,
-				displayName = self.cachedInfo[itemName].displayName,
-				total = 0,
-				slots = {},
-				capacity = chestSlots * self.cachedInfo[itemName].itemLimit,
-				assigned = 0,
-			}
-		end
-
-		self.items[itemName].total = self.items[itemName].total + itemInfo.count
-		table.insert(self.items[itemName].slots, { name = name, slot_idx = idx, count = itemInfo.count })
-	end
-end
-
-function StorageManager:locateSlots(searchItem, chest)
-	local items = peripheral.call(chest, "list")
-	local slots = {}
-	for idx, slot in pairs(items) do
-		if slot.name == searchItem then
-			slots[idx] = slot
-		end
-	end
-	return slots
-end
-
-function StorageManager:pullItem(from, item, count)
-	-- find all occ of item in "from" peripheral
-	local slots = self:locateSlots(item, from)
-
-	-- go through each slot, inserting
-	for idx, slotInfo in pairs(slots) do
-		if count > 0 then
-			local slotAmount = slotInfo.count
-
-			-- for now just insert into assigned chest or take a new one
-			local chest = nil
-			if self.assignedChests[item] then
-				chest = self.assignedChests[item]
-			else
-				local freeChest = self:getFreeChest()
-				chest = {
-					name = freeChest,
-					space = peripheral.call(freeChest, "size") * 64,
-				}
-				self.assignedChests[item] = chest
-			end
-			if chest then
-				local insertAmount = math.min(count, slotAmount, chest.space)
-				count = count - insertAmount
-				peripheral.call(chest.name, "pullItems", from, idx, insertAmount)
-			end
-		end
-	end
-end
-
-function StorageManager:getFreeChest()
-	if #self.freeChests == 0 then
-		error("Trying to get a free chest, there's none")
-	end
-	return table.remove(self.freeChests)
-end
-
-function StorageManager:pushItem(to, item, count)
-	print("DEBUG: pushItem started with these arguments")
-	print(to .. " " .. item .. " " .. count)
-	local total = self:getTotal(item)
-
-	-- if total == 0 or count > total then
-	-- 	error("Storage doesn't have/not enough of item")
-	-- end
-
-	local slots = self.items[item].slots
-	for _, slot in ipairs(slots) do
-		local chest = peripheral.wrap(slot.name)
-
-		local take = 0
-		if count >= slot.count then
-			take = slot.count
-		else
-			take = count
-		end
-		chest.pushItems(to, slot.slot_idx, take)
-		count = count - take
-		if count == 0 then
-			break
-		end
-	end
-end
-
-function StorageManager:_exist(item)
-	if self.items[item] ~= nil then
-		return true
-	end
-	return false
-end
-
-function StorageManager:debug()
-	term.clear()
-	term.setCursorPos(1, 1)
-	for _, chestName in ipairs(self.freeChests) do
-		print(chestName)
-	end
-end
-
-function StorageManager:getItems()
-	return self.items
-end
-
-function StorageManager:getTotal(item)
-	if not self:_exist(item) then
-		return 0
-	end
-
-	print("got this total of item: " .. self.items[item].total)
-	return self.items[item].total
-end
-
-function StorageManager:getSnapshot()
-	local snapshot = deepCopy(self.items)
-	return snapshot
 end
 
 return StorageManager

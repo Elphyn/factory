@@ -6,6 +6,14 @@ local function deep_equal(t1, t2)
 		return false
 	end
 
+	-- if queue
+	local isQueue1 = t1._isQueue
+	local isQueue2 = t2._isQueue
+
+	if isQueue1 and isQueue2 then
+		return t1:equals(t2)
+	end
+
 	-- count keys
 	local count1, count2 = 0, 0
 	for _ in pairs(t1) do

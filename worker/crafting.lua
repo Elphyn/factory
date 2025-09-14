@@ -54,13 +54,13 @@ function standardCrafting(takeFromName, placeWhereName, stationName, task, order
 	-- withdraw items
 	station.pushItem(placeWhereName, craftingItemName, howManyToCraft)
 	-- since it's concrete for this type of crafting, we always end up with what we needed to craft
-	if not order.yeild then
-		order.yeild = {}
+	if not order.yield then
+		order.yield = {}
 	end
-	if not order.yeild[craftingItemName] then
-		order.yeild[craftingItemName] = 0
+	if not order.yield[craftingItemName] then
+		order.yield[craftingItemName] = 0
 	end
-	order.yeild[craftingItemName] = order.yeild[craftingItemName] + howManyToCraft
+	order.yield[craftingItemName] = order.yield[craftingItemName] + howManyToCraft
 
 	if station.clearFilterItem ~= nil then
 		station.clearFilterItem()
