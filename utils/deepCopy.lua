@@ -1,3 +1,4 @@
+local Queue = dofile("factory/shared/Queue.lua")
 local function deepCopy(t)
 	-- if it's not table, we don't need a deep copy
 	if type(t) ~= "table" then
