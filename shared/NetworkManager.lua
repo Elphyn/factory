@@ -42,6 +42,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 			end
 		end, true)
 
+		print("Wating for: " .. awaitEvent)
 		while os.clock() - startTime < 5 and not resolved do
 			sleep(0.05) -- switch
 		end
