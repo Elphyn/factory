@@ -29,5 +29,6 @@ return {
 		dependencies = {
 			["minecraft:iron_ingot"] = 9,
 		},
+		craftingLimit = 10,
 	},
 }
