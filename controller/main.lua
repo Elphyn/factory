@@ -17,6 +17,10 @@ local display = Display.new(eventEmitter)
 local function main()
 	rednet.open("back")
 
+	if fs.exists("storage_log.txt") then
+		fs.delete("storage_log.txt")
+	end
+
 	threader:addThread(function()
 		while true do
 			networkManager:listen()
