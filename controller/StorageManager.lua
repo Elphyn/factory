@@ -1,5 +1,4 @@
 local deepCopy = dofile("factory/utils/deepCopy.lua")
-local log = dofile("factory/utils/logging.lua")
 local deepEqual = dofile("factory/utils/deepEqual.lua")
 local recipes = dofile("factory/shared/recipes.lua")
 local empty = dofile("factory/utils/isEmpty.lua")
@@ -11,10 +10,13 @@ function StorageManager.new(eventEmitter)
 	local self = setmetatable({}, StorageManager)
 	self.eventEmitter = eventEmitter
 	self.items = {}
-	self.freeSlots = Queue.new()
+	self.freeSlots = Queue.new() -- not that important, just to have items fill storage left -> right
 	self.cachedDetails = {}
 	self.capacity = 0
+	-- update Lock is important, because if any pull/push yeild, we need to make sure system doesn't update self.items
 	self.updateLock = false
+	-- updating is important to indicate if update paused mid way, and self.items isn't fully formed
+	-- any method that moves items must wait until updating has finished
 	self.updating = false
 	self:update()
 	self:setupEventListeners()
@@ -150,19 +152,18 @@ function StorageManager:getSnapshot()
 end
 
 function StorageManager:update()
-	log("Update started: ")
 	-- is for comparison
 	local oldTotals = self:getTotals()
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
+
+	-- there's plently of peripheral calls in scan, meaning it would switch to other coroutines mid scan
+	-- so we have to know if self.items is stable at the moment, self.updating is an indicator if it's stable
 	self.updating = true
 	self:reset()
 	self:scan()
 	self.updating = false
-	log("Old totals: ")
-	log(textutils.serialize(oldTotals))
+
 	local newTotals = self:getTotals()
-	log("New totals")
-	log(textutils.serialize(newTotals))
 
 	local changed = false
 
