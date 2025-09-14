@@ -1,4 +1,5 @@
 local deepCopy = dofile("factory/utils/deepCopy.lua")
+local log = dofile("factory/utils/logging.lua")
 local deepEqual = dofile("factory/utils/deepEqual.lua")
 local recipes = dofile("factory/shared/recipes.lua")
 local empty = dofile("factory/utils/isEmpty.lua")
@@ -147,12 +148,14 @@ function StorageManager:getSnapshot()
 end
 
 function StorageManager:update()
+	log("Update started: ")
 	-- is for comparison
 	local oldTotals = self:getTotals()
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
 
 	self:reset()
 	self:scan()
+	log(textutils.serialize(self.items))
 	local newTotals = self:getTotals()
 
 	local changed = false
