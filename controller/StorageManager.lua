@@ -210,10 +210,12 @@ function StorageManager:getTotal(item)
 end
 
 function StorageManager:pushItem(to, item, count)
+	self.updateLock = true
 	log("Asked this resource: " .. item .. " " .. count)
 	local total = self:getTotal(item)
 	log("Total of an item: " .. total)
-	log("Total if you grab yourself: " .. self.items[item] and self.items[item].total or 0)
+	log("Total if you grab yourself: ")
+	log(textutils.serialize(self:getTotals()))
 	-- theoretically we shouldn't get this error if shceduler did calculations right
 	-- and we have an accurate representation of item storage
 	if total == 0 or count > total then
@@ -235,6 +237,7 @@ function StorageManager:pushItem(to, item, count)
 			break
 		end
 	end
+	self.updateLock = false
 end
 
 function StorageManager:insertOrderDependencies(order, to)
