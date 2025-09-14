@@ -160,6 +160,7 @@ function StorageManager:update()
 	self:reset()
 	self:scan()
 
+	self.updateLock = false
 	if not deepEqual(oldItems, self.items) then
 		self:inventoryChange()
 	end
@@ -167,8 +168,6 @@ function StorageManager:update()
 	if not deepEqual(oldFreeSlots, self.freeSlots) then
 		self:capacityChange()
 	end
-
-	self.updateLock = false
 end
 
 function StorageManager:getTotal(item)
@@ -180,6 +179,9 @@ function StorageManager:getTotal(item)
 end
 
 function StorageManager:pushItem(to, item, count)
+	while self.updateLock do
+		sleep(0.05)
+	end
 	local total = self:getTotal(item)
 	-- theoretically we shouldn't get this error if shceduler did calculations right
 	-- and we have an accurate representation of item storage

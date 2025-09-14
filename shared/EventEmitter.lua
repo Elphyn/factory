@@ -38,6 +38,7 @@ end
 function EventEmitter:handleEvents()
 	while self.events:length() > 0 do
 		local unprocessedEvent = self.events:pop()
+		print("Handling event: ", unprocessedEvent.event)
 		local event = unprocessedEvent.event
 		local data = unprocessedEvent.data
 
