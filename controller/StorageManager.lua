@@ -13,6 +13,7 @@ function StorageManager.new(eventEmitter)
 	self.freeSlots = Queue.new()
 	self.cachedDetails = {}
 	self.capacity = 0
+	self:update()
 	self:setupEventListeners()
 	return self
 end
