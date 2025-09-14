@@ -155,7 +155,23 @@ function StorageManager:update()
 	self:scan()
 	local newTotals = self:getTotals()
 
-	if not deepEqual(oldTotals, newTotals) then
+	local changed = false
+
+	for k, v in pairs(oldTotals) do
+		if newTotals[k] ~= v then
+			changed = true
+			break
+		end
+	end
+
+	for k, v in pairs(newTotals) do
+		if oldTotals[k] ~= v then
+			changed = true
+			break
+		end
+	end
+
+	if changed then
 		self:inventoryChange()
 	end
 end
