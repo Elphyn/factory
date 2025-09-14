@@ -15,6 +15,7 @@ function StorageManager.new(eventEmitter)
 	self.cachedDetails = {}
 	self.capacity = 0
 	self.updateLock = false
+	self.updating = false
 	self:update()
 	self:setupEventListeners()
 	return self

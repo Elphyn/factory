@@ -20,7 +20,7 @@ function EventEmitter:generateID()
 	return id
 end
 
-function EventEmitter:subscribe(event, callback)
+function EventEmitter:subscribe(event, callback, async)
 	if not self.callbacks[event] then
 		self.callbacks[event] = {}
 	end
@@ -28,6 +28,10 @@ function EventEmitter:subscribe(event, callback)
 	local eventID = self:generateID() -- to safely remove in the future
 	if callback then
 		self.callbacks[event][eventID] = callback
+		self.callbacks[event][eventID] = {
+			fn = callback,
+			async = async or false,
+		}
 	end
 
 	-- for clear up, unsubcribe function
@@ -47,9 +51,14 @@ function EventEmitter:handleEvents()
 			for _, callback in pairs(self.callbacks[event]) do
 				-- there's a bunch of blocking operations and they take time
 				-- so we need to make them work in parallel
-				self.threader:addThread(function()
-					callback(table.unpack(data))
-				end)
+				--
+				if callback.async then
+					self.threader:addThread(function()
+						callback.fn(table.unpack(data))
+					end)
+				else
+					callback.fn(table.unpack(data))
+				end
 			end
 		end
 	end

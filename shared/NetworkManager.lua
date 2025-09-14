@@ -40,7 +40,7 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 				resolved = true
 				captured = response
 			end
-		end)
+		end, true)
 
 		while os.clock() - startTime < 5 and not resolved do
 			sleep(0.05) -- switch
