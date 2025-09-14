@@ -6,12 +6,13 @@ local split = require("even")
 local Scheduler = {}
 Scheduler.__index = Scheduler
 
-function Scheduler.new(eventEmitter, nodeManager)
+function Scheduler.new(eventEmitter, nodeManager, threader)
 	local self = setmetatable({}, Scheduler)
 	self.eventEmitter = eventEmitter
 	self.nodeManager = nodeManager
 	self.nextId = 1
 	self.queue = {}
+	self.threader = threader
 	self.assigned = {}
 	self.itemsProcessing = {}
 	self:setupEventListeners()
@@ -27,7 +28,9 @@ end
 function Scheduler:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("inventory_changed", function(storage)
-			self:planCrafts(storage)
+			self.threader:addThread(function()
+				self:planCrafts(storage)
+			end)
 		end)
 		self.eventEmitter:subscribe("order-finished", function(msg)
 			self:handleFinishedOrder(msg)
