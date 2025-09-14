@@ -264,17 +264,20 @@ end
 function StorageManager:pullItem(from, item, count)
 	-- get all slots in which item is located
 	local slots = self:locateSlots(item, from)
-	local partiallyFilled = self.items[item].partiallyFilledSlots
 
-	-- first fill partially filled slots
-	local leftover = self:fill(from, slots, item, count, partiallyFilled)
+	-- first fill partially filled slots, if there's any
+	local left = count
+	if self.items[item] then
+		local partiallyFilled = self.items[item].partiallyFilledSlots
+		left = self:fill(from, slots, item, left, partiallyFilled)
+	end
 
 	-- what's left is filled into impty slots
-	leftover = self:fill(from, slots, item, leftover)
+	left = self:fill(from, slots, item, left)
 
 	-- throwing an error, because we should check if we can insert, before inserting
 	-- so if leftover more then 0, means logic higher was wrong
-	if leftover > 0 then
+	if left > 0 then
 		error("Coudln't insert item fully")
 	end
 end
