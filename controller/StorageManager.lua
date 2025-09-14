@@ -14,6 +14,7 @@ function StorageManager.new(eventEmitter)
 	self.freeSlots = Queue.new()
 	self.cachedDetails = {}
 	self.capacity = 0
+	self.updateLock = false
 	self:update()
 	self:setupEventListeners()
 	return self
@@ -234,10 +235,12 @@ function StorageManager:pushItem(to, item, count)
 end
 
 function StorageManager:insertOrderDependencies(order, to)
+	self.updateLock = true
 	local recipe = recipes[order.name]
 	for name, ratio in pairs(recipe.dependencies) do
 		self:pushItem(to, name, order.count * ratio)
 	end
+	self.updateLock = false
 end
 
 function StorageManager:locateSlots(searchItem, chest)
@@ -327,9 +330,11 @@ end
 
 function StorageManager:withdraw(buffer, yield)
 	-- withdrawing each item we crafted from order from buffer
+	self.updateLock = true
 	for item, crafted in pairs(yield) do
 		self:pullItem(buffer, item, crafted)
 	end
+	self.updateLock = false
 end
 
 return StorageManager

@@ -8,6 +8,7 @@ function EventEmitter.new(threader)
 	self.threader = threader
 	self.callbacks = {}
 	self.asyncCallbacks = {}
+	self.updateLock = false
 	self.events = Queue.new()
 	self.nextID = 1
 	return self

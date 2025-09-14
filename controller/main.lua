@@ -40,7 +40,9 @@ local function main()
 	threader:addThread(function()
 		-- updating and displaying contents of storage
 		while true do
-			storageManager:update()
+			if not storageManager.updateLock then
+				storageManager:update()
+			end
 			sleep(0.05)
 		end
 	end)
