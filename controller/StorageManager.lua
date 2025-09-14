@@ -212,8 +212,8 @@ end
 function StorageManager:pushItem(to, item, count)
 	log("Asked this resource: " .. item .. " " .. count)
 	local total = self:getTotal(item)
-	log("Total of an item: ", total)
-	log("Total if you grab yourself: ", self.items[item] and self.items[item].total or 0)
+	log("Total of an item: " .. total)
+	log("Total if you grab yourself: " .. self.items[item] and self.items[item].total or 0)
 	-- theoretically we shouldn't get this error if shceduler did calculations right
 	-- and we have an accurate representation of item storage
 	if total == 0 or count > total then
