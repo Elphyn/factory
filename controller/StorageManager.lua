@@ -234,6 +234,7 @@ end
 
 function StorageManager:fill(from, slots, item, count, outputSlots)
 	local insertSlots = outputSlots or self.freeSlots
+	print("Got this many slots in fill: ", #insertSlots)
 	local slot = table.remove(slots)
 	-- we run this until we either exhaust count
 	-- or until we exhaust slots
@@ -277,14 +278,17 @@ function StorageManager:pullItem(from, item, count)
 	if self.items[item] then
 		local partiallyFilled = self.items[item].partiallyFilledSlots
 		left = self:fill(from, slots, item, left, partiallyFilled)
+		print("Items left after fill: ", left)
 	end
 
+	--
 	-- what's left is filled into impty slots
 	left = self:fill(from, slots, item, left)
 
 	-- throwing an error, because we should check if we can insert, before inserting
 	-- so if leftover more then 0, means logic higher was wrong
 	if left > 0 then
+		print("Left: ", left)
 		error("Coudln't insert item fully")
 	end
 end
