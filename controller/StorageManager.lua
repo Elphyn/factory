@@ -159,7 +159,7 @@ function StorageManager:update()
 	local newTotals = self:getTotals()
 
 	self.updateLock = false
-	if not deepEqual(oldItems, newTotals) then
+	if not deepEqual(oldTotals, newTotals) then
 		self:inventoryChange()
 	end
 end
