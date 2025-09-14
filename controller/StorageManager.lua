@@ -9,6 +9,7 @@ StorageManager.__index = StorageManager
 function StorageManager.new(eventEmitter)
 	local self = setmetatable({}, StorageManager)
 	self.eventEmitter = eventEmitter
+	self.tranfer = false
 	self.items = {}
 	self.freeSlots = Queue.new()
 	self.cachedDetails = {}
@@ -20,7 +21,9 @@ end
 function StorageManager:setupEventListeners()
 	if self.eventEmitter then
 		self.eventEmitter:subscribe("order-finished", function(info)
+			self.tranfer = true
 			self:withdraw(info.buffer, info.yield)
+			self.tranfer = false
 			self:update()
 		end)
 	end
@@ -148,6 +151,9 @@ function StorageManager:getSnapshot()
 end
 
 function StorageManager:update()
+	if self.transfer then
+		return
+	end
 	local snapshot = self:getSnapshot()
 	-- is for comparison
 	local oldItems = snapshot.items
