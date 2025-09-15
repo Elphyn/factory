@@ -10,10 +10,10 @@ function StorageManager.new(eventEmitter)
 	local self = setmetatable({}, StorageManager)
 	self.eventEmitter = eventEmitter
 	self.items = {}
-	self.freeSlots = Queue.new() -- not that important, just to have items fill storage left -> right
+	self.freeSlots = Queue.new() -- not that important to be queue, just to have items fill storage left -> right
 	self.cachedDetails = {}
 	self.capacity = 0
-	-- update Lock is important, because if any pull/push yeild, we need to make sure system doesn't update self.items
+	-- update Lock is important, because if any pull/push yeild mid tranfer, we need to make sure system doesn't update self.items
 	self.updateLock = false
 	-- updating is important to indicate if update paused mid way, and self.items isn't fully formed
 	-- any method that moves items must wait until updating has finished
