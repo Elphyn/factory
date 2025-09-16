@@ -18,11 +18,14 @@ local function prompt(validOptions, string)
 		print(string)
 		print("---------------------------------------------------")
 		print("Available options: ")
+		local line = 5
+		local optCount = 1
 		for opt, _ in pairs(validOptions) do
-			print(opt)
+			print(optCount .. ") " .. opt)
+			line = line + 1
 		end
-		-- term.write("> ")
-		-- term.setCursorPos(3, 4)
+		term.write("> ")
+		term.setCursorPos(3, line)
 		local ok, input = validateInput(validOptions, read())
 		if ok then
 			return input

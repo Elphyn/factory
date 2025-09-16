@@ -1,6 +1,6 @@
 local OrderManager = {}
 local craft = require("crafting")
-local buffer = require("config").bufferName
+local buffer = dofile("config.lua").bufferName
 OrderManager.__index = OrderManager
 
 function OrderManager.new(threader, stationManager, eventEmitter)

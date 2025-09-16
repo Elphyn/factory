@@ -1,5 +1,5 @@
 local NetworkManager = dofile("factory/shared/NetworkManager.lua")
-local buffer = require("config").bufferNameGlobal
+local buffer = dofile("config.lua").bufferNameGlobal
 
 local WorkerNetworkManager = {}
 WorkerNetworkManager.__index = WorkerNetworkManager
