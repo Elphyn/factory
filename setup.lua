@@ -60,7 +60,7 @@ local function setup()
 		["left"] = true,
 		["right"] = true,
 	}
-	table.modemLocation = prompt(validModemLocations, "Enter modem location:")
+	configInput.modemLocation = prompt(validModemLocations, "Enter modem location:")
 
 	if configInput.pcType == "main" then
 		-- collectInputMain(configInput) -- later add for a monitor setup
