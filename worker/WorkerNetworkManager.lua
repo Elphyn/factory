@@ -66,7 +66,7 @@ function WorkerNetworkManager:fulfilRequest(request, data)
 end
 
 function WorkerNetworkManager:sendBuffer(request)
-	local buffer = dofile("factory/worker/config.lua").bufferNameGlobal
+	local buffer = dofile("config.lua").bufferNameGlobal
 	local msg = {
 		buffer = buffer,
 	}
