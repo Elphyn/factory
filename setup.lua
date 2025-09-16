@@ -20,7 +20,7 @@ local function prompt(validOptions, string)
 		print("Available options: ")
 		local line = 5
 		for opt, _ in pairs(validOptions) do
-			print("● " .. opt)
+			print("* " .. opt)
 			line = line + 1
 		end
 		term.write("> ")
