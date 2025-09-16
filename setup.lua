@@ -19,9 +19,8 @@ local function prompt(validOptions, string)
 		print("---------------------------------------------------")
 		print("Available options: ")
 		local line = 5
-		local optCount = 1
 		for opt, _ in pairs(validOptions) do
-			print(optCount .. ") " .. opt)
+			print("● " .. opt)
 			line = line + 1
 		end
 		term.write("> ")
@@ -46,12 +45,6 @@ end
 
 local function setup()
 	local configInput = {}
-
-	-- debug
-	print(stationBlocks)
-	sleep(2)
-	print(getKeysSet)
-	sleep(2)
 	-- prompt if it's a main pc or a node
 	configInput.pcType = prompt({ ["main"] = true, ["node"] = true }, "Is this pc a mainPC, or a nodePC?: ")
 
