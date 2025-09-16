@@ -11,7 +11,7 @@ end
 
 print("Updating...")
 local ok, _ = pcall(function()
-	clone("https://github.com/Elphyn/factory", "factory", "downloads")
+	clone("https://github.com/Elphyn/factory", "factoryNew")
 end)
 if not ok then
 	print("Update failed, try to reboot")
@@ -21,14 +21,14 @@ if fs.exists("factory") then
 	fs.delete("factory")
 end
 
-if fs.exists("downloads/factory") then
-	fs.move("downloads/factory", "factory")
+if fs.exists("factoryNew") then
+	fs.move("factoryNew", "factory")
 else
 	error("There's no copy of factory in downloads in startup")
 end
 
-if fs.exists("factoryConfig.lua") then
-	local pcType = require("factoryConfig").pcType
+if fs.exists("config.lua") then
+	local pcType = require("config").pcType
 	if pcType == "main" then
 		shell.run("factory/controller/main.lua")
 	elseif pcType == "node" then
