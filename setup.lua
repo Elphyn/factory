@@ -10,6 +10,8 @@ end
 
 local function prompt(validOptions, string)
 	while true do
+		term.clear()
+		term.setCursorPos(1, 1)
 		print("--------------------------------------------")
 		print(string)
 		local ok, input = validateInput(validOptions, read())
@@ -36,7 +38,6 @@ end
 local function setup()
 	local configInput = {}
 
-	term.clear()
 	-- prompt if it's a main pc or a node
 	configInput.pcType = prompt({ ["main"] = true, ["node"] = true }, "Is this pc a mainPC, or a nodePC?: ")
 
