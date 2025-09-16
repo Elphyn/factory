@@ -5,3 +5,5 @@ local function countKeys(table)
 	end
 	return count
 end
+
+return countKeys

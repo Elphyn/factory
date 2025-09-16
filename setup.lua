@@ -2,7 +2,7 @@ local generateConfig = require("createConfig")
 local stationBlocks = require("worker.stationBlocks")
 local getKeySet = require("utils.getKeysSet")
 local getValueSet = require("utils.getValueSet")
-local countKeys = require("utils.countKeys")
+local countTable = require("utils.countKeys")
 
 local function validateInput(reference, input)
 	if reference[input] then
