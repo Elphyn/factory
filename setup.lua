@@ -19,7 +19,7 @@ local function prompt(validOptions, string)
 		print(string)
 		print("---------------------------------------------------")
 		local line = 4
-		if countKeys(validOptions) < 10 then
+		if countTable(validOptions) < 10 then
 			print("Available options: ")
 			line = 5
 			for opt, _ in pairs(validOptions) do
