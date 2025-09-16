@@ -1,4 +1,4 @@
-local config = require("config")
+local config = dofile("config.lua")
 local StationManager = {}
 
 StationManager.__index = StationManager

@@ -1,8 +1,8 @@
-function generateConfig(config)
+function generateConfig(table, path)
 	-- open file for writing
-	local file = fs.open("factory/worker/config.lua", "w")
+	local file = fs.open(path, "w")
 	file.write("return {\n")
-	for k, v in pairs(config) do
+	for k, v in pairs(table) do
 		if v == "nil" then
 			file.write(("  %s = nil,\n"):format(k))
 		elseif type(v) == "string" then
