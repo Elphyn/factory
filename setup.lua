@@ -62,9 +62,10 @@ local function setup()
 	end
 	generateConfig(configInput, "config.lua")
 
-	if not fs.exists("startup.lua") then
-		fs.copy("factory/startup.lua", "startup.lua")
+	if fs.exists("startup.lua") then
+		fs.delete("startup.lua")
 	end
+	fs.copy("factory/startup.lua", "startup.lua")
 end
 
 setup()
