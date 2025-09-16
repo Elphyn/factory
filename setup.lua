@@ -37,7 +37,7 @@ local function collectInputForNode(table)
 	local validStationTypes = getKeySet(stationBlocks)
 	table.stationType = prompt(validStationTypes, "Enter what type of station this pc should manage: ")
 
-	local peripherals = peripheral.list()
+	local peripherals = peripheral.getNames()
 	local validPeripherals = getValueSet(peripherals)
 	table.bufferName = prompt(validPeripherals, "Enter a buffer peripheral name(local): ")
 	table.bufferNameGlobal = prompt(validPeripherals, "Enter a buffer peripheral name(global): ")
