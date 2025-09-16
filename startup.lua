@@ -11,7 +11,7 @@ end
 
 print("Updating...")
 local ok, _ = pcall(function()
-	clone("https://github.com/Elphyn/factory", "downloads")
+	clone("https://github.com/Elphyn/factory", "factory", "downloads")
 end)
 if not ok then
 	print("Update failed, try to reboot")
