@@ -15,8 +15,12 @@ local function prompt(validOptions, string)
 		print("---------------------------------------------------")
 		print(string)
 		print("---------------------------------------------------")
-		term.write("> ")
-		term.setCursorPos(3, 4)
+		print("Available options: ")
+		for opt, _ in pairs(validOptions) do
+			print(opt)
+		end
+		-- term.write("> ")
+		-- term.setCursorPos(3, 4)
 		local ok, input = validateInput(validOptions, read())
 		if ok then
 			return input
