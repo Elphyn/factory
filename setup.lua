@@ -28,7 +28,7 @@ local function prompt(validOptions, string)
 			end
 		end
 		term.write("> ")
-		term.setCursorPos(3, line)
+		term.setCursorPos(3, 19)
 		local ok, input = validateInput(validOptions, read())
 		if ok then
 			return input
