@@ -2,6 +2,7 @@ local generateConfig = require("createConfig")
 local stationBlocks = require("worker.stationBlocks")
 local getKeySet = require("utils.getKeysSet")
 local getValueSet = require("utils.getValueSet")
+local countKeys = require("utils.countKeys")
 
 local function validateInput(reference, input)
 	if reference[input] then
@@ -17,11 +18,14 @@ local function prompt(validOptions, string)
 		print("---------------------------------------------------")
 		print(string)
 		print("---------------------------------------------------")
-		print("Available options: ")
-		local line = 5
-		for opt, _ in pairs(validOptions) do
-			print("* " .. opt)
-			line = line + 1
+		local line = 4
+		if countKeys(validOptions) < 10 then
+			print("Available options: ")
+			line = 5
+			for opt, _ in pairs(validOptions) do
+				print("* " .. opt)
+				line = line + 1
+			end
 		end
 		term.write("> ")
 		term.setCursorPos(3, line)
