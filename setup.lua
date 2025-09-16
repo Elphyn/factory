@@ -16,7 +16,7 @@ local function prompt(validOptions, string)
 		print(string)
 		print("--------------------------------------------")
 		term.write("> ")
-		term.setCursorPos(2, 4)
+		term.setCursorPos(3, 4)
 		local ok, input = validateInput(validOptions, read())
 		if ok then
 			return input
