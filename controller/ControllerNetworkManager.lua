@@ -7,6 +7,10 @@ setmetatable(ControllerNetworkManager, { __index = NetworkManager })
 function ControllerNetworkManager.new(eventEmitter, storageManager, threader)
 	local self = setmetatable(NetworkManager.new(eventEmitter, threader), ControllerNetworkManager)
 	self.storageManager = storageManager
+	self.cached = {
+		buffers = {},
+		stationCount = {},
+	}
 	self:setupEvents()
 	return self
 end
@@ -20,17 +24,27 @@ function ControllerNetworkManager:setupEvents()
 end
 
 function ControllerNetworkManager:getNodeBuffer(nodeID)
-	local msg = {
-		event = "get-buffer",
-	}
-	return self:makeRequest(nodeID, msg, "response-buffer").buffer
+	if not self.cached.buffers[nodeID] then
+		local msg = {
+			event = "get-buffer",
+		}
+		local res = self:makeRequest(nodeID, msg, "response-buffer").buffer
+		self.cached.buffers[nodeId] = res
+		return res
+	end
+	return self.cached.buffers[nodeID]
 end
 
 function ControllerNetworkManager:requestStationCount(nodeID)
-	local msg = {
-		event = "get-stations",
-	}
-	return self:makeRequest(nodeID, msg, "response-stations").n
+	if not self.cached.stationCount[nodeID] then
+		local msg = {
+			event = "get-stations",
+		}
+		local res = self:makeRequest(nodeID, msg, "response-stations").n
+		self.cached.stationCount[nodeID] = res
+		return res
+	end
+	return self.cached.stationCount[nodeID]
 end
 
 function ControllerNetworkManager:sendOrder(order)
