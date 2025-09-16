@@ -1,5 +1,7 @@
 local generateConfig = require("createConfig")
 local stationBlocks = require("worker.stationBlocks")
+local getKeySet = require("utils.getKeysSet")
+local getValueSet = require("utils.getValueSet")
 
 local function validateInput(reference, input)
 	if reference[input] then
@@ -30,9 +32,6 @@ local function prompt(validOptions, string)
 end
 
 local function collectInputForNode(table)
-	local getKeySet = require("utils.getKeysSet")
-	local getValueSet = require("utils.getValueSet")
-
 	local validStationTypes = getKeySet(stationBlocks)
 	table.stationType = prompt(validStationTypes, "Enter what type of station this pc should manage: ")
 
@@ -45,6 +44,11 @@ end
 local function setup()
 	local configInput = {}
 
+	-- debug
+	print(stationBlocks)
+	sleep(2)
+	print(getKeysSet)
+	sleep(2)
 	-- prompt if it's a main pc or a node
 	configInput.pcType = prompt({ ["main"] = true, ["node"] = true }, "Is this pc a mainPC, or a nodePC?: ")
 
