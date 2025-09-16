@@ -29,7 +29,7 @@ function ControllerNetworkManager:getNodeBuffer(nodeID)
 			event = "get-buffer",
 		}
 		local res = self:makeRequest(nodeID, msg, "response-buffer").buffer
-		self.cached.buffers[nodeId] = res
+		self.cached.buffers[nodeID] = res
 		return res
 	end
 	return self.cached.buffers[nodeID]
