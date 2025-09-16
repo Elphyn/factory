@@ -24,7 +24,7 @@ function ControllerNetworkManager:setupEvents()
 end
 
 function ControllerNetworkManager:getNodeBuffer(nodeID)
-	if not self.cached.buffers[nodeID] then
+	if not self.cached.buffers[nodeID] ~= nil then
 		local msg = {
 			event = "get-buffer",
 		}
@@ -36,7 +36,7 @@ function ControllerNetworkManager:getNodeBuffer(nodeID)
 end
 
 function ControllerNetworkManager:requestStationCount(nodeID)
-	if not self.cached.stationCount[nodeID] then
+	if not self.cached.stationCount[nodeID] ~= nil then
 		local msg = {
 			event = "get-stations",
 		}
