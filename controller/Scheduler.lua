@@ -201,7 +201,7 @@ function Scheduler:sendOrder(order)
 	local success = self.storageManager:insertOrderDependencies(order, buffer)
 	if success then
 		self.networkManager:makeRequest(order.assignedNodeId, order, "response-order")
-		print("Sent an order for " .. order.item .. ": " .. order.count)
+		print("Sent an order for " .. order.name .. ": " .. order.count)
 		order.state = "Sent"
 		return true
 	end
