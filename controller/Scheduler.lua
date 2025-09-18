@@ -6,13 +6,14 @@ local split = require("even")
 local Scheduler = {}
 Scheduler.__index = Scheduler
 
-function Scheduler.new(eventEmitter, nodeManager, threader)
+function Scheduler.new(eventEmitter, nodeManager, threader, networkManager)
 	local self = setmetatable({}, Scheduler)
 	self.eventEmitter = eventEmitter
 	self.nodeManager = nodeManager
+	self.threader = threader
+	self.networkManager = networkManager
 	self.nextId = 1
 	self.queue = {}
-	self.threader = threader
 	self.assigned = {}
 	self.itemsProcessing = {}
 	self:setupEventListeners()
@@ -137,9 +138,17 @@ function Scheduler:planCrafts(inventory)
 				if not self.itemsProcessing[item] then
 					self.itemsProcessing[item] = {}
 				end
-				self.queue[id] = order
 				self.itemsProcessing[item][id] = order
-				self:onNewOrder(order)
+				self.threader:addThread(function()
+					local success = self:sendOrder()
+					if success then
+						if success then
+							self.queue[id] = order
+						else
+							self.itemsProcessing[item][id] = nil
+						end
+					end
+				end)
 			end
 		end
 	end
@@ -184,8 +193,17 @@ function Scheduler:generateOrder(nodeID, item, count)
 	return order
 end
 
-function Scheduler:onNewOrder(order)
-	self.eventEmitter:emit("new-order", order)
+function Scheduler:sendOrder(order)
+	-- TODO: this needs a big rowork, with proper failure recovery
+
+	local buffer = self.networkManager:getNodeBuffer(order.assignedNodeId)
+	local success = self.storageManager:insertOrderDependencies(order, buffer)
+	if success then
+		self.networkManager:makeRequest(order.assignedNodeId, order, "response-order")
+		order.state = "Sent"
+		return true
+	end
+	return false
 end
 
 function Scheduler:onChange()

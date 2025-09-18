@@ -207,41 +207,72 @@ function StorageManager:getTotal(item)
 end
 
 function StorageManager:pushItem(to, item, count)
+	-- if there's not enough/any we stop right here
 	local total = self:getTotal(item)
-	-- theoretically we shouldn't get this error if shceduler did calculations right
-	-- and we have an accurate representation of item storage
-	if total == 0 or count > total then
-		error("Storage doesn't have/not enough of item")
+	if total == 0 then
+		return false, 0
+	end
+	if total < count then
+		return false, 0
 	end
 
+	local initialCount = count
+	local totalMoved = 0
+	-- where system thinks item is located
 	local slots = self.items[item].slots
-	for i = #slots, 1, -1 do
-		local slot = slots[i]
-		local take = 0
-		if count >= slot.count then
-			take = slot.count
-		else
-			take = count
+	while count > 0 do
+		local slot = slots[#slots] -- peek right most slot
+		if not slot then
+			return false, totalMoved -- if there's no slots anymore
 		end
-		peripheral.call(slot.chest, "pushItems", to, slot.index, take)
-		count = count - take
-		if count == 0 then
-			break
+
+		-- insert either min of item in slot or if slot has more then we need, we insert count
+		local insertAmount = math.min(count, slot.count)
+		local moved = peripheral.call(slot.chest, "pushItems", to, slot.index, insertAmount)
+		if moved == 0 then
+			-- this is unlikely, but possible to withdraw an item by player right before that hits
+			-- or system has wrong information in which slots items are located
+			return false, totalMoved
+		end
+
+		-- aftermath
+		totalMoved = totalMoved + moved
+		count = count - moved
+		slot.count = slot.count - moved
+
+		-- stack pop if slot is drained
+		if slot.count == 0 then
+			table.remove(slots)
 		end
 	end
+	return initialCount == totalMoved, totalMoved
 end
 
 function StorageManager:insertOrderDependencies(order, to)
 	while self.updating do
 		sleep(0.05)
 	end
-
 	self.updateLock = true
+	local itemsMoved = {}
 	local recipe = recipes[order.name]
-	for name, ratio in pairs(recipe.dependencies) do
-		self:pushItem(to, name, order.count * ratio)
+	for dep, ratio in pairs(recipe.dependencies) do
+		local success, moved = self:pushItem(to, dep, order.count * ratio)
+
+		-- we save how much we moved, so if one of the inserts fail, we can rollback
+		if moved > 0 then
+			itemsMoved[dep] = moved
+		end
+
+		-- rollback of what we've moved so far, if one of the inserts failed
+		if not success then
+			self:withdraw(to, itemsMoved)
+			-- there's really no point in adding retry here, if it failed, then we have wrong representation of self.items
+			-- meaning we need to update first, to update we need to first set updateLock to false
+			return false
+		end
 	end
 	self.updateLock = false
+	return true
 end
 
 function StorageManager:locateSlots(searchItem, chest)
@@ -327,16 +358,16 @@ function StorageManager:pullItem(from, item, count)
 	end
 end
 
-function StorageManager:withdraw(buffer, yield)
-	-- withdrawing each item we crafted from order from buffer
-
+function StorageManager:withdraw(from, items)
+	-- if other coroutine paused midway scanning we wait until it finishes
 	while self.updating do
 		sleep(0.05)
 	end
 
+	-- we lock down updates of self.items to make sure transfer would go smoothly
 	self.updateLock = true
-	for item, crafted in pairs(yield) do
-		self:pullItem(buffer, item, crafted)
+	for item, crafted in pairs(items) do
+		self:pullItem(from, item, crafted)
 	end
 	self.updateLock = false
 end

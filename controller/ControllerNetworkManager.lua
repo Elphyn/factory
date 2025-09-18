@@ -49,12 +49,4 @@ function ControllerNetworkManager:requestStationCount(nodeID)
 	return self.cached.stationCount[nodeID]
 end
 
-function ControllerNetworkManager:sendOrder(order)
-	local buffer = self:getNodeBuffer(order.assignedNodeId)
-	self.storageManager:insertOrderDependencies(order, buffer)
-
-	self:makeRequest(order.assignedNodeId, order, "response-order")
-	order.state = "Sent"
-end
-
 return ControllerNetworkManager
