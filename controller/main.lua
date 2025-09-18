@@ -23,6 +23,7 @@ local function main()
 
 	threader:addThread(function()
 		while true do
+			print("Listening: ")
 			networkManager:listen()
 		end
 	end)
