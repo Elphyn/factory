@@ -11,7 +11,7 @@ local eventEmitter = EventEmitter.new(threader)
 local storageManager = StorageManager.new(eventEmitter)
 local networkManager = ControllerNetworkManager.new(eventEmitter, storageManager, threader)
 local nodeManager = NodeManager.new(eventEmitter, networkManager)
-local scheduler = Scheduler.new(eventEmitter, nodeManager, threader, networkManager)
+local scheduler = Scheduler.new(eventEmitter, nodeManager, threader, networkManager, storageManager)
 local display = Display.new(eventEmitter)
 
 local function main()

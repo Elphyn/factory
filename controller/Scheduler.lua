@@ -6,10 +6,11 @@ local split = require("even")
 local Scheduler = {}
 Scheduler.__index = Scheduler
 
-function Scheduler.new(eventEmitter, nodeManager, threader, networkManager)
+function Scheduler.new(eventEmitter, nodeManager, threader, networkManager, storageManager)
 	local self = setmetatable({}, Scheduler)
 	self.eventEmitter = eventEmitter
 	self.nodeManager = nodeManager
+	self.storageManager = storageManager
 	self.threader = threader
 	self.networkManager = networkManager
 	self.nextId = 1
