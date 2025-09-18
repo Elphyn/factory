@@ -140,7 +140,7 @@ function Scheduler:planCrafts(inventory)
 				end
 				self.itemsProcessing[item][id] = order
 				self.threader:addThread(function()
-					local success = self:sendOrder()
+					local success = self:sendOrder(order)
 					if success then
 						if success then
 							self.queue[id] = order
