@@ -21,7 +21,7 @@ return {
 		dependencies = {
 			["minecraft:iron_nugget"] = 9,
 		},
-		craftingLimit = 1000,
+		craftingLimit = 10,
 	},
 	["minecraft:iron_block"] = {
 		displayName = "Iron Block",
