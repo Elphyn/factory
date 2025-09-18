@@ -11,16 +11,7 @@ function ControllerNetworkManager.new(eventEmitter, storageManager, threader)
 		buffers = {},
 		stationCount = {},
 	}
-	self:setupEvents()
 	return self
-end
-
-function ControllerNetworkManager:setupEvents()
-	self.eventEmitter:subscribe("new-order", function(order)
-		self.threader:addThread(function()
-			self:sendOrder(order)
-		end)
-	end)
 end
 
 function ControllerNetworkManager:getNodeBuffer(nodeID)

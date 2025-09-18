@@ -44,6 +44,7 @@ function EventEmitter:handleEvents()
 	while self.events:length() > 0 do
 		local unprocessedEvent = self.events:pop()
 		local event = unprocessedEvent.event
+		print("Handling event: ", event)
 		local data = unprocessedEvent.data
 
 		if self.callbacks[event] then
