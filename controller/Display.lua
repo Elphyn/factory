@@ -24,7 +24,7 @@ function Display:setupEventListeners()
 		self.queue = queue
 		self:render()
 	end)
-	self.eventEmitter:subscribe("capacity_chaged", function(capacity)
+	self.eventEmitter:subscribe("capacity_changed", function(capacity)
 		print("received new capacity in Display")
 		self.totalCapacity = capacity.total
 		self.capacity = capacity.current
