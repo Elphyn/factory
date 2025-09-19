@@ -59,7 +59,7 @@ function Display:render()
 	local monitor = peripheral.wrap(monitorName)
 	monitor.clear()
 	monitor.setCursorPos(1, 1)
-	monitor.write("Storage capacity: " .. self.totalCapacity .. "/" .. self.capacity)
+	monitor.write("Storage capacity: " .. self.totalCapacity .. "/" .. self.totalCapacity - self.capacity)
 	local line = 2
 	for name, info in pairs(itemTable) do
 		if info.total > 0 then
@@ -82,31 +82,6 @@ function Display:render()
 		local itemInfoString = string.format("%s | Can craft: %d | %s", name, order.count, order.state)
 		monitor.write(itemInfoString)
 		line = line + 1
-	end
-end
-
-function Display:renderStorage(storage)
-	local itemTable = storage
-	if itemTable == nil then
-		print("No items in storage")
-		return
-	end
-	local monitorName = self:_findMonitor()
-	if monitorName == nil then
-		print("No monitor found")
-		return
-	end
-	local monitor = peripheral.wrap(monitorName)
-	monitor.clear()
-	-- TODO: this should be it's own component
-	local line = 2
-	for name, info in pairs(itemTable) do
-		if info.total > 0 then
-			monitor.setCursorPos(1, line)
-			local itemInfoString = string.format("%d/%d | %s", info.total, info.capacity, info.displayName)
-			monitor.write(itemInfoString)
-			line = line + 1
-		end
 	end
 end
 
