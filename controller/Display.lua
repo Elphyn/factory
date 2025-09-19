@@ -25,10 +25,8 @@ function Display:setupEventListeners()
 		self:render()
 	end)
 	self.eventEmitter:subscribe("capacity_changed", function(capacity)
-		print("received new capacity in Display")
 		self.totalCapacity = capacity.total
 		self.capacity = capacity.current
-		print(textutils.serialize(capacity))
 		self:render()
 	end)
 end

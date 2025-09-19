@@ -109,6 +109,7 @@ function StorageManager:scanChest(chestName)
 
 	collectedInfo.capacity = chestSpace
 	collectedInfo.totalCapacity = chestSpace
+	print("Chest space: " .. chestSpace)
 
 	-- filling in item details, generating free slots table
 	for i, item in pairs(filledSlots) do
@@ -263,8 +264,6 @@ function StorageManager:update()
 	end
 
 	if oldCurrentCapacity ~= self.capacity or oldTotalCapacity ~= self.totalCapacity then
-		print("capacity changed!")
-		print(self.totalCapacity .. "/" .. self.capacity)
 		self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
 	end
 
