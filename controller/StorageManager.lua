@@ -52,42 +52,63 @@ function StorageManager:cacheItemDetails(chestName, slotIDX, item)
 	}
 end
 
-function StorageManager:saveItemDetails(item, slotIndex, chestName)
-	if self.items[item.name] == nil then
-		self.items[item.name] = {
-			name = item.name,
-			displayName = self.cachedDetails[item.name].displayName,
-			total = 0,
-			slots = {}, -- for pulling out
-			partiallyFilledSlots = Queue.new(), -- for pushing in
-		}
+function StorageManager:isItemInitialized(table, item)
+	if table[item] == nil then
+		return false
+	end
+	return true
+end
+
+function StorageManager:initItem(table, item)
+	-- imposible condition, but could happen if refactored badly
+	if not self.cachedDetails[item].displayName then
+		error("Error in initItem, can't initialize " .. item .. "without cached info on it")
+	end
+	table[item] = {
+		name = item,
+		displayName = self.cachedDetails[item].displayName,
+		total = 0,
+		slots = {}, -- for pulling out
+		partiallyFilledSlots = Queue.new(), -- for pushing in
+	}
+end
+
+function StorageManager:saveItemDetails(item, slotIndex, chestName, storage)
+	if not self:isItemInitialized(storage, item.name) then
+		self:initItem(storage, item.name)
 	end
 	local slotDetails = {
 		chest = chestName,
 		index = slotIndex,
 		count = item.count,
 	}
-	self.items[item.name].total = self.items[item.name].total + item.count
+	storage[item.name].total = storage[item.name].total + item.count
 
 	-- if slot isn't full, meaning it's 64 or 16 for pearls, we can push it into this slot
 	if slotDetails.count < self.cachedDetails[item.name].itemLimit then
-		self.items[item.name].partiallyFilledSlots:push(slotDetails)
+		storage[item.name].partiallyFilledSlots:push(slotDetails)
 	end
-	table.insert(self.items[item.name].slots, slotDetails)
-	self.capacity = self.capacity - item.count * self.cachedDetails[item.name].weight
+	table.insert(storage[item.name].slots, slotDetails)
+	storage.capacity = storage.capacity - item.count * self.cachedDetails[item.name].weight
 end
 
 function StorageManager:scanChest(chestName)
-	local chest = peripheral.wrap(chestName)
+	-- info we collected on this chest
+	local collectedInfo = {
+		items = {},
+		filledSlots = {},
+		totalCapacity = 0,
+		capacity = 0,
+		freeSlots = Queue.new(),
+	}
 
+	local chest = peripheral.wrap(chestName)
 	local filledSlots = chest.list()
 	local numSlots = chest.size()
 	local chestSpace = numSlots * 64
 
-	-- updaing how many items storage can hold
-	self.totalCapacity = self.totalCapacity + chestSpace
-	self.capacity = self.capacity + chestSpace
-	-- self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
+	collectedInfo.capacity = chestSpace
+	collectedInfo.totalCapacity = chestSpace
 
 	-- filling in item details, generating free slots table
 	for i, item in pairs(filledSlots) do
@@ -99,7 +120,7 @@ function StorageManager:scanChest(chestName)
 		end
 
 		-- saving where item is being held, it's count, updaing total count
-		self:saveItemDetails(item, i, chestName)
+		self:saveItemDetails(item, i, chestName, collectedInfo)
 		-- self.totalCapacity = self.totalCapacity -
 	end
 	-- saving free slots in qeuue, so when we need to insert something, we insert at the first empty, not last
@@ -110,9 +131,10 @@ function StorageManager:scanChest(chestName)
 				index = i,
 				count = 0,
 			}
-			self.freeSlots:push(slot)
+			collectedInfo.freeSlots:push(slot)
 		end
 	end
+	return collectedInfo
 end
 
 function StorageManager:searchForChests()
@@ -131,7 +153,45 @@ function StorageManager:scan()
 	local chests = self:searchForChests()
 
 	for _, chestName in ipairs(chests) do
-		self:scanChest(chestName)
+		-- scanning a chest could fail if you're to break chest midscan, before scan
+		local ok, res = pcall(function()
+			return self:scanChest(chestName)
+		end)
+		if ok then
+			-- if scan went successfully, then we take gathered info and update self values
+			self:mergeGatheredInfo(res)
+		end
+	end
+end
+
+function StorageManager:mergeGatheredInfo(table)
+	-- here we merge self.items and all other related tables from scanning a chest
+	for item, info in pairs(table.items) do
+		-- if item first time appearing in self.items
+		if not self:isItemInitialized(self.items, item) then
+			self:initItem(self.items, item)
+		end
+		-- merging totals
+		self.items[item].total = self.items[item].total + info.total
+		-- merging slots
+		for _, slot in ipairs(info.slots) do
+			table.insert(self.items[item].slots, slot)
+		end
+		-- merging partiallyFilledSlots
+		while info.partiallyFilledSlots:size() > 0 do
+			local slot = info.partiallyFilledSlots:pop()
+			self.items[item].partiallyFilledSlots:push(slot)
+		end
+	end
+
+	-- merging capacity
+	self.capacity = self.capacity + table.capacity
+	self.totalCapacity = self.totalCapacity + table.totalCapacity
+
+	-- merging free slots
+	while table.freeSlots:size() > 0 do
+		local slot = table.freeSlots:pop()
+		self.freeSlots:push(slot)
 	end
 end
 
@@ -391,7 +451,7 @@ function StorageManager:withdraw(from, items)
 	for item, crafted in pairs(items) do
 		local success = self:pullItem(from, item, crafted)
 		if not success then
-			error("Failed to withdraw item: ", item)
+			error("Failed to withdraw item: " .. item)
 		end
 	end
 	self.updateLock = false
