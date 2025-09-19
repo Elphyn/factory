@@ -82,11 +82,11 @@ function StorageManager:saveItemDetails(item, slotIndex, chestName, storage)
 		index = slotIndex,
 		count = item.count,
 	}
-	storage[item.name].total = storage[item.name].total + item.count
+	storage.items[item.name].total = storage.items[item.name].total + item.count
 
 	-- if slot isn't full, meaning it's 64 or 16 for pearls, we can push it into this slot
 	if slotDetails.count < self.cachedDetails[item.name].itemLimit then
-		storage[item.name].partiallyFilledSlots:push(slotDetails)
+		storage.items[item.name].partiallyFilledSlots:push(slotDetails)
 	end
 	table.insert(storage[item.name].slots, slotDetails)
 	storage.capacity = storage.capacity - item.count * self.cachedDetails[item.name].weight
