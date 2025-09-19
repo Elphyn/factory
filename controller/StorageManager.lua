@@ -104,7 +104,7 @@ function StorageManager:scanChest(chestName)
 
 	local chest = peripheral.wrap(chestName)
 	local filledSlots = chest.list()
-	local numSlots = chest.size()
+	local numSlots = chest.length()
 	local chestSpace = numSlots * 64
 
 	collectedInfo.capacity = chestSpace
@@ -178,7 +178,7 @@ function StorageManager:mergeGatheredInfo(table)
 			table.insert(self.items[item].slots, slot)
 		end
 		-- merging partiallyFilledSlots
-		while info.partiallyFilledSlots:size() > 0 do
+		while info.partiallyFilledSlots:length() > 0 do
 			local slot = info.partiallyFilledSlots:pop()
 			self.items[item].partiallyFilledSlots:push(slot)
 		end
@@ -189,7 +189,7 @@ function StorageManager:mergeGatheredInfo(table)
 	self.totalCapacity = self.totalCapacity + table.totalCapacity
 
 	-- merging free slots
-	while table.freeSlots:size() > 0 do
+	while table.freeSlots:length() > 0 do
 		local slot = table.freeSlots:pop()
 		self.freeSlots:push(slot)
 	end
