@@ -109,7 +109,6 @@ function StorageManager:scanChest(chestName)
 
 	collectedInfo.capacity = chestSpace
 	collectedInfo.totalCapacity = chestSpace
-	print("Chest space: " .. chestSpace)
 
 	-- filling in item details, generating free slots table
 	for i, item in pairs(filledSlots) do
