@@ -29,6 +29,7 @@ function Display:setupEventListeners()
 		self.totalCapacity = capacity.total
 		self.capacity = capacity.current
 		print(textutils.serialize(capacity))
+		self:render()
 	end)
 end
 
