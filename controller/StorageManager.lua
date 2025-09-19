@@ -104,7 +104,7 @@ function StorageManager:scanChest(chestName)
 
 	local chest = peripheral.wrap(chestName)
 	local filledSlots = chest.list()
-	local numSlots = chest.length()
+	local numSlots = chest.size()
 	local chestSpace = numSlots * 64
 
 	collectedInfo.capacity = chestSpace
