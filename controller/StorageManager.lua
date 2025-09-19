@@ -159,7 +159,7 @@ function StorageManager:scan()
 		end)
 		if ok then
 			print("Collected info from chest: ")
-			print(textutils.serialize(res))
+			print(textutils.serialize(res.items))
 			-- if scan went successfully, then we take gathered info and update self values
 			self:mergeGatheredInfo(res)
 		else
