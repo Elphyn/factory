@@ -160,6 +160,8 @@ function StorageManager:scan()
 		if ok then
 			-- if scan went successfully, then we take gathered info and update self values
 			self:mergeGatheredInfo(res)
+		else
+			print("Failed to scan a chest, err: ", res)
 		end
 	end
 end
