@@ -146,10 +146,6 @@ function StorageManager:inventoryChange()
 	self.eventEmitter:emit("inventory_changed", self.items)
 end
 
-function StorageManager:capacityChange()
-	self.eventEmitter:emit("capacity_changed", self.totalCapacity)
-end
-
 function StorageManager:getSnapshot()
 	local snapshot = {
 		items = deepCopy(self.items),
@@ -205,6 +201,7 @@ function StorageManager:update()
 	end
 
 	if oldCurrentCapacity ~= self.capacity or oldTotalCapacity ~= self.totalCapacity then
+		print("capacity changed!")
 		self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
 	end
 
