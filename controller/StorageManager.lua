@@ -202,6 +202,7 @@ function StorageManager:update()
 
 	if oldCurrentCapacity ~= self.capacity or oldTotalCapacity ~= self.totalCapacity then
 		print("capacity changed!")
+		print(self.totalCapacity .. "/" .. self.capacity)
 		self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
 	end
 
