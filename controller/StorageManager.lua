@@ -73,7 +73,7 @@ function StorageManager:saveItemDetails(item, slotIndex, chestName)
 		self.items[item.name].partiallyFilledSlots:push(slotDetails)
 	end
 	table.insert(self.items[item.name].slots, slotDetails)
-	self.capacity = self.capacity - item.count * self.cachedDetails[item].weight
+	self.capacity = self.capacity - item.count * self.cachedDetails[item.name].weight
 end
 
 function StorageManager:scanChest(chestName)
