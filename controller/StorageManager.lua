@@ -12,6 +12,7 @@ function StorageManager.new(eventEmitter)
 	self.items = {}
 	self.freeSlots = Queue.new() -- not that important to be queue, just to have items fill storage left -> right
 	self.cachedDetails = {}
+	self.totalCapacity = 0
 	self.capacity = 0
 	-- update Lock is important, because if any pull/push yeild mid tranfer, we need to make sure system doesn't update self.items
 	self.updateLock = false
@@ -25,9 +26,8 @@ end
 
 function StorageManager:setupEventListeners()
 	if self.eventEmitter then
-		self.eventEmitter:subscribe("order-finished", function(info)
-			self:withdraw(info.buffer, info.yield)
-		end)
+		self.eventEmitter:subscribe("order-finished", function(info) end)
+		self:withdraw(info.buffer, info.yield)
 	end
 end
 
@@ -42,10 +42,12 @@ function StorageManager:cacheItemDetails(chestName, slotIDX, item)
 	-- you need to know where item is stored to request details
 	local chest = peripheral.wrap(chestName)
 
+	local itemLimit = chest.getItemLimit(slotIDX)
 	self.cachedDetails[item] = {
 		-- this one might slow system down quite a bit if not cached
 		displayName = chest.getItemDetail(slotIDX).displayName,
-		itemLimit = chest.getItemLimit(slotIDX),
+		itemLimit = itemLimit,
+		weight = 64 / itemLimit,
 	}
 end
 
@@ -71,6 +73,7 @@ function StorageManager:saveItemDetails(item, slotIndex, chestName)
 		self.items[item.name].partiallyFilledSlots:push(slotDetails)
 	end
 	table.insert(self.items[item.name].slots, slotDetails)
+	self.capacity = self.capacity - item.count * self.cachedDetails[item].weight
 end
 
 function StorageManager:scanChest(chestName)
@@ -81,7 +84,9 @@ function StorageManager:scanChest(chestName)
 	local chestSpace = numSlots * 64
 
 	-- updaing how many items storage can hold
+	self.totalCapacity = self.totalCapacity + chestSpace
 	self.capacity = self.capacity + chestSpace
+	self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
 
 	-- filling in item details, generating free slots table
 	for i, item in pairs(filledSlots) do
@@ -94,6 +99,7 @@ function StorageManager:scanChest(chestName)
 
 		-- saving where item is being held, it's count, updaing total count
 		self:saveItemDetails(item, i, chestName)
+		-- self.totalCapacity = self.totalCapacity -
 	end
 	-- saving free slots in qeuue, so when we need to insert something, we insert at the first empty, not last
 	for i = 1, numSlots do
@@ -131,6 +137,7 @@ end
 function StorageManager:reset()
 	self.items = {}
 	self.freeSlots:reset()
+	self.totalCapacity = 0
 	self.capacity = 0
 end
 
@@ -139,7 +146,7 @@ function StorageManager:inventoryChange()
 end
 
 function StorageManager:capacityChange()
-	self.eventEmitter:emit("capacity_changed", self.capacity)
+	self.eventEmitter:emit("capacity_changed", self.totalCapacity)
 end
 
 function StorageManager:getSnapshot()
@@ -354,8 +361,9 @@ function StorageManager:pullItem(from, item, count)
 	-- throwing an error, because we should check if we can insert, before inserting
 	-- so if leftover more then 0, means logic higher was wrong
 	if left > 0 then
-		error("Coudln't insert item fully")
+		return false
 	end
+	return true
 end
 
 function StorageManager:withdraw(from, items)
@@ -367,7 +375,10 @@ function StorageManager:withdraw(from, items)
 	-- we lock down updates of self.items to make sure transfer would go smoothly
 	self.updateLock = true
 	for item, crafted in pairs(items) do
-		self:pullItem(from, item, crafted)
+		local success = self:pullItem(from, item, crafted)
+		if not success then
+			error("Failed to withdraw item: ", item)
+		end
 	end
 	self.updateLock = false
 end

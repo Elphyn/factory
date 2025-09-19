@@ -9,6 +9,8 @@ function Display.new(eventEmitter)
 	self.eventEmitter = eventEmitter
 	self.items = {}
 	self.queue = {}
+	self.totalCapacity = 0
+	self.capacity = 0
 	self:setupEventListeners()
 	return self
 end
@@ -21,6 +23,10 @@ function Display:setupEventListeners()
 	self.eventEmitter:subscribe("queue_changed", function(queue)
 		self.queue = queue
 		self:render()
+	end)
+	self.eventEmitter:subscribe("capacity_chaged", function(capacity)
+		self.totalCapacity = capacity.total
+		self.capacity = capacity.current
 	end)
 end
 
@@ -87,7 +93,9 @@ function Display:renderStorage(storage)
 	end
 	local monitor = peripheral.wrap(monitorName)
 	monitor.clear()
-	local line = 1
+	-- TODO: this should be it's own component
+	monitor.write("Storage capacity: " .. self.totalCapacity .. "/" .. self.capacity)
+	local line = 2
 	for name, info in pairs(itemTable) do
 		if info.total > 0 then
 			monitor.setCursorPos(1, line)
