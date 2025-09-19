@@ -87,7 +87,7 @@ function StorageManager:scanChest(chestName)
 	-- updaing how many items storage can hold
 	self.totalCapacity = self.totalCapacity + chestSpace
 	self.capacity = self.capacity + chestSpace
-	self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
+	-- self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
 
 	-- filling in item details, generating free slots table
 	for i, item in pairs(filledSlots) do
@@ -159,9 +159,20 @@ function StorageManager:getSnapshot()
 	return snapshot
 end
 
+function StorageManager:getCapacitySnapshot()
+	local snapshot = {
+		total = self.totalCapacity,
+		current = self.capacity,
+	}
+	return snapshot
+end
+
 function StorageManager:update()
 	-- is for comparison
 	local oldTotals = self:getTotals()
+	local oldCapacity = self:getCapacitySnapshot()
+	local oldTotalCapacity = oldCapacity.total
+	local oldCurrentCapacity = oldCapacity.current
 	-- local oldFreeSlots = snapshot.freeSlots -- can't do for now, since it's a metatable
 
 	-- there's plently of peripheral calls in scan, meaning it would switch to other coroutines mid scan
@@ -191,6 +202,10 @@ function StorageManager:update()
 			changed = true
 			break
 		end
+	end
+
+	if oldCurrentCapacity ~= self.capacity or oldTotalCapacity ~= self.totalCapacity then
+		self.eventEmitter:emit("capacity_changed", { total = self.totalCapacity, current = self.capacity })
 	end
 
 	if changed then
