@@ -88,7 +88,7 @@ function StorageManager:saveItemDetails(item, slotIndex, chestName, storage)
 	if slotDetails.count < self.cachedDetails[item.name].itemLimit then
 		storage.items[item.name].partiallyFilledSlots:push(slotDetails)
 	end
-	table.insert(storage[item.name].slots, slotDetails)
+	table.insert(storage.items[item.name].slots, slotDetails)
 	storage.capacity = storage.capacity - item.count * self.cachedDetails[item.name].weight
 end
 
