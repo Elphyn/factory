@@ -94,6 +94,7 @@ function Display:renderStorage(storage)
 	local monitor = peripheral.wrap(monitorName)
 	monitor.clear()
 	-- TODO: this should be it's own component
+	monitor.setCursorPos(1, 1)
 	monitor.write("Storage capacity: " .. self.totalCapacity .. "/" .. self.capacity)
 	local line = 2
 	for name, info in pairs(itemTable) do
