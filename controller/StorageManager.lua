@@ -166,9 +166,9 @@ function StorageManager:scan()
 	end
 end
 
-function StorageManager:mergeGatheredInfo(table)
+function StorageManager:mergeGatheredInfo(chestInfo)
 	-- here we merge self.items and all other related tables from scanning a chest
-	for item, info in pairs(table.items) do
+	for item, info in pairs(chestInfo.items) do
 		-- if item first time appearing in self.items
 		if not self:isItemInitialized(self.items, item) then
 			self:initItem(self.items, item)
@@ -187,12 +187,12 @@ function StorageManager:mergeGatheredInfo(table)
 	end
 
 	-- merging capacity
-	self.capacity = self.capacity + table.capacity
-	self.totalCapacity = self.totalCapacity + table.totalCapacity
+	self.capacity = self.capacity + chestInfo.capacity
+	self.totalCapacity = self.totalCapacity + chestInfo.totalCapacity
 
 	-- merging free slots
-	while table.freeSlots:length() > 0 do
-		local slot = table.freeSlots:pop()
+	while chestInfo.freeSlots:length() > 0 do
+		local slot = chestInfo.freeSlots:pop()
 		self.freeSlots:push(slot)
 	end
 end
