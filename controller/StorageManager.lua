@@ -75,7 +75,7 @@ end
 
 function StorageManager:saveItemDetails(item, slotIndex, chestName, storage)
 	if not self:isItemInitialized(storage, item.name) then
-		self:initItem(storage, item.name)
+		self:initItem(storage.items, item.name)
 	end
 	local slotDetails = {
 		chest = chestName,
