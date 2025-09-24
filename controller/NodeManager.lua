@@ -25,6 +25,7 @@ function NodeManager:setupEvents()
 			self.nodesAvailable[msg.type] = {}
 		end
 		table.insert(self.nodesAvailable[msg.type], msg.id)
+		self.eventEmitter:emit("new-crafting")
 	end)
 end
 
