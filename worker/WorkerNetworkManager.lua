@@ -9,7 +9,7 @@ function WorkerNetworkManager.new(eventEmitter, stationManager, threader)
 	local self = NetworkManager.new(eventEmitter, threader) -- base fields initialized
 	setmetatable(self, WorkerNetworkManager)
 	self.stationManager = stationManager
-	self.self:setupEvents()
+	self:setupEvents()
 	return self
 end
 
