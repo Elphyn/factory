@@ -193,6 +193,8 @@ function Scheduler:generateOrder(nodeID, item, count)
 end
 
 function Scheduler:sendOrder(order)
+	print("order: ")
+	print(textutils.serialize(order))
 	local buffer = self.nodeManager:getBufferOfNode(order.assignedNodeId)
 	local success = self.storageManager:insertOrderDependencies(order, buffer)
 	if success then
