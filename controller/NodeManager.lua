@@ -5,7 +5,10 @@ NodeManager.__index = NodeManager
 
 function NodeManager.new(eventEmitter, networkManager)
 	local self = setmetatable({}, NodeManager)
-	self.nodes = {}
+	self.nodes = {
+		states = {},
+		available = {},
+	}
 	self.networkManager = networkManager
 	self.eventEmitter = eventEmitter
 	self.nextId = 0
@@ -20,7 +23,10 @@ function NodeManager:generateId()
 end
 
 function NodeManager:anyNodesOfType(type)
-	if self.nodes[type] then
+	if not self.nodes[type] then
+		return false
+	end
+	for _ in pairs(self.nodes[type].available) do
 		return true
 	end
 	return false
@@ -44,6 +50,7 @@ function NodeManager:scan()
 		if string.match(Pname, "^computer") then
 			local pc = peripheral.wrap(Pname)
 			local name = pc.getLabel()
+			local state = "ready"
 			-- if computer has name, it's likely a node
 			if name ~= nil then
 				-- if name of computer is worker, it's a node
@@ -56,10 +63,11 @@ function NodeManager:scan()
 					end
 					-- if pc isn't on, we turn it on
 					if not pc.isOn() then
+						state = "starting"
 						pc.turnOn()
 					end
 
-					table.insert(self.nodes[type], { id = pc.getID(), capacity = 1024 })
+					table.insert(self.nodes[type], { id = pc.getID(), state = state, stations = 0, buffer = nil })
 				end
 			end
 		end
