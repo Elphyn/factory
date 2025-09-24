@@ -20,10 +20,10 @@ function ControllerNetworkManager:getNodeBuffer(nodeID)
 		local msg = {
 			event = "get-buffer",
 		}
-		local ok, res = self:makeRequest(nodeID, msg, "response-buffer").buffer
+		local ok, res = self:makeRequest(nodeID, msg, "response-buffer")
 		-- TODO: handle failure here
-		self.cached.buffers[nodeID] = res
-		return res
+		self.cached.buffers[nodeID] = res.buffer
+		return res.buffer
 	end
 	return self.cached.buffers[nodeID]
 end
@@ -34,10 +34,10 @@ function ControllerNetworkManager:requestStationCount(nodeID)
 		local msg = {
 			event = "get-stations",
 		}
-		local ok, res = self:makeRequest(nodeID, msg, "response-stations").n
+		local ok, res = self:makeRequest(nodeID, msg, "response-stations")
 		-- TODO: handle failure here
-		self.cached.stationCount[nodeID] = res
-		return res
+		self.cached.stationCount[nodeID] = res.n
+		return res.n
 	end
 	return self.cached.stationCount[nodeID]
 end
