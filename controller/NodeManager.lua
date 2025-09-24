@@ -21,6 +21,9 @@ function NodeManager:setupEvents()
 		self.nodes[msg.id].buffer = msg.buffer
 		self.nodes[msg.id].stations = msg.stations
 		self.nodes[msg.id].state = "ready"
+		if not self.nodesAvailable[msg.type] then
+			self.nodesAvailable[msg.type] = {}
+		end
 		table.insert(self.nodesAvailable[msg.type], msg.id)
 	end)
 end
