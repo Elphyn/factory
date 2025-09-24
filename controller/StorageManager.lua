@@ -29,6 +29,9 @@ function StorageManager:setupEventListeners()
 		self.eventEmitter:subscribe("order-finished", function(info)
 			self:withdraw(info.buffer, info.yield)
 		end)
+		self.eventEmitter:subscribe("new-crafting", function()
+			self:inventoryChange()
+		end)
 	end
 end
 
