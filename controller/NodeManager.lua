@@ -32,6 +32,9 @@ function NodeManager:generateId()
 end
 
 function NodeManager:anyNodesOfType(type)
+	if not self.nodesAvailable[type] then
+		return false
+	end
 	return #self.nodesAvailable[type] > 0
 end
 
@@ -60,7 +63,6 @@ function NodeManager:scan()
 		if string.match(Pname, "^computer") then
 			local pc = peripheral.wrap(Pname)
 			local name = pc.getLabel()
-			local state = "ready"
 			-- if computer has name, it's likely a node
 			if name ~= nil then
 				-- if name of computer is worker, it's a node
@@ -72,13 +74,10 @@ function NodeManager:scan()
 						self.nodesType[type] = {}
 					end
 					-- if pc isn't on, we turn it on
-					if not pc.isOn() then
-						state = "starting"
-						pc.turnOn()
-					end
+					pc.reboot()
 
 					local nodeID = pc.getID()
-					local node = { id = nodeID, state = state, stations = 0, buffer = nil }
+					local node = { id = nodeID, state = "starting", stations = 0, buffer = nil }
 					self.nodes[nodeID] = node
 					table.insert(self.nodesType[type], nodeID)
 				end

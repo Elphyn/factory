@@ -57,6 +57,7 @@ function WorkerNetworkManager:notifyStart(n, buffer, type)
 	local ok = self:findMainID()
 	if ok then
 		rednet.send(self.mainID, msg)
+		print("Sent start notification on main")
 	else
 		error("Could't find the mainPC")
 	end
