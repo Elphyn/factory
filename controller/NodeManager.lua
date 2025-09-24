@@ -42,7 +42,7 @@ function NodeManager:anyNodesOfType(type)
 end
 
 function NodeManager:getBufferOfNode(nodeID)
-	if not self.nodes[nodeID] or self.nodes[nodeID].ready ~= "ready" then
+	if not self.nodes[nodeID] or self.nodes[nodeID].state ~= "ready" then
 		error("Trying to get node's buffer without it being ready")
 	end
 	return self.nodes[nodeID].buffer
