@@ -41,4 +41,13 @@ local function main()
 	end
 end
 
-main()
+local function start()
+	local n = stationManager:getTotalStations()
+	local buffer = config.bufferNameGlobal
+	local type = config.stationType
+
+	workerNetworkManager:notifyStart(n, buffer, type)
+	main()
+end
+
+start()

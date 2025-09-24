@@ -193,7 +193,7 @@ function Scheduler:generateOrder(nodeID, item, count)
 end
 
 function Scheduler:sendOrder(order)
-	local buffer = self.networkManager:getNodeBuffer(order.assignedNodeId)
+	local buffer = self.nodeManager:getBufferOfNode(order.assignedNodeId)
 	local success = self.storageManager:insertOrderDependencies(order, buffer)
 	if success then
 		self.networkManager:makeRequest(order.assignedNodeId, order, "response-order")

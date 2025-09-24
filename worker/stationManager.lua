@@ -13,6 +13,11 @@ function StationManager.new(eventEmitter)
 	return self
 end
 
+function StationManager:getTotalStations()
+	-- should only be used on the start of the program, since available would change then
+	return #self.stations.available
+end
+
 function StationManager:countStations()
 	local count = 0
 	for _ in pairs(self.stations.states) do

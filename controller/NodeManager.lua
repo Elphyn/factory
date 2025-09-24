@@ -5,15 +5,24 @@ NodeManager.__index = NodeManager
 
 function NodeManager.new(eventEmitter, networkManager)
 	local self = setmetatable({}, NodeManager)
-	self.nodes = {
-		states = {},
-		available = {},
-	}
+	self.nodes = {}
+	self.nodesType = {}
+	self.nodesAvailable = {}
 	self.networkManager = networkManager
 	self.eventEmitter = eventEmitter
 	self.nextId = 0
+	self:setupEvents()
 	self:scan()
 	return self
+end
+
+function NodeManager:setupEvents()
+	self.eventEmitter:subscribe("node-ready", function(msg)
+		self.nodes[id].buffer = msg.buffer
+		self.nodes[id].stations = msg.stations
+		self.nodes[id].state = "ready"
+		table.insert(self.nodesAvailable[msg.type], msg.id)
+	end)
 end
 
 function NodeManager:generateId()
@@ -23,20 +32,21 @@ function NodeManager:generateId()
 end
 
 function NodeManager:anyNodesOfType(type)
-	if not self.nodes[type] then
-		return false
+	return #self.nodesAvailable[type] > 0
+end
+
+function NodeManager:getBufferOfNode(nodeID)
+	if not self.nodes[nodeID] or self.nodes[nodeID].ready ~= "ready" then
+		error("Trying to get node's buffer without it being ready")
 	end
-	for _ in pairs(self.nodes[type].available) do
-		return true
-	end
-	return false
+	return self.nodes[nodeID].buffer
 end
 
 function NodeManager:getNodesStaitionsCount(nodeType)
 	local stations = {}
-	for _, node in ipairs(self.nodes[nodeType]) do
-		local nStations = self.networkManager:requestStationCount(node.id)
-		stations[node.id] = nStations
+	for _, nodeID in ipairs(self.nodesAvailable[nodeType]) do
+		local nStations = self.nodes[nodeID].stations
+		stations[nodeID] = nStations
 	end
 	return stations
 end
@@ -58,8 +68,8 @@ function NodeManager:scan()
 					-- we're taking type of the node with (.+)$, takes what comes after worker:
 					local type = string.match(name, "^worker:(.+)$")
 					-- init
-					if self.nodes[type] == nil then
-						self.nodes[type] = {}
+					if self.nodesType[type] == nil then
+						self.nodesType[type] = {}
 					end
 					-- if pc isn't on, we turn it on
 					if not pc.isOn() then
@@ -67,7 +77,10 @@ function NodeManager:scan()
 						pc.turnOn()
 					end
 
-					table.insert(self.nodes[type], { id = pc.getID(), state = state, stations = 0, buffer = nil })
+					local nodeID = pc.getID()
+					local node = { id = nodeID, state = state, stations = 0, buffer = nil }
+					self.nodes[nodeID] = node
+					table.insert(self.nodesType[type], nodeID)
 				end
 			end
 		end

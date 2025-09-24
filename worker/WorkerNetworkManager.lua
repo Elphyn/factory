@@ -9,7 +9,7 @@ function WorkerNetworkManager.new(eventEmitter, stationManager, threader)
 	local self = NetworkManager.new(eventEmitter, threader) -- base fields initialized
 	setmetatable(self, WorkerNetworkManager)
 	self.stationManager = stationManager
-	self:setupEvents()
+	self.self:setupEvents()
 	return self
 end
 
@@ -26,6 +26,40 @@ function WorkerNetworkManager:setupEvents()
 	self.eventEmitter:subscribe("order-finished", function(order)
 		self:notifyOrderFinished(order)
 	end)
+end
+
+function WorkerNetworkManager:findMainID()
+	if self.mainID then
+		return true
+	end
+	local devices = peripheral.getNames()
+	for _, name in ipairs(devices) do
+		if string.match(name, "^computer") then
+			local pc = peripheral.wrap(name)
+			local pcName = pc.getLabel()
+			if pcName == "MainPC" then
+				self.mainID = pc.getID()
+				return true
+			end
+		end
+	end
+	return false
+end
+
+function WorkerNetworkManager:notifyStart(n, buffer, type)
+	local msg = {
+		event = "node-ready",
+		type = type,
+		id = os.getComputerID(),
+		stations = n,
+		buffer = buffer,
+	}
+	local ok = self:findMainID()
+	if ok then
+		rednet.send(self.mainID, msg)
+	else
+		error("Could't find the mainPC")
+	end
 end
 
 function WorkerNetworkManager:confirmOrder(order)
