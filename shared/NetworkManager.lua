@@ -27,30 +27,38 @@ function NetworkManager:makeRequest(nodeID, request, awaitEvent)
 	local resolved = false
 	local captured = nil
 
-	-- while retryCount < 5 do
-	while true do
+	local removeListener = self.eventEmitter:subscribe(awaitEvent, function(response)
+		if response.messageID == request.messageID then
+			resolved = true
+			captured = response
+		end
+	end, true)
+
+	local retryCount = 0
+	while retryCount <= 5 do
 		local startTime = os.clock()
 		local ok = rednet.send(nodeID, request)
 		if not ok then
+			-- that does mean rednet is closed, which should never happen
 			error("Couldn't send a message: ", textutils.serialize(request))
 		end
-
-		local removeListener = self.eventEmitter:subscribe(awaitEvent, function(response)
-			if response.messageID == request.messageID then
-				resolved = true
-				captured = response
-			end
-		end, true)
 
 		print("Wating for: " .. awaitEvent)
 		while os.clock() - startTime < 5 and not resolved do
 			sleep(0.05) -- switch
 		end
 
-		removeListener()
 		if resolved then
-			return captured
+			break
 		end
+		retryCount = retryCount + 1
+	end
+
+	removeListener()
+	if resolved then
+		return true, captured
+	else
+		return false, nil
 	end
 end
 

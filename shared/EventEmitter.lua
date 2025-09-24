@@ -10,6 +10,7 @@ function EventEmitter.new(threader)
 	self.asyncCallbacks = {}
 	self.updateLock = false
 	self.events = Queue.new()
+	self.processedMessages = {}
 	self.nextID = 1
 	return self
 end
@@ -47,6 +48,16 @@ function EventEmitter:handleEvents()
 		print("Handling event: ", event)
 		local data = unprocessedEvent.data
 
+		-- making sure duplicate messages are ignored
+		-- if one message with this id was handled, then we it's fine now
+		if data.messageID ~= nil then
+			-- this means that we're handling a message event, there could be duplicates so need to avoid them
+			if self.processedMessages[data.messageID] then
+				goto continue
+			end
+			self.processedMessages[data.messageID] = true
+		end
+
 		if self.callbacks[event] then
 			for _, callback in pairs(self.callbacks[event]) do
 				-- there's a bunch of blocking operations and they take time
@@ -61,6 +72,7 @@ function EventEmitter:handleEvents()
 				end
 			end
 		end
+		::continue::
 	end
 end
 

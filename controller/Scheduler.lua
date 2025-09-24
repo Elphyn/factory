@@ -197,6 +197,7 @@ function Scheduler:sendOrder(order)
 	local success = self.storageManager:insertOrderDependencies(order, buffer)
 	if success then
 		self.networkManager:makeRequest(order.assignedNodeId, order, "response-order")
+		-- TODO: handle failure
 		order.state = "Sent"
 		return true
 	end
