@@ -18,9 +18,9 @@ end
 
 function NodeManager:setupEvents()
 	self.eventEmitter:subscribe("node-ready", function(msg)
-		self.nodes[id].buffer = msg.buffer
-		self.nodes[id].stations = msg.stations
-		self.nodes[id].state = "ready"
+		self.nodes[msg.id].buffer = msg.buffer
+		self.nodes[msg.id].stations = msg.stations
+		self.nodes[msg.id].state = "ready"
 		table.insert(self.nodesAvailable[msg.type], msg.id)
 	end)
 end
