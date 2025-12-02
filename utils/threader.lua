@@ -1,6 +1,13 @@
+---@module 'Threader'
 local Threader = {}
 Threader.__index = Threader
 
+---@class Threader
+---@field threads thread coroutine
+---@field event table required data for coroutine resume (CC:Tweaked coroutine is buit on it)
+
+---Creates a Coroutine manager
+---@return Threader
 function Threader.new()
 	local self = setmetatable({}, Threader)
 	self.threads = {}
@@ -8,6 +15,10 @@ function Threader.new()
 	return self
 end
 
+--- Runs async function in parallel
+---@param fn function function to run in parallel
+---@param callback function a function to call when thread has finished it's work
+---@param info? table table containing callback parameters packed
 function Threader:addThread(fn, callback, info)
 	local co = coroutine.create(fn)
 	local thread = {
@@ -19,6 +30,8 @@ function Threader:addThread(fn, callback, info)
 	table.insert(self.threads, thread)
 end
 
+--- Checking if threader has any active threads
+---@return boolean
 function Threader:alive()
 	if #self.threads < 1 then
 		return false
@@ -31,6 +44,7 @@ function Threader:alive()
 	return false
 end
 
+--- Basically a main loop for a whole system, constantly polling for threads resuming them if they're ready
 function Threader:run()
 	for i = 1, #self.threads do
 		local thread = self.threads[i]

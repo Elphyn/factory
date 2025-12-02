@@ -1,0 +1,16 @@
+---@class standard_crafting_task
+---@field state string
+---@field assigned_node_id number
+---@field requested_item_name string
+---@field count number
+---
+---
+---
+---@class crafting_order
+---@field event '"crafting_order"'
+---@field assignedNodeID number
+---@field requestedItemName string
+---@field requestedItemCount number
+---@field orderState '"waiting"' | '"Sent"'
+---@field orderID number
+---@field aliveProcesses? number

@@ -1,10 +1,19 @@
 -- FIFO queue implementation
+---@module 'Queue'
+---
+---@class Queue
+---@field _isQueue boolean Don't quire remember why I need this
+---@field first number head of the queue
+---@field last number tail of the queue
+---@field table table the actual collection
 
 local Queue = {}
 Queue.__index = Queue
 
 local deepEqual = dofile("factory/utils/deepEqual.lua")
 
+---Creates a qeuue
+---@return Queue
 function Queue.new()
 	local self = setmetatable({}, Queue)
 	self._isQueue = true
@@ -14,11 +23,15 @@ function Queue.new()
 	return self
 end
 
+---Add value to the end of the queue
+---@param value any
 function Queue:push(value)
 	self.last = self.last + 1
 	self.table[self.last] = value
 end
 
+--- Pops first value in the queue and returns it
+---@return unknown
 function Queue:pop()
 	if self.first > self.last then
 		error("Trying to pop from an empty queue")
@@ -29,6 +42,8 @@ function Queue:pop()
 	return value
 end
 
+--- Look at the first item in the queue
+---@return unknown
 function Queue:peek()
 	if self.first > self.last then
 		error("Trying to peek into an empty queue")
@@ -37,15 +52,20 @@ function Queue:peek()
 	return value
 end
 
+--- Get number of items in the queue
+---@return integer
 function Queue:length()
 	return self.last - self.first + 1
 end
 
+--- Reset the queue, removing all items inside
 function Queue:reset()
 	self.first = 1
 	self.last = 0
 	self.table = {}
 end
+
+-- These methods below are likely not going to be used anymore
 
 function Queue:toTable()
 	return {

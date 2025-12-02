@@ -180,27 +180,32 @@ function Scheduler:balanceLoad(item, count)
 	return finalizedOrders
 end
 
-function Scheduler:generateOrder(nodeID, item, count)
+---@param assignedNodeID number
+---@param requestedItemName string
+---@param requestedItemCount number
+---@return crafting_order
+function Scheduler:generateOrder(assignedNodeID, requestedItemName, requestedItemCount)
 	local order = {
 		event = "crafting-order",
-		assignedNodeId = nodeID,
-		name = item,
-		count = count,
-		state = "waiting",
-		id = self:generateId(),
+		assignedNodeID = assignedNodeID,
+		requestedItemName = requestedItemName,
+		requestedItemCount = requestedItemCount,
+		orderState = "waiting",
+		orderID = self:generateId(),
 	}
 	return order
 end
 
+--- Send order to assigned node handler
+---@param order crafting_order
+---@return boolean
 function Scheduler:sendOrder(order)
-	print("order: ")
-	print(textutils.serialize(order))
-	local buffer = self.nodeManager:getBufferOfNode(order.assignedNodeId)
+	local buffer = self.nodeManager:getBufferOfNode(order.assignedNodeID)
 	local success = self.storageManager:insertOrderDependencies(order, buffer)
 	if success then
-		self.networkManager:makeRequest(order.assignedNodeId, order, "response-order")
+		self.networkManager:makeRequest(order.assignedNodeID, order, "response-order")
 		-- TODO: handle failure
-		order.state = "Sent"
+		order.orderState = "Sent"
 		return true
 	end
 	return false

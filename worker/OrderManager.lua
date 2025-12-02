@@ -19,9 +19,10 @@ function OrderManager:setupEventListeners()
 	end)
 end
 
+---@param order crafting_order
 function OrderManager:onNewOrder(order)
 	-- supposed to trigger on event
-	self.orders[order.id] = order
+	self.orders[order.orderID] = order
 	self.threader:addThread(function()
 		self:startOrder(order)
 	end, function()
@@ -29,9 +30,11 @@ function OrderManager:onNewOrder(order)
 	end)
 end
 
+---@param order crafting_order
+---@return boolean
 function OrderManager:orderFinished(order)
 	-- order is finished when count went to 0, and all processes finished
-	return order.count == 0 and order.aliveProcesses == 0
+	return order.requestedItemCount == 0 and order.aliveProcesses == 0
 end
 
 function OrderManager:awaitStations()
@@ -41,15 +44,18 @@ function OrderManager:awaitStations()
 	end
 end
 
+--- Splitting order between stations
+---@param order crafting_order
+---@return standard_crafting_task
 function OrderManager:generateTask(order)
-	if order.count <= 0 then
+	if order.requestedItemCount <= 0 then
 		error("Trying to generateTask for finished order")
 	end
 	local task = {
-		name = order.name,
-		count = 1,
+		requestedItemName = order.requestedItemName,
+		requestedItemCount = 1,
 	}
-	order.count = order.count - 1
+	order.requestedItemCount = order.requestedItemCount - 1
 	return task
 end
 
@@ -65,9 +71,10 @@ function OrderManager:startCrafting(task, order, station)
 	end)
 end
 
+---@param order crafting_order
 function OrderManager:assignStations(order)
 	local total = self.stationManager:available()
-	for i = 1, total do
+	for _ = 1, total do
 		local task = self:generateTask(order)
 		local station = self.stationManager:getOneStation()
 		self:startCrafting(task, order, station)
@@ -83,6 +90,7 @@ function OrderManager:assignStation(order)
 	self:startCrafting(task, order, station)
 end
 
+---@param order crafting_order
 function OrderManager:startOrder(order)
 	-- self.queue[id]= { name = item, count = maxCraft, state = "waiting", id = id}
 	order.aliveProcesses = 0
@@ -91,7 +99,7 @@ function OrderManager:startOrder(order)
 		self:awaitStations() -- wait for stations to be free
 
 		-- assign station if order isn't assigned fully
-		while self.stationManager:anyFreeStations() and order.count > 0 do
+		while self.stationManager:anyFreeStations() and order.requestedItemCount > 0 do
 			self:assignStation(order)
 		end
 
@@ -99,6 +107,7 @@ function OrderManager:startOrder(order)
 	end
 end
 
+---@param order crafting_order
 function OrderManager:onOrderFinished(order)
 	self.eventEmitter:emit("order-finished", order)
 end

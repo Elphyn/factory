@@ -7,6 +7,7 @@ Display.__index = Display
 function Display.new(eventEmitter)
 	local self = setmetatable({}, Display)
 	self.eventEmitter = eventEmitter
+	self.displayName = nil
 	self.items = {}
 	self.queue = {}
 	self.totalCapacity = 0
@@ -31,6 +32,8 @@ function Display:setupEventListeners()
 	end)
 end
 
+---Searches peripheral names for a monitor
+---@return string | nil
 function Display:_findMonitor()
 	local list = peripheral.getNames()
 
@@ -67,7 +70,6 @@ function Display:render()
 			line = line + 1
 		end
 	end
-	-- name = {order = name, count = how much we crafting}
 	line = line + 1
 	monitor.setCursorPos(1, line)
 	if not empty(queue) then

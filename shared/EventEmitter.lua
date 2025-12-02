@@ -1,26 +1,44 @@
+---@module 'EventEmitter'
 local EventEmitter = {}
 EventEmitter.__index = EventEmitter
 
 local Queue = dofile("factory/shared/Queue.lua")
 
+---@class EventEmitter
+---@field threader Threader
+---@field callbacks table
+---@field asyncCallbacks table
+---@field events Queue
+---@field processedMessages table
+---@field nextID number
+
+--- Creates new EventEmitter
+---@param threader Threader
+---@return EventEmitter
 function EventEmitter.new(threader)
 	local self = setmetatable({}, EventEmitter)
 	self.threader = threader
 	self.callbacks = {}
 	self.asyncCallbacks = {}
-	self.updateLock = false
 	self.events = Queue.new()
 	self.processedMessages = {}
 	self.nextID = 1
 	return self
 end
 
+---Plain id generator
+---@return number
 function EventEmitter:generateID()
 	local id = self.nextID
 	self.nextID = self.nextID + 1
 	return id
 end
 
+---Call a function on event
+---@param event string
+---@param callback function
+---@param async? boolean
+---@return function
 function EventEmitter:subscribe(event, callback, async)
 	if not self.callbacks[event] then
 		self.callbacks[event] = {}
@@ -41,6 +59,7 @@ function EventEmitter:subscribe(event, callback, async)
 	end
 end
 
+---Main loop of EventEmitter
 function EventEmitter:handleEvents()
 	while self.events:length() > 0 do
 		local unprocessedEvent = self.events:pop()
@@ -76,6 +95,9 @@ function EventEmitter:handleEvents()
 	end
 end
 
+---Emit an event, triggering subscribed callbacks
+---@param event string
+---@param ... unknown args for callbacks
 function EventEmitter:emit(event, ...)
 	local unprocessedEvent = {
 		event = event,
