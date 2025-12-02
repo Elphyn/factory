@@ -1,18 +1,16 @@
--- FIFO queue implementation
----@module 'Queue'
----
+---FIFO queue implementation
 ---@class Queue
 ---@field _isQueue boolean Don't quire remember why I need this
 ---@field first number head of the queue
 ---@field last number tail of the queue
 ---@field table table the actual collection
-
+---
 local Queue = {}
 Queue.__index = Queue
 
-local deepEqual = dofile("factory/utils/deepEqual.lua")
+-- local deepEqual = dofile("factory/utils/deepEqual.lua")
 
----Creates a qeuue
+--- Creates a queue
 ---@return Queue
 function Queue.new()
 	local self = setmetatable({}, Queue)
@@ -83,12 +81,12 @@ function Queue.initFromTable(data)
 	return queue
 end
 
-function Queue:equals(other)
-	if not other or getmetatable(other) ~= getmetatable(self) then
-		return false
-	end
-
-	return self.first == other.first and self.last == other.last and deepEqual(self.table, other.table)
-end
+-- function Queue:equals(other)
+-- 	if not other or getmetatable(other) ~= getmetatable(self) then
+-- 		return false
+-- 	end
+--
+-- 	return self.first == other.first and self.last == other.last and deepEqual(self.table, other.table)
+-- end
 
 return Queue

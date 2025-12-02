@@ -1,10 +1,10 @@
----@module 'Threader'
+---Threader implementation
+---@class Threader
+---@field threads table
+---@field event table required data for coroutine resume (CC:Tweaked coroutine is buit on it)
+---
 local Threader = {}
 Threader.__index = Threader
-
----@class Threader
----@field threads thread coroutine
----@field event table required data for coroutine resume (CC:Tweaked coroutine is buit on it)
 
 ---Creates a Coroutine manager
 ---@return Threader
@@ -17,7 +17,7 @@ end
 
 --- Runs async function in parallel
 ---@param fn function function to run in parallel
----@param callback function a function to call when thread has finished it's work
+---@param callback? function a function to call when thread has finished it's work
 ---@param info? table table containing callback parameters packed
 function Threader:addThread(fn, callback, info)
 	local co = coroutine.create(fn)

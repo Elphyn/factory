@@ -1,8 +1,4 @@
----@module 'EventEmitter'
-local EventEmitter = {}
-EventEmitter.__index = EventEmitter
-
-local Queue = dofile("factory/shared/Queue.lua")
+local Queue = require("Queue")
 
 ---@class EventEmitter
 ---@field threader Threader
@@ -11,6 +7,9 @@ local Queue = dofile("factory/shared/Queue.lua")
 ---@field events Queue
 ---@field processedMessages table
 ---@field nextID number
+---
+local EventEmitter = {}
+EventEmitter.__index = EventEmitter
 
 --- Creates new EventEmitter
 ---@param threader Threader
@@ -96,8 +95,8 @@ function EventEmitter:handleEvents()
 end
 
 ---Emit an event, triggering subscribed callbacks
----@param event string
----@param ... unknown args for callbacks
+---@param event eventEmitter.events
+---@param ... unknown args for callback
 function EventEmitter:emit(event, ...)
 	local unprocessedEvent = {
 		event = event,
