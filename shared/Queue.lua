@@ -81,12 +81,4 @@ function Queue.initFromTable(data)
 	return queue
 end
 
--- function Queue:equals(other)
--- 	if not other or getmetatable(other) ~= getmetatable(self) then
--- 		return false
--- 	end
---
--- 	return self.first == other.first and self.last == other.last and deepEqual(self.table, other.table)
--- end
-
 return Queue
