@@ -1,11 +1,20 @@
+---@type item
 local storedItem = require("storedItem")
-local deepCopy = dofile("factory/utils/deepCopy.lua")
+---@type itemDetailStore
+local itemDetailsStore = require("controller.itemDetails")
 ---@type Queue
 local Queue = dofile("factory/utils/Queue.lua")
+
+local deepCopy = dofile("factory/utils/deepCopy.lua")
+
+local slotMax = 64
+---
+---@alias itemName string
 ---
 ---@class storageManager
 ---@field eventEmitter EventEmitter
----@field items table<string, storedItem>
+---@field items table<itemName, item>
+---@field itemDetails itemDetailStore
 ---@field freeSlots Queue
 ---@field totalCapacity number
 ---@field currentCapacity number
@@ -21,6 +30,7 @@ function storageManager.new(eventEmitter)
 	local self = setmetatable({}, storageManager)
 	self.eventEmitter = eventEmitter
 	self.items = {}
+	self.itemDetails = itemDetailsStore.new()
 	self.freeSlots = Queue.new()
 	self.totalCapacity = 0
 	self.currentCapacity = 0
@@ -87,13 +97,44 @@ function storageManager:searchForChests()
 	return chests
 end
 
----@class collectedInfo
----@field
+---@class chestInfo
+---@field items item[]
+---@field currentCapacity number
+---@field totalCapacity number
+---@field freeSlots Queue
 
 ---@param chestName string
----@return boolean,
+---@return boolean, chestInfo?
 function storageManager:scanChest(chestName)
 	local chest = peripheral.wrap(chestName)
+
+	if chest == nil then
+		return false
+	end
+
+	---@type chestInfo
+	local chestInfo = {}
+
+	local numSlots = chest.size()
+	local chestSpace = numSlots * slotMax
+	chestInfo.currentCapacity = chestSpace
+	chestInfo.totalCapacity = chestSpace
+
+	local filledSlots = chest.list()
+	for i, item in pairs(filledSlots) do
+		local itemName = item.name
+
+		if not self.itemDetails:isSaved(itemName) then
+			local displayName = chest.getItemDetail(i).displayName
+			local itemLimit = chest.getItemLimit(i)
+
+			self.itemDetails:saveDetails(itemName, displayName, itemLimit, slotMax / itemLimit)
+		end
+
+		-- Continue here
+	end
+
+	return true, chestInfo
 end
 
 function storageManager:scan()
