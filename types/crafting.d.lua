@@ -4,8 +4,6 @@
 ---@field requested_item_name string
 ---@field count number
 ---
----
----
 ---@class crafting_order
 ---@field event '"crafting_order"'
 ---@field assignedNodeID number

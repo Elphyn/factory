@@ -38,7 +38,7 @@ end
 ---@param callback function
 ---@param async? boolean
 ---@return function
-function EventEmitter:subscribe(event, callback, async)
+function EventEmitter:on(event, callback, async)
 	if not self.callbacks[event] then
 		self.callbacks[event] = {}
 	end

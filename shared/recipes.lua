@@ -1,3 +1,11 @@
+---@alias ratio number how many of this item need for crafting one of requested
+---
+--- @class recipe
+--- @field displayName string
+--- @field crafter ccTweaked.peripherals.type
+--- @field dependencies table<itemName, ratio>
+--- @field craftingLimit number Specified by player as to how many to hold in storage
+
 return {
 	["minecraft:gravel"] = {
 		displayName = "Gravel",
