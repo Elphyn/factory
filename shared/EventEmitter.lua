@@ -54,31 +54,32 @@ function EventEmitter:on(event, callback, async)
 		async = async or false,
 	}
 
-	-- for clear up, unsubcribe function
+	-- for clean up, unsubcribe function
 	return function()
 		self.callbacks[event][eventID] = nil
 	end
 end
 
----@param event eventName 
+---Triggers an event, triggering subscribed callbacks
+---@param event eventName
 ---@param ... unknown args for callback
 function EventEmitter:emit(event, ...)
 	if not self.callbacks[event] then
 		return
 	end
 
-  local args = table.pack(...)
+	local args = table.pack(...)
 	for _, callback in pairs(self.callbacks[event]) do
-    -- if async
+		-- if async
 		if callback.async then
-			self.threader:addThread(function ()
-        callback.fn(table.unpack(args))
+			self.threader:addThread(function()
+				callback.fn(table.unpack(args))
 			end)
-      goto continue
+			goto continue
 		end
-    -- if not async
-    callback.fn(...)
-	    ::continue::
+		-- if not async
+		callback.fn(...)
+		::continue::
 	end
 end
 
