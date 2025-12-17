@@ -5,7 +5,7 @@ local Queue = dofile("factory/utils/Queue.lua")
 ---@type table<itemName, recipe>
 local recipes = dofile("factory/shared/recipes.lua")
 ---@type EventEmitter
-local eventEmitter = dofile("factory/shared/EventEmitter.lua")
+local EventEmitter = dofile("factory/shared/EventEmitter.lua")
 
 local deepCopy = dofile("factory/utils/deepCopy.lua")
 
@@ -15,7 +15,6 @@ local slotMax = 64
 ---@alias itemCount number
 ---
 ---@class storageManager
----@field eventEmitter EventEmitter
 ---@field items table<itemName, item>
 ---@field freeSlots Queue
 ---@field totalCapacity number
@@ -23,14 +22,19 @@ local slotMax = 64
 ---@field updating boolean
 ---@field updateLock boolean
 ---
+---@class freeSlot
+---@field chestName string
+---@field slotIndex number
+
+--- @class storageManager: EventEmitter
 local storageManager = {}
 storageManager.__index = storageManager
-setmetatable(storageManager, {__index = })
+setmetatable(storageManager, { __index = EventEmitter })
 
 ---Creates a Storage Manager
----@return storageManager
-function storageManager.new()
-	local self = setmetatable({}, storageManager)
+---@return EventEmitter: storageManager
+function storageManager.new(threader)
+	local self = setmetatable(EventEmitter.new(threader), storageManager)
 	self.items = {}
 	self.freeSlots = Queue.new()
 	self.totalCapacity = 0
@@ -40,11 +44,18 @@ function storageManager.new()
 	return self
 end
 
--- Notes:
--- 1) Look into update locks, probably enough to have one variable
--- 2) Wiping on update fully is not a good idea, just leaving total as 0 is a better option
--- -- 1) No need for separate cashing table, all is initialized within an itemStored class
--- -- 2) Easier to compare changes in the inventory (just comparing two table snapshots of items)
+--- Main loop of this manager
+--- Should be called when listeners are set up the abstraction
+function storageManager:start()
+	self.threader:addThread(function()
+		while true do
+			if not self.updateLock then
+				self:update()
+			end
+			sleep(0.05)
+		end
+	end)
+end
 
 ---@return { total: number, current: number}
 function storageManager:snapshotCapacity()
@@ -142,7 +153,7 @@ function storageManager:totalsDiffer(oldTotals, newTotals)
 end
 
 function storageManager:signalChange()
-	self.eventEmitter:emit("inventory_changed", self.items)
+	self:emit("inventory_changed", self.items)
 end
 
 --- Checks for changes in storage and updates it
