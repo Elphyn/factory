@@ -1,5 +1,4 @@
 ---@meta
 
----@alias eventEmitter.events
----| "order-finished"
+---@alias storageManager.events 
 ---| "inventory_changed"

@@ -44,7 +44,12 @@ function storageManager.new(threader)
 	return self
 end
 
---- Main loop of this manager
+-- Notes:
+-- Back to back operations shouldn't be permitted, there has to be at least one update between each
+-- If that's unnaceptable due to performace probably would have to rework a whole storage module
+--
+
+--- Main loop of storageManager
 --- Should be called when listeners are set up the abstraction
 function storageManager:start()
 	self.threader:addThread(function()
@@ -89,6 +94,7 @@ function storageManager:searchForChests()
 	return chests
 end
 
+--- Scanning chest for items
 ---@param chestName string
 function storageManager:scanChest(chestName)
 	local chest = peripheral.wrap(chestName)
@@ -109,7 +115,7 @@ function storageManager:scanChest(chestName)
 		if not self.items[itemName] then
 			local displayName = chest.getItemDetail(i).displayName
 			local itemLimit = chest.getItemLimit(i)
-			self.items[itemName] = storedItem.new(itemName, displayName, itemLimit, slotMax / itemLimit)
+			self.items[itemName] = storedItem.new(itemName, displayName, itemLimit, slotMax / itemLimit, self.freeSlots)
 		end
 
 		self.items[itemName]:addSlot(chestName, i, itemCount)
@@ -214,10 +220,21 @@ function storageManager:withdraw(from, items)
 		sleep(0.05)
 	end
 	self.updateLock = true
-	for item, crafted in pairs(items) do
-		local success = self:pullItem(from, item, crafted)
+	for itemName, crafted in pairs(items) do
+		local item = self.items[itemName]
+		-- TODO: not doing anything with count of moved items for now, would work on handling failure later
+		local success, moved = item:pullItem(from, crafted)
 		if not success then
-			error("Failed to withdraw item: " .. item .. " something is very wrong, look into the flow of items")
+			error(
+				"Failed to withdraw item: "
+					.. item.displayName
+					.. " | Moving from: "
+					.. from
+					.. " expected to move: "
+					.. crafted
+					.. " moved: "
+					.. moved
+			)
 		end
 	end
 	self.updateLock = false
