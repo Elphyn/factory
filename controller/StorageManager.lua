@@ -1,7 +1,7 @@
 ---@type item
 local storedItem = require("storedItem")
 ---@type Queue
-local Queue = dofile("factory/utils/Queue.lua")
+local Queue = dofile("factory/shared/Queue.lua")
 ---@type table<itemName, recipe>
 local recipes = dofile("factory/shared/recipes.lua")
 ---@type EventEmitter
