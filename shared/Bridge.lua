@@ -44,7 +44,10 @@ end
 
 --- main loop of the bridge, always listening for messages
 function Bridge:startListening()
-	-- listening thread
+	-- A loop that listens and a loop that is handling should never be on the same thread, one could easily block the other one
+	-- More so when using EventEmitter:emit method, since it could execute multiple callbacks
+	--
+	-- main listening loop
 	self.threader:addThread(function()
 		while true do
 			-- TODO: make this information come from config
@@ -52,7 +55,7 @@ function Bridge:startListening()
 				error("Can't listen if rednet isn't open")
 			end
 
-			-- rednet.receive has yeild it's source code, just as sleep
+			-- rednet.receive has yeild it's source code, just as sleep, so it's non blocking
 			local id, message = rednet.receive()
 			if not message then
 				error("[BRIDGE] Received an empty message from " .. id)
@@ -61,9 +64,7 @@ function Bridge:startListening()
 		end
 	end)
 
-	-- message handler
-	-- Note:
-	-- has to be reworked before used
+	-- main message handling loop
 	self.threader:addThread(function()
 		while true do
 			while self.messages:length() > 0 do
@@ -93,9 +94,9 @@ function Bridge:handleMessage(message)
 	end
 
 	self.processedMessages:add(message.messageID)
-	-- before processing sending an ack to inidicate that we received the command
+	-- before processing sending an ack to inidicate that we received the message
 	self:sendACK(message.from, message.messageID)
-	self:emit("message_received", { from = message.from, content = message.messageContent })
+	self:emit("message_received", message.from, message.messageContent)
 end
 
 ---@param nodeID number
