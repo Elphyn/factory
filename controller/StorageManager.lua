@@ -32,7 +32,6 @@ storageManager.__index = storageManager
 setmetatable(storageManager, { __index = EventEmitter })
 
 ---Creates a Storage Manager
----@return EventEmitter: storageManager
 function storageManager.new(threader)
 	local self = setmetatable(EventEmitter.new(threader), storageManager)
 	self.items = {}
