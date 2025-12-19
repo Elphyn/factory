@@ -162,7 +162,6 @@ function storageManager:totalsDiffer(oldTotals, newTotals)
 	for itemName, itemCount in pairs(newTotals) do
 		local oldCount = oldTotals[itemName] or 0
 		if itemCount ~= oldCount then
-			print("[DEBUG] total's differ")
 			return true
 		end
 	end
@@ -178,6 +177,7 @@ end
 function storageManager:update()
 	local oldTotals = self:snapshotTotals()
 	local oldCapacitry = self:snapshotCapacity()
+	print("[Debug] oldCapacitry: " .. oldCapacitry)
 
 	-- Locking storageManager from any item movements until the update is finished
 	self.updating = true
@@ -187,6 +187,7 @@ function storageManager:update()
 
 	local newTotals = self:snapshotTotals()
 	local newCapacity = self:snapshotCapacity()
+	print("[Debug] newCapacity: " .. newCapacity)
 
 	if self:totalsDiffer(oldTotals, newTotals) or oldCapacitry ~= newCapacity then
 		self:signalChange()
