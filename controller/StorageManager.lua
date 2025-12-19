@@ -162,6 +162,7 @@ function storageManager:totalsDiffer(oldTotals, newTotals)
 	for itemName, itemCount in pairs(newTotals) do
 		local oldCount = oldTotals[itemName] or 0
 		if itemCount ~= oldCount then
+			print("[DEBUG] total's differ")
 			return true
 		end
 	end
