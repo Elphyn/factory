@@ -8,9 +8,16 @@ local function main()
 	local threader = Threader.new()
 	local storageManager = StorageManager.new(threader)
 
-	storageManager:on("inventory_changed", function(storage)
-		print("Inventroy changed, state: " .. storage)
+	storageManager:on("inventory_changed", function(items)
+		print("Inventroy changed, state: ")
+		print(textutils.serialise(items))
 	end)
+
+	storageManager:start()
+
+	while true do
+		threader:run()
+	end
 end
 
 main()

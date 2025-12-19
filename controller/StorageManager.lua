@@ -159,7 +159,7 @@ function storageManager:totalsDiffer(oldTotals, newTotals)
 end
 
 function storageManager:signalChange()
-	self:emit("inventory_changed", self.items)
+	self:emit("inventory_changed", self:snapshotTotals())
 end
 
 --- Checks for changes in storage and updates it
