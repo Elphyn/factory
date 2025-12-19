@@ -177,8 +177,6 @@ end
 function storageManager:update()
 	local oldTotals = self:snapshotTotals()
 	local oldCapacitry = self:snapshotCapacity()
-	print("[Debug] oldCapacitry: ")
-	print(textutils.serialise(oldCapacitry))
 
 	-- Locking storageManager from any item movements until the update is finished
 	self.updating = true
@@ -188,10 +186,12 @@ function storageManager:update()
 
 	local newTotals = self:snapshotTotals()
 	local newCapacity = self:snapshotCapacity()
-	print("[Debug] newCapacity: ")
-	print(textutils.serialise(newCapacity))
 
-	if self:totalsDiffer(oldTotals, newTotals) or oldCapacitry ~= newCapacity then
+	if
+		self:totalsDiffer(oldTotals, newTotals)
+		or oldCapacitry.current ~= newCapacity.current
+		or oldCapacitry.total ~= newCapacity.total
+	then
 		self:signalChange()
 	end
 end
