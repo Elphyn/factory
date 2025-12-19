@@ -136,6 +136,17 @@ end
 ---@return table<itemName, itemCount>
 function storageManager:snapshotTotals()
 	local totals = {}
+	for _, item in pairs(self.items) do
+		totals[item.displayName] = item.total
+	end
+	return deepCopy(totals)
+end
+
+---Creates a snapshot of all item's totals for comparison
+---@alias displayName string a display name for an item for better readability
+---@return table<displayName, itemCount>
+function storageManager:snapshotTotalsWithDisplayName()
+	local totals = {}
 	for name, item in pairs(self.items) do
 		totals[name] = item.total
 	end
