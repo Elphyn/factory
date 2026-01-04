@@ -23,12 +23,12 @@ After a refactor I will place a demo/screenshots as to how to set up the system 
 ### Setup
 
 1. Clone the repository on your main computer and node computer:
-```lua
+```bash
 pastebin run qL6NF5xJ
 ```
 
 2. Run the setup script:
-```lua
+```bash
 factory/setup.lua
 ```
 
