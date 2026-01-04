@@ -18,7 +18,9 @@ After a refactor I will place a demo/screenshots as to how to set up the system 
 
 ### Prerequisites
 
-- CC:Tweaked, Create, UnlimitedPeripheralWorks 
+- CC:Tweaked  
+- Create 
+- UnlimitedPeripheralWorks
 
 ### Setup
 
@@ -41,6 +43,7 @@ factory/setup.lua
 ## About
 
 Personal project inspired by system displayed in this [video](https://www.youtube.com/watch?v=40RwGATZYwI&t=282s).
+I was not able to get my hands on source code of system in that video, so I decided to make my own with quite a few extensions and making it way more complicated then it really needs to be.
 
 ## License
 
