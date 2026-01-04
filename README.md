@@ -1,4 +1,4 @@
-# FactoryOS: 
+# FactoryOS
 
 ## What is this?
 
@@ -22,14 +22,14 @@ After a refactor I will place a demo/screenshots as to how to set up the system 
 
 ### Setup
 
-1. Clone the repository on your main computer:
+1. Clone the repository on your main computer and node computer:
 ```lua
 pastebin run qL6NF5xJ
 ```
 
 2. Run the setup script:
 ```lua
-lua setup.lua
+factory/setup.lua
 ```
 
 3. Configure each computer:
@@ -48,4 +48,4 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 
 ## Acknowledgments
 
-Thanks to [SquidDev](https://github.com/SquidDev) for creating a git clone inside CC:Tweaked
+Thanks to [SquidDev](https://github.com/SquidDev) for creating a git clone inside CC:Tweaked!
