@@ -50,7 +50,7 @@ function Crafting.findCraftableItemsForNodeType(items, nodeType)
 end
 
 ---@param items table<itemName, itemCount> Items we currently have in system
----@param availableNodeTypes nodeType[]
+---@param availableNodeTypes table<nodeType, boolean>
 function Crafting.findCraftableItems(items, availableNodeTypes)
 	local craftableItemsByNode = {}
 	for _, nodeType in ipairs(availableNodeTypes) do
