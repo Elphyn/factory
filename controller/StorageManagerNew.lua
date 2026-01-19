@@ -27,7 +27,6 @@ function storageManager:locatePeripherals()
 	local storageUnitTypes = config.peripherals
 
 	for _, unitType in ipairs(storageUnitTypes) do
-		print("Looking for type: " .. unitType)
 		local p_list = { peripheral.find(unitType) }
 
 		for _, p in ipairs(p_list) do
