@@ -15,6 +15,8 @@ function storageManager.new(threader)
 	self.storageUnits = {}
 	-- self.items = {}
 	self.sharedItemDetails = {}
+	self.updateLock = false
+	self.updating = false
 	return self
 end
 
@@ -40,6 +42,7 @@ end
 
 -- For testing for now
 function storageManager:scanUnits()
+	print("Started scan")
 	for _, storageUnit in ipairs(self.storageUnits) do
 		local items, err = storageUnit.adapter:getItems()
 		if err then
@@ -49,6 +52,17 @@ function storageManager:scanUnits()
 			print("Located item: " .. itemName .. "\n" .. "Count: " .. itemCount)
 		end
 	end
+end
+
+function storageManager:start()
+	self.threader:addThread(function()
+		while true do
+			if not self.updateLock then
+				self:scanUnits()
+			end
+			sleep(0.05)
+		end
+	end)
 end
 
 return storageManager

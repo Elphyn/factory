@@ -16,7 +16,7 @@ local function main()
 
 	-- adding a thread that always checks storage for changes
 	-- storageManager:start()
-	storageManager:scanUnits()
+	storageManager:start()
 
 	-- main loop of the program
 	while true do
