@@ -41,8 +41,9 @@ function storageManager:locatePeripherals()
 end
 
 -- For testing for now
-function storageManager:scanUnits()
+function storageManager:testFunction()
 	print("Started scan")
+	self:locatePeripherals()
 	for _, storageUnit in ipairs(self.storageUnits) do
 		local items, err = storageUnit.adapter:getItems()
 		if err then
