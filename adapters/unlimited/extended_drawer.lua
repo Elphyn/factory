@@ -80,7 +80,8 @@ function Drawer:update()
 	local itemInfo = p.items()
 	for i = 1, self.numSlots do
 		local slotInfo = itemInfo[i]
-		if not slotInfo then
+		-- future note: I am checking for name here, because empty slot isn't nil here, but a empty table
+		if not slotInfo.name then
 			goto continue
 		end
 
