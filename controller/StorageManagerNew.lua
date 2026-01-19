@@ -1,5 +1,5 @@
 local EventEmitter = require("libs.EventEmitter")
-local config = require("StorageConfig")
+local config = require("controller.StorageConfig")
 local adapters = require("adapters.adapters")
 
 -- TODO: later when experimenting with advanced peripherals add check for which mod is currently being used
