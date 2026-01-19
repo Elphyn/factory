@@ -87,7 +87,7 @@ function storageManager:totalsDiffer(with)
 		return false
 	end
 
-	return compare(self.items, with) and compare(with, self.items)
+	return compare(self.items, with) or compare(with, self.items)
 end
 
 -- TODO: add capacity scan
