@@ -80,8 +80,7 @@ function Drawer:update()
 	local itemInfo = p.items()
 	for i = 1, self.numSlots do
 		local slotInfo = itemInfo[i]
-		-- future note: I am checking for name here, because empty slot isn't nil here, but a empty table
-		if not slotInfo.name then
+		if not slotInfo then
 			goto continue
 		end
 
@@ -89,7 +88,7 @@ function Drawer:update()
 		self.currentCapacity = self.currentCapacity - slotInfo.count
 
 		if not self.cachedDetails[slotInfo.name] then
-			self:gatherDetails(p)
+			self:gatherDetails(slotInfo)
 		end
 
 		::continue::
