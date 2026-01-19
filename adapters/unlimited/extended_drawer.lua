@@ -31,6 +31,15 @@ end
 function Drawer:setup()
 	local typeList = peripheral.getType(self.name)
 
+	-- in case returned type is single, it's a string
+	if type(typeList) == "string" then
+		local type = typeList
+		local nSlots = DRAWER_TYPES[type]
+		self.singleSlotCapacity = DEFAULT_DRAWER_CAPACITY / nSlots
+		self.numSlots = nSlots
+		return
+	end
+
 	-- documentation on cc:tweaked isn't complete, need to shut the lsp here, more so on mod integrations
 	---@diagnostic disable-next-line
 	for _, type in pairs(typeList) do
