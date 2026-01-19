@@ -1,6 +1,6 @@
 ---@type Threader
 local Threader = require("libs.Threader")
-local StorageManager = require("controller.StorageManager.new")
+local StorageManager = require("controller.StorageManagerNew")
 
 local function main()
 	-- rednet.open("back")
