@@ -61,6 +61,7 @@ function EventEmitter:on(event, callback, async)
 end
 
 ---Triggers an event, triggering subscribed callbacks
+---Note: for non async callback need be careful about blocking behaivor
 ---@param event eventName
 ---@param ... unknown args for callback
 function EventEmitter:emit(event, ...)

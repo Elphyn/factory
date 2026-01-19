@@ -1,0 +1,23 @@
+--- @alias itemName string
+--- @alias itemCount number
+---
+--- @alias storageUnitName
+--- |'"minecraft:chest"'
+---
+--- @class itemDetails
+--- @field displayName string
+--- @field maxCount number
+--- @field weight number
+---
+--- @class StorageConfig
+--- @field peripherals storageUnitName[]
+--- also policy, but later
+---
+---
+--- @class storageUnit
+--- @field name storageUnitName
+--- @field adapter storageAdapter
+---
+--- @class storageManager: EventEmitter
+--- @field storageUnits storageUnit[]
+--- @field sharedItemDetails table<itemName, itemDetails>

@@ -1,0 +1,43 @@
+--- @alias items table<itemName, itemCount> Items we have in possession @alias moved number amount of items moved during an operation
+--- @alias cachedDetials table<itemName, itemDetails>
+---
+--- @alias errMessageStorageAdapter
+--- | "local peripheral unreachable"
+--- | "remote peripheral unreachable"
+--- | "state desync"
+---
+--- @alias integrationModName
+--- | '"unlimited"'
+--- | '"advanced"'
+---
+--- @alias adapterStorage table<storageUnitName, storageAdapter>
+--- @alias modAdapterStorage table<integrationModName, adapterStorage>
+---
+---
+--- @class slot
+--- @field chestIndex number
+--- @field itemCount number
+---
+---
+--- @class storageAdapter
+--- @field cachedDetials cachedDetials
+--- @field name string
+--- @field totalCapacity number
+--- @field currentCapacity number
+--- @field new fun(chestName: string, sharedCachedDetails: cachedDetials): storageAdapter
+--- @field gatherDetails fun(self: table, itemName: itemName, slotIndex: number): errMessageStorageAdapter | nil
+--- @field getItems fun(self: table): table<itemName, itemCount>, nil | errMessageStorageAdapter
+--- @field pushItem fun(self: table, to: string, itemName: string, itemCount: number): moved, nil | errMessageStorageAdapter
+--- @field pullItem fun(self: table, from: string, itemName: string, itemCount: number)
+--- @field getCapacity fun(self: table)
+--- @field getCapacityForItem fun(self: table, itemName: string)
+--- @field transactionMove fun(self: table, to: string, itemName: string, itemCount: number)
+--- @field transactionPull fun(self: table, from: string, itemName: string, itemCount: number)
+---
+---
+--- @class chestAdapter: storageAdapter
+--- @field update fun(self: table): nil | errMessageStorageAdapter
+--- @field getSlot fun(self: table, itemName: itemName): slot
+--- @field items table<itemName, itemCount>
+--- @field filledSlots table<itemName, slot[]>
+--- @field partiallyFilledSlots table<itemName, Deque>
