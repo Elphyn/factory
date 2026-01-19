@@ -87,6 +87,11 @@ function storageManager:totalsDiffer(with)
 		return true
 	end
 
+	print("Comparing:")
+	print(textutils.serialise(with))
+	print("\n")
+	print(textutils.serialise(self.items))
+
 	return compare(self.items, with) and compare(with, self.items)
 end
 
