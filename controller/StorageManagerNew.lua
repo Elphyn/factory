@@ -50,3 +50,5 @@ function storageManager:scanUnits()
 		end
 	end
 end
+
+return storageManager
