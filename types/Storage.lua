@@ -1,5 +1,6 @@
 --- @alias itemName string
 --- @alias itemCount number
+--- @alias storedItems table<itemName, itemCount>
 ---
 --- @alias storageUnitName
 --- |'"minecraft:chest"'
@@ -14,10 +15,16 @@
 --- also policy, but later
 ---
 ---
---- @class storageUnit
---- @field name storageUnitName
---- @field adapter storageAdapter
----
 --- @class storageManager: EventEmitter
---- @field storageUnits storageUnit[]
+--- @field storageUnits table<storageUnitName, storageAdapter>
 --- @field sharedItemDetails table<itemName, itemDetails>
+--- @field items table<itemName, itemCount>
+--- @field itemLocations table<storageUnitName, storedItems>
+--- @field updateLock boolean
+--- @field updating boolean
+--- @field locatePeripherals fun(self: table)
+--- @field start fun(self: table)
+--- @field runStorageCheck fun(self: table)
+--- @field fullScan fun(self: table)
+--- @field totalsDiffer fun(self: table, with: table): boolean
+--- @field signalChange fun(self: table)
