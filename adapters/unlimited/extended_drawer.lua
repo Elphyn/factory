@@ -95,3 +95,5 @@ function Drawer:getItems()
 
 	return self.items, nil
 end
+
+return Drawer
