@@ -20,11 +20,13 @@
 ---
 ---
 --- @class storageAdapter
---- @field cachedDetials cachedDetials
+--- @field cachedDetails cachedDetials
 --- @field name string
 --- @field totalCapacity number
 --- @field currentCapacity number
---- @field new fun(chestName: string, sharedCachedDetails: cachedDetials): storageAdapter
+--- @field items table<itemName, itemCount>
+--- @field new fun(chestName: string, sharedCachedDetails: cachedDetials): storageAdapter | nil
+--- @field update fun(self: table): nil | errMessageStorageAdapter
 --- @field gatherDetails fun(self: table, itemName: itemName, slotIndex: number): errMessageStorageAdapter | nil
 --- @field getItems fun(self: table): table<itemName, itemCount>, nil | errMessageStorageAdapter
 --- @field pushItem fun(self: table, to: string, itemName: string, itemCount: number): moved, nil | errMessageStorageAdapter
@@ -36,8 +38,13 @@
 ---
 ---
 --- @class chestAdapter: storageAdapter
---- @field update fun(self: table): nil | errMessageStorageAdapter
 --- @field getSlot fun(self: table, itemName: itemName): slot
---- @field items table<itemName, itemCount>
 --- @field filledSlots table<itemName, slot[]>
 --- @field partiallyFilledSlots table<itemName, Deque>
+---
+--- @class drawerAdapter: storageAdapter
+--- @field storedItemName itemName
+--- @field storedItemCount itemCount
+--- @field numSlots number
+--- @field singleSlotCapacity number
+--- @field setup fun(self: table): nil | errMessageStorageAdapter

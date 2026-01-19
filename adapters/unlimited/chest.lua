@@ -1,14 +1,15 @@
 local Deque = require("libs.Deque")
 
+local CHEST_MAX_SLOT_CAPACITY = 64
+
 ---@class chestAdapter
 local Chest = {}
-local CHEST_MAX_SLOT_CAPACITY = 64
 Chest.__index = Chest
 
 function Chest.new(chestName, sharedCachedDetails)
 	local self = setmetatable({}, Chest)
 	assert(peripheral.isPresent(chestName) == true, "StorageUnit with name: " .. chestName .. " does not exist")
-	self.cachedDetials = sharedCachedDetails
+	self.cachedDetails = sharedCachedDetails
 	self.name = chestName
 	self.items = {}
 	self.filledSlots = {}
@@ -27,7 +28,7 @@ function Chest:gatherDetails(itemName, slotIndex)
 	if not info then
 		error("Impossible condition: gatheringItem details got empty slotIndex")
 	end
-	self.cachedDetials[itemName] = {
+	self.cachedDetails[itemName] = {
 		displayName = info.displayName,
 		maxCount = info.maxCount,
 		weight = 64 / info.maxCount,
@@ -58,7 +59,7 @@ function Chest:update()
 		self.items[itemInfo.name] = (self.items[itemInfo.name] or 0) + itemInfo.count
 		self.currentCapacity = self.currentCapacity - itemInfo.count
 
-		if not self.cachedDetials[itemInfo.name] then
+		if not self.cachedDetails[itemInfo.name] then
 			self:gatherDetails(itemInfo.name, slotIndex)
 		end
 
@@ -85,11 +86,6 @@ function Chest:update()
 end
 
 function Chest:getItems()
-	local p = peripheral.wrap(self.name)
-	if not p then
-		return {}, "local peripheral unreachable"
-	end
-
 	local err = self:update()
 	if err then
 		return {}, err
@@ -147,7 +143,7 @@ function Chest:pushItem(to, itemName, itemCount)
 			error("Impossible condition: slot.itemCount dropped below 0, check ChestAdapterImplementation")
 		end
 
-		if self.cachedDetials[itemName].maxCount > slot.itemCount then
+		if self.cachedDetails[itemName].maxCount > slot.itemCount then
 			-- TODO: possibly change peek and pop instead of pop and push if any left
 			self.partiallyFilledSlots[itemName]:push(slot)
 		else
