@@ -10,8 +10,8 @@ local function main()
 
 	-- setting up event listeners
 	storageManager:on("inventory_changed", function(items)
-		-- print("Inventroy changed, state: ")
-		-- print(textutils.serialise(items))
+		print("Inventroy changed, state: ")
+		print(textutils.serialise(items))
 	end)
 
 	-- adding a thread that always checks storage for changes

@@ -81,16 +81,11 @@ function storageManager:totalsDiffer(with)
 	local compare = function(t1, t2)
 		for k, v in pairs(t1) do
 			if t2[k] ~= v then
-				return false
+				return true
 			end
 		end
-		return true
+		return false
 	end
-
-	print("Comparing:")
-	print(textutils.serialise(with))
-	print("\n")
-	print(textutils.serialise(self.items))
 
 	return compare(self.items, with) and compare(with, self.items)
 end
