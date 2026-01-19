@@ -59,7 +59,7 @@ function storageManager:start()
 	self.threader:addThread(function()
 		while true do
 			if not self.updateLock then
-				self:testFunction()()
+				self:testFunction()
 			end
 			sleep(0.05)
 		end
