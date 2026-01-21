@@ -1,10 +1,6 @@
 --- @alias items table<itemName, itemCount> Items we have in possession @alias moved number amount of items moved during an operation
 --- @alias cachedDetials table<itemName, itemDetails>
 ---
---- @alias errMessageStorageAdapter
---- | "local peripheral unreachable"
---- | "remote peripheral unreachable"
---- | "state desync"
 ---
 --- @alias integrationModName
 --- | '"unlimited"'
@@ -48,3 +44,4 @@
 --- @field numSlots number
 --- @field singleSlotCapacity number
 --- @field setup fun(self: table): nil | errMessageStorageAdapter
+--- @field inventory InventoryAdapter_unlimited

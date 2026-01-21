@@ -5,12 +5,7 @@ local assertType = dofile("factory/utils/assertType.lua")
 
 ---@alias movedItems number Number of moved items in the process
 ---@alias success boolean a flag to indicate whether the operation succeded
----@alias moved number amount of items moved during an operation
 ---
----@class slot
----@field chestName string
----@field chestIndex number
----@field itemCount number
 
 ---@class item
 ---@field itemName string

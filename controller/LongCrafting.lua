@@ -1,7 +1,7 @@
 ---@type recipes
-local recipes = dofile("../shared/recipes.lua")
+local recipes = dofile("shared/recipes.lua")
 
-local DESIRED_CONFIDENCE = 0.8
+local DESIRED_CONFIDENCE_FOR_SINGLE_NODE = 0.8
 
 local LongCrafting = {}
 
@@ -18,7 +18,7 @@ function LongCrafting.checkNonDeterministicCraftAndReserve(items, neededItem, qu
 	for depName, depRatio in pairs(recipe.dependencies) do
 		local p = 1 / depRatio
 
-		local reqForOne = math.log(1 - DESIRED_CONFIDENCE) / math.log(1 - p)
+		local reqForOne = math.log(1 - DESIRED_CONFIDENCE_FOR_SINGLE_NODE) / math.log(1 - p)
 		local totalRequired = math.ceil(reqForOne * quantity)
 
 		local stock = (items[depName] or 0) - (reservedItems[depName] or 0)
@@ -78,8 +78,8 @@ end
 ---@param availableNodeTypes table<nodeType, boolean>
 ---@return boolean
 function LongCrafting.shortCraftPossible(items, neededItem, quantity, availableNodeTypes)
-	local requiredStation = recipes.stationType(neededItem)
-	if not availableNodeTypes[requiredStation] then
+	local requiredStation = recipes.stationType[neededItem]
+	if not requiredStation or not availableNodeTypes[requiredStation] then
 		return false
 	end
 
@@ -92,6 +92,56 @@ function LongCrafting.shortCraftPossible(items, neededItem, quantity, availableN
 	return LongCrafting.checkDeterministicCraftAndReserve(items, neededItem, quantity)
 end
 
-function LongCrafting.findCraftableItems(items, availableNodeTypes) end
+---Finds all items that can be crafted with current inventory and available nodes
+---@param items table<itemName, itemCount> Current inventory
+---@param availableNodeTypes table<nodeType, boolean> Available station types
+---@return table<itemName, number> Items that can be crafted and their quantities
+function LongCrafting.findCraftableItems(items, availableNodeTypes)
+	local craftableItems = {}
+	local itemsCopy = {}
+
+	-- Deep copy items to avoid mutating original
+	for itemName, count in pairs(items) do
+		itemsCopy[itemName] = count
+	end
+
+	-- Check each recipe
+	for itemName, recipe in pairs(recipes.recipes) do
+		local requiredStation = recipes.stationType[itemName]
+
+		-- Skip if we don't have the required station type
+		if not availableNodeTypes[requiredStation] then
+			goto continue
+		end
+
+		-- Calculate maximum craftable quantity
+		local maxQuantity = math.huge
+
+		for depName, depRatio in pairs(recipe.dependencies) do
+			local availableDep = itemsCopy[depName] or 0
+
+			if recipe.nonDeterministic then
+				-- For non-deterministic, use confidence-based calculation
+				local p = 1 / depRatio
+				local reqForOne = math.log(1 - DESIRED_CONFIDENCE_FOR_SINGLE_NODE) / math.log(1 - p)
+				local possibleQuantity = math.floor(availableDep / reqForOne)
+				maxQuantity = math.min(maxQuantity, possibleQuantity)
+			else
+				-- For deterministic, use simple ratio
+				local possibleQuantity = math.floor(availableDep / depRatio)
+				maxQuantity = math.min(maxQuantity, possibleQuantity)
+			end
+		end
+
+		-- Only add if we can craft at least 1 item
+		if maxQuantity > 0 then
+			craftableItems[itemName] = maxQuantity
+		end
+
+		::continue::
+	end
+
+	return craftableItems
+end
 
 return LongCrafting

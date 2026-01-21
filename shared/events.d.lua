@@ -1,4 +1,4 @@
 ---@meta
 
----@alias storageManager.events 
+---@alias storageManager.events
 ---| "inventory_changed"

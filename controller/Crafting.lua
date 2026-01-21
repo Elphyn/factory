@@ -7,7 +7,6 @@ local Crafting = {}
 ---@alias nodeType string a type of crafter node is overseeing
 ---@alias itemsLeft table<itemName, itemCount> items that weren't allocated
 ---@alias craftableItems table<itemName, itemCount> items that we can craft
----@alias items table<itemName, itemCount> Items we have in possession
 
 ---@param items table<itemName, itemCount> Items we currently have in system
 ---@param nodeType nodeType

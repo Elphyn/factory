@@ -11,22 +11,12 @@ local deepCopy = dofile("factory/utils/deepCopy.lua")
 
 local slotMax = 64
 ---
----@alias itemName string
----@alias itemCount number
----
----@class storageManager
----@field items table<itemName, item>
----@field freeSlots Queue
----@field totalCapacity number
----@field currentCapacity number
----@field updating boolean
----@field updateLock boolean
 ---
 ---@class freeSlot
 ---@field chestName string
 ---@field slotIndex number
+---
 
---- @class storageManager: EventEmitter
 local storageManager = {}
 storageManager.__index = storageManager
 setmetatable(storageManager, { __index = EventEmitter })
@@ -47,6 +37,7 @@ end
 -- Back to back operations shouldn't be permitted, there has to be at least one update between each
 -- If that's unnaceptable due to performace probably would have to rework a whole storage module
 --
+-- Later need to make a distinction when inventry has changed or capacity and emit different events
 
 --- Main loop of storageManager
 --- Should be called when listeners are set up the abstraction

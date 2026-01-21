@@ -1,4 +1,4 @@
-function generateConfig(table, path)
+local function generateConfig(table, path)
 	-- open file for writing
 	local file = fs.open(path, "w")
 	file.write("return {\n")
@@ -16,4 +16,5 @@ function generateConfig(table, path)
 
 	print("config.lua generated!")
 end
+
 return generateConfig

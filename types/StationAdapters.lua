@@ -1,0 +1,18 @@
+--- @alias stationType
+--- | "mill"
+--- | "press"
+--- | "fan:washing"
+---
+--- @class craftingTask
+--- @field itemName itemName
+--- @field itemCount itemCount
+--- @field input string
+--- @field output string
+---
+--- @class stationAdapter
+--- @field name string
+--- @field state string
+--- @field type string
+--- @field pullItems fun(self: table)
+--- @field pushItems fun(self: table)
+--- @field acceptTask fun(self: table, task)

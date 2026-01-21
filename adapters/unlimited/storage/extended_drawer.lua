@@ -14,54 +14,26 @@ local DRAWER_TYPES = {
 local Drawer = {}
 Drawer.__index = Drawer
 
-function Drawer.new(p_name, sharedCachedDetails)
+function Drawer.new(p_name)
 	local self = setmetatable({}, Drawer)
-	assert(peripheral.isPresent(p_name) == true, "StorageUnit with name: " .. p_name .. " does not exist")
 	self.name = p_name
-	self.cachedDetails = sharedCachedDetails
 	self.totalCapacity = DEFAULT_DRAWER_CAPACITY
 	self.currentCapacity = DEFAULT_DRAWER_CAPACITY
 	self.singleSlotCapacity = 0
 	self.items = {}
 	self.numSlots = 0
+	self.inventory = require("adapters.inventory_unlimited").new(p_name, true)
 	self:setup()
 	return self
 end
 
 function Drawer:setup()
-	local typeList = peripheral.getType(self.name)
+	local type = self.inventory:getType()
 
-	-- in case returned type is single, it's a string
-	if type(typeList) == "string" then
-		local type = typeList
-		local nSlots = DRAWER_TYPES[type]
-		self.singleSlotCapacity = DEFAULT_DRAWER_CAPACITY / nSlots
-		self.numSlots = nSlots
-		return
-	end
+	assert(DRAWER_TYPES[type], "[GUARDRAIL] drawer setup failed, unkown type: " .. type)
 
-	-- documentation on cc:tweaked isn't complete, need to shut the lsp here, more so on mod integrations
-	---@diagnostic disable-next-line
-	for _, type in pairs(typeList) do
-		if DRAWER_TYPES[type] then
-			local nSlots = DRAWER_TYPES[type]
-			self.singleSlotCapacity = DEFAULT_DRAWER_CAPACITY / nSlots
-			self.numSlots = nSlots
-			return
-		end
-	end
-
-	-- Impossible condition, should not happen, if triggered I did something wrong
-	error("Drawer adapter setup failed")
-end
-
-function Drawer:gatherDetails(slotInfo)
-	self.cachedDetails[slotInfo.name] = {
-		displayName = slotInfo.displayName,
-		maxCount = slotInfo.maxCount,
-		-- TODO: not sure if I need weight anymore
-		weight = 64 / slotInfo.maxCount,
-	}
+	self.numSlots = DRAWER_TYPES[type]
+	self.singleSlotCapacity = DEFAULT_DRAWER_CAPACITY / self.numSlots
 end
 
 function Drawer:resetInfo()
