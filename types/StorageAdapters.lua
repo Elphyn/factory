@@ -23,7 +23,6 @@
 --- @field items table<itemName, itemCount>
 --- @field new fun(chestName: string, sharedCachedDetails: cachedDetials): storageAdapter | nil
 --- @field update fun(self: table): nil | errMessageStorageAdapter
---- @field gatherDetails fun(self: table, itemName: itemName, slotIndex: number): errMessageStorageAdapter | nil
 --- @field getItems fun(self: table): table<itemName, itemCount>, nil | errMessageStorageAdapter
 --- @field pushItem fun(self: table, to: string, itemName: string, itemCount: number): moved, nil | errMessageStorageAdapter
 --- @field pullItem fun(self: table, from: string, itemName: string, itemCount: number)
@@ -44,4 +43,4 @@
 --- @field numSlots number
 --- @field singleSlotCapacity number
 --- @field setup fun(self: table): nil | errMessageStorageAdapter
---- @field inventory InventoryAdapter_unlimited
+--- @field inventory InventoryComponentUnlimited

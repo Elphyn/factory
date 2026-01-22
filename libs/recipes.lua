@@ -18,29 +18,35 @@ return {
 		["minecraft:iron_nugget"] = "fan:washing",
 	},
 	recipes = {
-		["minecraft:gravel"] = {
-			dependencies = {
-				["minecraft:cobblestone"] = 1,
+		["mill"] = {
+			["minecraft:gravel"] = {
+				dependencies = {
+					["minecraft:cobblestone"] = 1,
+				},
+			},
+			["minecraft:flint"] = {
+				dependencies = {
+					["minecraft:gravel"] = 1,
+				},
 			},
 		},
-		["minecraft:flint"] = {
-			dependencies = {
-				["minecraft:gravel"] = 1,
+		["press"] = {
+			["minecraft:iron_ingot"] = {
+				dependencies = {
+					["minecraft:iron_nugget"] = 9,
+				},
+			},
+			["minecraft:iron_block"] = {
+				dependencies = {
+					["minecraft:iron_ingot"] = 9,
+				},
 			},
 		},
-		["minecraft:iron_ingot"] = {
-			dependencies = {
-				["minecraft:iron_nugget"] = 9,
-			},
-		},
-		["minecraft:iron_block"] = {
-			dependencies = {
-				["minecraft:iron_ingot"] = 9,
-			},
-		},
-		["minecraft:iron_nugget"] = {
-			dependencies = {
-				["minecraft:gravel"] = 1 / 0.12,
+		["fan:washing"] = {
+			["minecraft:iron_nugget"] = {
+				dependencies = {
+					["minecraft:gravel"] = 1 / 0.12,
+				},
 			},
 		},
 	},

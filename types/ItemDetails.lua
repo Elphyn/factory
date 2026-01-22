@@ -2,7 +2,7 @@
 --- @class itemContext
 --- @field displayNames table<itemName, displayName>
 --- @field maxCounts table<itemName, number>
---- @field itemRegisterd fun(itemName: itemName): boolean
+--- @field itemRegistered fun(itemName: itemName): boolean
 --- @field registerItem fun(itemName: itemName, displayName: displayName, maxCount: number)
 --- @field getDisplayName fun(itemName: itemName): displayName
 --- @field getMaxCount fun(itemName: itemName): number

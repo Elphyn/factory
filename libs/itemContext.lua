@@ -1,4 +1,4 @@
---- @class itemDetailStorage
+--- @class itemContext
 local ItemContext = {
 	displayNames = {},
 	maxCounts = {},
