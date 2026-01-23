@@ -95,7 +95,11 @@ function storageManager:fullScan()
 	self:locatePeripherals()
 
 	for p_name, adapter in pairs(self.storageUnits) do
-		local items = adapter:getItems()
+		local items, err = adapter:getItems()
+		if err then
+			-- crashing program for now, as I don't have time to work on recovery
+			error("Program crashed due to err: " .. err)
+		end
 
 		for itemName, itemCount in pairs(items) do
 			self.items[itemName] = (self.items[itemName] or 0) + itemCount
