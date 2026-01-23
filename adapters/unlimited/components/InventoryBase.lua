@@ -23,6 +23,9 @@ function InventoryBase.allowedType(p_name)
 	local typeList = peripheral.getType(p_name)
 	print("Checking type for " .. p_name .. " \nType: " .. typeList)
 
+	print("Allowed types:")
+	print(textutils.serialise(supportedPeripherals))
+
 	-- in case returned type is single, it's a string
 	if type(typeList) == "string" then
 		if supportedPeripherals[type] then
