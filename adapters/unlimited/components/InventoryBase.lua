@@ -29,7 +29,7 @@ function InventoryBase.allowedType(p_name)
 		end
 	end
 
-	if typeList(typeList) == "table" then
+	if type(typeList) == "table" then
 		-- documentation on cc:tweaked isn't complete, need to shut the lsp here, more so on mod integrations
 		---@diagnostic disable-next-line
 		for _, type in pairs(typeList) do
