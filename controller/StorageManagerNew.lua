@@ -97,17 +97,32 @@ function storageManager:fullScan()
 	for p_name, adapter in pairs(self.storageUnits) do
 		local items, err = adapter:getItems()
 		if err then
+			-- TODO: make recovery here
 			-- crashing program for now, as I don't have time to work on recovery
 			error("Program crashed due to err: " .. err)
 		end
 
-		for itemName, itemCount in pairs(items) do
+		-- for itemName, itemCount in pairs(items) do
+		-- 	self.items[itemName] = (self.items[itemName] or 0) + itemCount
+		--
+		-- 	if not self.itemLocations[p_name] then
+		-- 		self.itemLocations[p_name] = {}
+		-- 	end
+		--
+		-- 	self.itemLocations[p_name][itemName] = (self.itemLocations[p_name][itemName] or 0) + itemCount
+		-- end
+
+		for _, slotInfo in pairs(items) do
+			local itemName = slotInfo.name
+			local itemCount = slotInfo.count
+			-- saving total value of item
 			self.items[itemName] = (self.items[itemName] or 0) + itemCount
 
 			if not self.itemLocations[p_name] then
 				self.itemLocations[p_name] = {}
 			end
 
+			-- saving where items are located and their quantity there
 			self.itemLocations[p_name][itemName] = (self.itemLocations[p_name][itemName] or 0) + itemCount
 		end
 	end

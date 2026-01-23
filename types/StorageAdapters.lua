@@ -1,6 +1,10 @@
---- @alias items table<itemName, itemCount> Items we have in possession @alias moved number amount of items moved during an operation
+--- @alias slotIndex number
+--- @alias items table<slotIndex, slotInfo> Items we have in possession @alias moved number amount of items moved during an operation
 --- @alias cachedDetials table<itemName, itemDetails>
 ---
+--- @class slotInfo
+--- @field name itemName
+--- @field count itemCount
 ---
 --- @alias integrationModName
 --- | '"unlimited"'
@@ -23,7 +27,7 @@
 --- @field items table<itemName, itemCount>
 --- @field new fun(chestName: string, sharedCachedDetails: cachedDetials): storageAdapter | nil
 --- @field update fun(self: table): nil | errMessageStorageAdapter
---- @field getItems fun(self: table): table<itemName, itemCount>, nil | errMessageStorageAdapter
+--- @field getItems fun(self: table): items, nil | errMessageStorageAdapter
 --- @field pushItem fun(self: table, to: string, itemName: string, itemCount: number): moved, nil | errMessageStorageAdapter
 --- @field pullItem fun(self: table, from: string, itemName: string, itemCount: number)
 --- @field getCapacity fun(self: table)
