@@ -21,6 +21,7 @@ end
 --- @private
 function InventoryBase.allowedType(p_name)
 	local typeList = peripheral.getType(p_name)
+	print("Checking type for " .. p_name .. " \nType: " .. typeList)
 
 	-- in case returned type is single, it's a string
 	if type(typeList) == "string" then
